@@ -96,6 +96,12 @@ a mixed integer programming formulation that exploits the intrinsic combinatoria
 of the problem. We are able to solve a real-world instance to provable optimality in less
 than $2$ seconds, which was not possible with earlier methods.
 
+TODO:
+\begin{itemize}
+  \item Describe how to deal with multiple chromosomes. And drawback of assumption.
+  \item Describe backbone constraints
+\end{itemize}
+
 %A \emph{genotype} consists of two bitstrings of size $m$. We are given a set of
 %$n$ genotypes and a desired genotype called the \emph{ideotype}. By crossing
 %two genotypes, new genotypes can be obtained. The probability of obtaining a
@@ -305,7 +311,7 @@ Since we are considering homozygous ideotypes, we can assume without loss of gen
 We define $p \in S_i$ if either $c^i_{1,p}=1$ or $c^i_{2,p} = 1$ where $1 \leq i \leq n$ and $1 \leq p \leq m$. The following lemma now follows.
 \begin{lemma}
 \label{lem:lb_crs}
-The cardinality of a minimum set cover is a lower bound on the number of crossings of any feasible crossing schedule
+The cardinality of a minimum set cover is a lower bound on the number of crossings of any feasible crossing schedule.
 \end{lemma}
 \begin{proof}
 Let $\mathcal{C} = \{S_1,\ldots,S_k\}$ be a minimal cover with cardinality $k$. Assume without loss of generality that $C^*$ contains only 1-alleles.
@@ -324,12 +330,12 @@ We can derive a lower bound for the total population size when considering conse
 Let $(p,p+1)$ be such a pair of loci (where $1 \leq p < m$). For the ideotype to be obtained, there must be a genotype $C$ in the crossing schedule that contains 1-alleles at loci $p$ and $p+1$ on the same 
 chromosome, while this condition does not hold for its parents $D$ and $E$. Clearly, $\Pr{D,E \rightarrow C} \leq r_{p,p+1}$. Plugging this into \eqref{eq:popsize} yields a lower bound on the population size
 for that crossing and hence for the total population size. A tighter lower bound can be obtained when considering \emph{all} pairs of consecutive loci for which there are no genotypes in $\mathcal{P}$ containing
-1-alleles at the respective loci on the same chromosome. Let $\mathcal{L}$ be the set of such pairs of loci. One can easily verify that
+1-alleles at the respective loci on the same chromosome.\obacht[mohammed]{Why go from tight to tighter?} Let $\mathcal{L}$ be the set of such pairs of loci. One can easily verify that
 \begin{equation}
 \mathit{LB}_\mathrm{pop} := \sum_{(p,p+1) \in \mathcal{L}} N(r_{p,p+1},\gamma)
 \end{equation}
 is a lower bound on the total population size, as (i) for every $(p,p+1) \in \mathcal{L}$, $r_{p,p+1}$ is an upper bound on the probability of joining the two 1-alleles at loci $p$ and $p+1$, and (ii) 
-the following lemma holds:
+the following lemma holds: \obacht[mohammed]{clarification about why (ii) is needed}
 \begin{lemma}
 \label{lem:pop_magic}
 Let $p, q \in [0,0.5]$. Then
@@ -365,7 +371,7 @@ p^3 + 1 \geq 2q
 which holds since $q \leq 0.5$ and $p \geq 0$. 
 \end{proof}
 
-Using \eqref{eq:combined_prob} one can show that there is an optimal crossing schedules where homozygous genotypes are obtained via selfings. 
+Using \eqref{eq:combined_prob} one can show that there is an optimal crossing schedule where all homozygous genotypes are obtained via selfings. 
 \begin{lemma}
 \label{lem:selfing}
 There is an optimal schedule in which the (inner) homozygous genotypes are obtained via selfings.
@@ -440,7 +446,7 @@ Similarly, we omit the details of the implementation of absolute differences of 
 \label{sec:feasibility}
 
 The first set of constraints encodes the structure of the underlying directed acyclic graph $D=(V,A)$. We assume a numbering of the vertices
-according to their topological order. In particular, arcs always go from vertices $j<i$ to a vertex $i$, $i,j\in V$. Based on the node numbering, the lower and upper chromosomes of a node $i \in V$ are respectively $2i-1$ and $2i$. For convenience we introduce a mapping function $\delta(k)$ that returns the node a chromosome $k$ corresponds to.
+according to their topological order. In particular, arcs always go from vertices $j<i$ to a vertex $i$ for $i,j\in V$. Based on the node numbering, the lower and upper chromosomes of a node $i \in V$ are respectively $2i-1$ and $2i$. For convenience we introduce a mapping function $\delta(k)$ that returns the node a chromosome $k$ corresponds to.
 Then binary variables $x_{k,i}\in\{0,1\}$, $2n < k \leq 2L$, $i<\delta(k)$, denote whether chromosome $k$ originates from genotype $i$, that is, they indicate an arc $(i,\delta(k))$.
 % \begin{align}
 %   \label{eq:ilp_x}
@@ -496,7 +502,7 @@ The last property is enforced implicitly by the objective function, which is des
 The probability of a given genotype $i$ giving rise to a specific chromosome $k$ determines the 
 required population size (see \eqref{eq:popsize}). This probability in turn depends on the exact set of
 crossovers necessary to generate chromosome $k$ and on the sequence $s$ of heterozygous
-loci (see \eqref{eq:single_prob}). Binary variable $\tilde{a}_{i,p}=1$ if and only if locus $p$ of genotype $i$ is heterozygous: $\tilde{a}_{i,p} = |a_{2i-1,p} - a_{2i,p}|$ for $1 \leq i \leq L, 1 \leq p \leq m$.
+loci (see \eqref{eq:single_prob}). We define binary variable $\tilde{a}_{i,p}=1$ if and only if locus $p$ of genotype $i$ is heterozygous: $\tilde{a}_{i,p} = |a_{2i-1,p} - a_{2i,p}|$ for $1 \leq i \leq L, 1 \leq p \leq m$.
 Now a genotype $i$ is heterozygous, indicated by $h_i=1$, if at least one of its loci is heterozygous: $h_i \geq \tilde{a}_{i,p}$ for  $1 \leq i \leq L, 1 \leq p \leq m$.
 It is ensured that $h_i=0$ whenever $\tilde{a}_{i,p}=0$, $\forall 1 \leq p \leq m$, as $h_i=1$ would increase the required population size.
 
@@ -646,7 +652,7 @@ The desired probability of success is $\gamma=0.999$ and the genetic distance be
     8 & 1394 & 9 & 9 & 1147 &15 & 7 & 1329 &10 &10\\
     \hline
     \end{tabular}
-  \caption{Results for the instances by Servin et al. First column are the results on the tree cases (as obtained by Servin et al's method and our MIP), second column corresponds to PWC2 heuristic and the last column to our MIP for DAGs.}
+  \caption{Results for the instances by Servin et al. First column are the results on the tree cases (as obtained by Servin et al's method and our MIP), the second column corresponds to PWC2 heuristic and the last column to our MIP for DAGs.}
   \label{tbl:servin}
 \end{table}
 
