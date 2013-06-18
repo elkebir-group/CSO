@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "analysis/lowerbounds.h"
+#include "ilpsolverheuristic.h"
 
 IlpSolver::IlpSolver(const Data* pData, const Options& options)
   : CrossingSchedule(pData)
@@ -90,6 +91,13 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     _pCplex->setWarning(std::cout);
     _pCplex->setError(std::cout);
   }
+
+  _pCplex->use(new IlpSolverHeuristic(_env,
+                                      static_cast<int>(_pData->getParents().size()),
+                                      _pData->getNumberOfLoci(),
+                                      _options._fixedGen,
+                                      _options._bound,
+                                      _x));
 
   if(timeLimit>0)
     _pCplex->setParam(IloCplex::TiLim, timeLimit);

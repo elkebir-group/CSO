@@ -1,0 +1,7 @@
+# common stuff
+*.o
+*.creator.user
+*.creator.user.*
+
+# executables
+src/csoilp2
