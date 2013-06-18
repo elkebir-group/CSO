@@ -468,6 +468,13 @@ Since a chromosome originates from exactly one genotype, we have
 %   \sum_{j=1}^{i - 1} x_{2i-1,j} - \sum_{j=1}^{i - 1} x_{2i,j} = 0 && n < i\leq L
 % \end{align}
 
+
+To add:
+\begin{enumerate}
+  \item Out degree of all inner nodes must at least 1
+  \item Backbone stuff
+\end{enumerate}
+
 We capture the second condition by fixing a path of length $G$ using the $x$ variables and by restricting the depth of all remaining nodes, represented by additional
 integer variables, to be at most $G-1$. Implementing this condition requires the assumed ordering on vertices to be extended. For the sake of a clear discussion, we omit the details.
 
@@ -617,7 +624,7 @@ $\lambda_{\mathrm{pop}}\cdot\left(\sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\
 \subsubsection{Additional cuts.} We consider three additional cuts. The first one is due to Lemma~\ref{lem:selfing}. The following constraints enforce that a homozygous genotype results via selfing: $|x_{2i-1,j} - x_{2i,j}| \leq h_j$ for $n < i \leq L, 1 \leq j < i$.
 In addition, the lower and upper bound on the population size correspond to
   $\mathit{LB}_\mathrm{pop} \leq \sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{a_j},\gamma) \leq \mathit{UB}_\mathrm{pop}$ for $n < i \leq L$.
-For the sake of simplicity we omit the additional constraints required to enforce compulsory parental genotypes to be contained in the solution. 
+  For the sake of simplicity we omit the additional constraints required to enforce compulsory parental genotypes to be contained in the solution \obacht[mohammed]{We can be complete here, give compulsory leaves constraints. Also we don't have to do the constraints inline.}.
 
 To come back to condition five of our characterization of feasible solutions in the beginning of this section, 
 we simply set $a_1=\log(1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}})$. Then any $\bar{z}_i<a_1$ implying a population size larger than $N_{\mathrm{max}}$
@@ -666,7 +673,7 @@ fungus is resistant to fungicides, so host-plant resistance is desired.
 There is a wild-type pepper line that is resistant to the fungus. For this wild-type, three dominant quantitative trait loci (QTLs), numbered 1,2 and 3, that explain the resistance have been identified \cite{Chifriss:1992}. In addition to resistance, we also look at pungency, which is a dominant monogenic trait whose locus we assign number 4. The pungency gene is closely linked with one of the resistance QTLs, say the one of locus 3, with a genetic distance
 of 0.01~cM, i.e. $r_{3,4} = 0.01$ \cite{Haldane:1919}. The resistant line is pungent. On the other hand, the elite line used for production is sweet but susceptible to the disease. Both lines are pure lines, i.e.\ they are homozygous at all loci. The goal now is to come up with a crossing schedule that results in a homozygous individual that is both resistant and sweet. 
 We do this by using 1-alleles to indicate desired alleles. Therefore the parent set is 
-$\mathcal{P} = \small \left\{
+$\mathcal{P} = \left\{
   \begin{pmatrix}
     1 & 1 & 1 & 0\\
     1 & 1 & 1 & 0
@@ -677,7 +684,7 @@ $\mathcal{P} = \small \left\{
     0 & 0 & 0 & 1
   \end{pmatrix}
   \right\}$, and the ideotype is
-  $C^* = \small
+  $C^* = 
   \begin{pmatrix}
     1 & 1 & 1 & 1\\
     1 & 1 & 1 & 1
