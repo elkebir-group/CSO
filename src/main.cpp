@@ -42,7 +42,6 @@ int main(int argc, char** argv)
 #endif
 
   IlpSolver::Options options;
-  bool singleTarget = false;
   bool printRM = false;
   std::string outputFileName;
   int automatic = -1;
@@ -54,16 +53,12 @@ int main(int argc, char** argv)
         options._verbose, false)
     .refOption("t", "Enforce crossing schedules to be trees", 
         options._tree, false)
-    .refOption("r", "Upper bound on the depth", 
-        options._boundR, false)
     .refOption("p", "Cuts: enforce different parents",
         options._diffParents, false)
     .refOption("c", "Cuts: useful crossovers only",
         options._usefulCross, false)
     .refOption("n", "Cuts: based on bound Nmax",
         options._boundNmax, false)
-    .refOption("s", "Single target: consider only first chromosome of ideotype",
-        singleTarget, false)
     .refOption("b", "Number of internal nodes",
         options._bound, false)
     .refOption("br", "Generation",
@@ -123,8 +118,16 @@ int main(int argc, char** argv)
   {
     IlpSolver* pSolver = new IlpSolver(pData, options);
     pSolver->init();
-    if (pSolver->solve(false, -1) == IlpSolver::CSO_SOLVER_OPTIMAL)
-      pBestSchedule = pSolver;
+    if (timeLimit < 0)
+    {
+      if (pSolver->solve(false, -1) == IlpSolver::CSO_SOLVER_OPTIMAL)
+        pBestSchedule = pSolver;
+    }
+    else
+    {
+      if (pSolver->solve(false, timeLimit) != IlpSolver::CSO_SOLVER_INFEASIBLE)
+        pBestSchedule = pSolver;
+    }
   }
   else
   {

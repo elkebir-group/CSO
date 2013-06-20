@@ -25,7 +25,6 @@ public:
     int _fixedGen;  // fixes the number of generations
     bool _printProb;
     bool _boundNmax;
-    int _boundR;
     int _nof_segs;
     bool _servin;
     double _upperBoundObj;
@@ -41,7 +40,6 @@ public:
       , _fixedGen(-1)
       , _printProb(false)
       , _boundNmax(false)
-      , _boundR(-1)
       , _nof_segs(7)
       , _servin(false)
       , _upperBoundObj(std::numeric_limits<double>::max())
@@ -150,11 +148,12 @@ private:
   double parseLogProb(int i) const;
   unsigned long parseGen(int i) const;
   void constructDAG();
-  int getGap(int i) const;
   int getRelNode(int base_i, int backbone_i) const;
   int getAbsChromosome(int base_i, int backbone_k) const;
   int getAbsNode(int base_i, int backbone_i) const;
-  int getRelChromosome(int base_k, int backbone_k) const;
+
+  bool isBackboneNode(int i) const;
+  int getNrInnerPred(int i) const;
 
 protected:
   void printEdges(Node node, BoolNodeMap& visited, std::ostream& out) const;
@@ -167,13 +166,32 @@ public:
   double getObjectiveValue() const;
 };
 
+inline bool IlpSolver::isBackboneNode(int i) const
+{
+  return i == 0 ||
+      (_options._bound - _options._fixedGen < i && i < _options._bound);
+}
+
+inline int IlpSolver::getNrInnerPred(int i) const
+{
+  if (isBackboneNode(i))
+  {
+    return i;
+  }
+  else
+  {
+    // -3, because the last and second-last backbone nodes
+    // as well as first backbone node cannot be predecessors
+    return i + _options._fixedGen - 3;
+  }
+}
+
 inline int IlpSolver::getAbsChromosome(int i, int k) const
 {
   if (k < 2*i)
     return k;
   else
-    // KLOPT diT?
-    return k + 2*(_options._bound - _options._fixedGen - i);
+    return k - 2*i + 2*(_options._bound - _options._fixedGen + 1);
 }
 
 inline int IlpSolver::getAbsNode(int i, int j) const
@@ -181,29 +199,15 @@ inline int IlpSolver::getAbsNode(int i, int j) const
   if (j < i)
     return j;
   else
-    return j + _options._bound - _options._fixedGen - i;
+    return j - i + _options._bound - _options._fixedGen + 1;
 }
 
 inline int IlpSolver::getRelNode(int base_i, int backbone_i) const
 {
-  const int firstBackboneNode = _options._bound - _options._fixedGen;
-  return base_i + backbone_i - firstBackboneNode;
-}
-
-inline int IlpSolver::getRelChromosome(int base_i, int backbone_k) const
-{
   abort();
   // TODO
-  const int firstBackboneChromosome = 2*(_options._bound - _options._fixedGen) - 1;
-  return backbone_k - firstBackboneChromosome + 1 + 2*base_i;
-}
-
-inline int IlpSolver::getGap(int i) const
-{
-  assert(0 <= i && i < _options._bound);
-  assert(_options._fixedGen > 1);
-
-  return _options._bound - _options._fixedGen - i + 1;
+  const int firstBackboneNode = _options._bound - _options._fixedGen;
+  return base_i + backbone_i - firstBackboneNode;
 }
 
 inline double IlpSolver::getObjectiveValue() const
@@ -263,7 +267,7 @@ inline void IlpSolver::printX() const
   const int n = _pData->getParents().size();
   for (int k = 0; k < 2*_options._bound - 1; k++)
   {
-    for (int i = 0; i < n+k/2; i++)
+    for (int i = 0; i < n + getNrInnerPred(k/2); i++)
     {
       std::cout << "// x[" << k << "][" << i << "] = "
         << _pCplex->getValue(_x[k][i]) << std::endl;
