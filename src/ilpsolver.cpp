@@ -20,6 +20,7 @@ IlpSolver::IlpSolver(const Data* pData, const Options& options)
   , _idx(_G)
   , _env()
   , _model(_env)
+  , _allVar(_env)
   , _obj(_env)
   , _pCplex(NULL)
   , _breakpoint()
@@ -92,12 +93,16 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     _pCplex->setError(std::cout);
   }
 
-  _pCplex->use(new IlpSolverHeuristic(_env,
-                                      static_cast<int>(_pData->getParents().size()),
-                                      _pData->getNumberOfLoci(),
-                                      _options._fixedGen,
-                                      _options._bound,
-                                      _x));
+  //_pCplex->use(new IlpSolverHeuristic(_env,
+  //                                    static_cast<int>(_pData->getParents().size()),
+  //                                    _pData->getNumberOfLoci(),
+  //                                    _options._fixedGen,
+  //                                    _options._bound,
+  //                                    _c,
+  //                                    _obj,
+  //                                    _x,
+  //                                    _p,
+  //                                    _allVar));
 
   if(timeLimit>0)
     _pCplex->setParam(IloCplex::TiLim, timeLimit);
@@ -105,12 +110,29 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
   if(feasibility)
     _pCplex->setParam(IloCplex::MIPEmphasis, CPX_MIPEMPHASIS_FEASIBILITY);
 
-  //_pCplex->setParam(IloCplex::Threads, 1);
-  
-  //_pCplex->exportModel("letssee.lp");
-  //std::cout << "// Number of cols: " << _pCplex->getNcols() << std::endl;
-  //std::cout << "// Number of rows: " << _pCplex->getNrows() << std::endl;
-  if(!_pCplex->solve())
+  _pCplex->setParam(IloCplex::Threads, 1);
+
+  char buf[1024];
+  sprintf(buf, "letssee-c%d-g%d.lp", _options._bound, _options._fixedGen);
+  _pCplex->exportModel(buf);
+  std::cout << "// crs: " << _options._bound << std::endl;
+  std::cout << "// gen: " << _options._fixedGen << std::endl;
+  std::cout << "// Number of cols: " << _pCplex->getNcols() << " " << _allVar.getSize() << std::endl;
+  std::cout << "// Number of rows: " << _pCplex->getNrows() << std::endl;
+
+  bool res = false;
+
+  try
+  {
+    res = _pCplex->solve();
+  }
+  catch (IloCplex::Exception& e)
+  {
+    std::cerr << e.getStatus() << std::endl;
+    exit(1);
+  }
+
+  if(!res)
   {
     //_env.error() << "Failed to optimize LP" << std::endl;
     return _pCplex->getCplexStatus() == CPX_STAT_ABORT_TIME_LIM ? 
@@ -325,18 +347,23 @@ void IlpSolver::initChromosomesFromGenotypes()
     int offset = g <= 1 || i >= _options._bound-g ? 0 : g-2;
 
     _x[2*i] = IloBoolVarArray(_env, n+i+offset);
-    if(i<_options._bound-1)
+    if(i < _options._bound-1)
+    {
       _x[2*i+1] = IloBoolVarArray(_env, n+i+offset);
+    }
+
     for(int j=0; j<n+i+offset; j++)
     {
       std::stringstream ss;
       ss << "x_" << 2*i << "_" << j;
       _x[2*i][j] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_x[2*i][j]);
       if(i<_options._bound-1)
       {
         std::stringstream ss2;
         ss2 << "x_" << 2*i+1 << "_" << j;
         _x[2*i+1][j] = IloBoolVar(_env, ss2.str().c_str());
+        _allVar.add(_x[2*i+1][j]);
       }
     }
   }
@@ -381,7 +408,7 @@ void IlpSolver::initChromosomesFromGenotypes()
       sumofoutedges.clear();
     }
   }
-  else
+  else if (_options._bound > 1)
   {
     // no backbone, everything adheres to topological ordering
     for (int i=0; i<_options._bound-1; i++)
@@ -455,6 +482,7 @@ void IlpSolver::initAllelesFromChromosomes()
       std::stringstream ss;
       ss << "y_" << i << "_" << j;
       _y[i][j] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_y[i][j]);
     }
   }
 
@@ -466,7 +494,8 @@ void IlpSolver::initAllelesFromChromosomes()
     {
       std::stringstream ss;
       ss << "p_" << i << "_" << t;
-      _p[i][t] = IloBoolVar(_env,ss.str().c_str());
+      _p[i][t] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_p[i][t]);
     }
   }
 
@@ -476,7 +505,12 @@ void IlpSolver::initAllelesFromChromosomes()
   {
     _bt[i] = IloBoolVarArray(_env, m);
     for(int t=0; t<m; t++)
-      _bt[i][t] = IloBoolVar(_env);
+    {
+      std::stringstream ss;
+      ss << "bt_" << i << "_" << t;
+      _bt[i][t] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_bt[i][t]);
+    }
   }
   for(int i=0; i < _options._bound-1; i++)
   {
@@ -492,7 +526,10 @@ void IlpSolver::initAllelesFromChromosomes()
   // is node heterozygous
   for(int i=0; i < _options._bound-1; i++)
   {
-    _het[i] = IloBoolVar(_env);
+    std::stringstream ss;
+    ss << "het_" << i;
+    _het[i] = IloBoolVar(_env, ss.str().c_str());
+    _allVar.add(_het[i]);
     for(int j=0; j<m; j++)
       _model.add(_het[i]>=_bt[i][j]);
   }
@@ -524,6 +561,7 @@ void IlpSolver::initAllelesFromChromosomes()
         ss << "input_bit_";
         ss << i << "_" << j << "_" << t;
         _input_bit[i][j][t] = IloBoolVar(_env, ss.str().c_str());
+        _allVar.add(_input_bit[i][j][t]);
       }
     }
   }
@@ -710,6 +748,7 @@ void IlpSolver::initTree()
     for (int p = 0; p < m; p++)
     {
       _uc[i][p] = IloBoolVar(_env);
+      _allVar.add(_uc[i][p]);
 
       int offset = g <= 1 || i >= _options._bound-g ? 0 : g-2;
       
@@ -717,6 +756,7 @@ void IlpSolver::initTree()
       for (int j = n; j < n+i+offset; j++)
       {
         _ucx[2*i][p][j-n] = IloBoolVar(_env);
+        _allVar.add(_ucx[2*i][p][j-n]);
       }
       
       if (i != _options._bound - 1)
@@ -725,6 +765,7 @@ void IlpSolver::initTree()
         for (int j = n; j < n+i+offset; j++)
         {
           _ucx[2*i+1][p][j-n] = IloBoolVar(_env);
+          _allVar.add(_ucx[2*i+1][p][j-n]);
         }
       }
     }
@@ -865,6 +906,7 @@ void IlpSolver::initObjectiveGen()
       std::stringstream ss;
       ss << "r_" << i;
       _r[i].setName(ss.str().c_str());
+      _allVar.add(_r[i]);
       int offset = g <= 1 || i >= _options._bound-g ? 0 : g-2;
       for(int j=0; j<i+offset; j++)
       {
@@ -902,9 +944,17 @@ void IlpSolver::initObjectivePop()
     // leaves
     for(int j=0; j<n; j++)
     { 
-      _hetx[2*i][j] = IloBoolVar(_env);
+      std::stringstream ss;
+      ss << "hetx_" << 2*i << "_" << j;
+      _hetx[2*i][j] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_hetx[2*i][j]);
       if(i<_options._bound-1)
-        _hetx[2*i+1][j] = IloBoolVar(_env);
+      {
+        std::stringstream ss;
+        ss << "hetx_" << 2*i + 1 << "_" << j;
+        _hetx[2*i+1][j] = IloBoolVar(_env, ss.str().c_str());
+        _allVar.add(_hetx[2*i+1][j]);
+      }
       if(_homozygous[j]) {          
         _model.add(_hetx[2*i][j]==0);
         if(i<_options._bound-1)
@@ -920,9 +970,17 @@ void IlpSolver::initObjectivePop()
     // inner nodes
     for(int j=n; j < n + i + offset; j++)
     {
-      _hetx[2*i][j] = IloBoolVar(_env);
+      std::stringstream ss;
+      ss << "hetx_" << 2*i << "_" << j;
+      _hetx[2*i][j] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_hetx[2*i][j]);
       if(i<_options._bound-1)
-        _hetx[2*i+1][j] = IloBoolVar(_env);
+      {
+        std::stringstream ss;
+        ss << "hetx_" << 2*i + 1 << "_" << j;
+        _hetx[2*i+1][j] = IloBoolVar(_env, ss.str().c_str());
+        _allVar.add(_hetx[2*i+1][j]);
+      }
 
       _model.add(_hetx[2*i][j]<=_het[j-n]);
       _model.add(_hetx[2*i][j]<=_x[2*i][j]);
@@ -941,7 +999,12 @@ void IlpSolver::initObjectivePop()
   {
     _d[i] = IloBoolVarArray(_env, m-1);
     for(int j=0; j<m-1; j++)
-      _d[i][j] = IloBoolVar(_env);
+    {
+      std::stringstream ss;
+      ss << "d_" << i << "_" << j;
+      _d[i][j] = IloBoolVar(_env, ss.str().c_str());
+      _allVar.add(_d[i][j]);
+    }
   }
   for(int i=0; i < (2 * _options._bound)-1; i++)
   {
@@ -963,7 +1026,10 @@ void IlpSolver::initObjectivePop()
       _h[i][p] = IloBoolVarArray(_env, m-p-1);
       for (int q = p + 1; q < m; q++)
       {
-        _h[i][p][q-p-1] = IloBoolVar(_env);
+        std::stringstream ss;
+        ss << "h_" << i << "_" << p << "_" << q-p-1;
+        _h[i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+        _allVar.add(_h[i][p][q-p-1]);
         _model.add(_h[i][p][q-p-1]<=_bt[i][p]);
         _model.add(_h[i][p][q-p-1]<=_bt[i][q]);
         for (int r = p + 1; r < q; r++)
@@ -994,8 +1060,11 @@ void IlpSolver::initObjectivePop()
         _hx[k][i][p] = IloBoolVarArray(_env, m-p-1);
         for (int q = p+1; q < m; q++)
         {
-          _hx[k][i][p][q-p-1] = IloBoolVar(_env);
-          if (_c[2*i][p] == _c[2*i+1][p] || 
+          std::stringstream ss;
+          ss << "hx_" << k << "_" << i << "_" << p << "_" << q-p-1;
+          _hx[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _allVar.add(_hx[k][i][p][q-p-1]);
+          if (_c[2*i][p] == _c[2*i+1][p] ||
               _c[2*i][q] == _c[2*i+1][q] ||
               !isHomozygousBlock(i,p,q))
           {
@@ -1019,7 +1088,10 @@ void IlpSolver::initObjectivePop()
         _hx[k][i][p] = IloBoolVarArray(_env, m-p-1);
         for (int q = p+1; q < m; q++)
         {
-          _hx[k][i][p][q-p-1] = IloBoolVar(_env);
+          std::stringstream ss;
+          ss << "hx_" << k << "_" << i << "_" << p << "_" << q-p-1;
+          _hx[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _allVar.add(_hx[k][i][p][q-p-1]);
           _model.add(_hx[k][i][p][q-p-1] <= _h[i-n][p][q-p-1]);
           _model.add(_hx[k][i][p][q-p-1] <= _x[k][i]);
           _model.add(_hx[k][i][p][q-p-1] >= _h[i-n][p][q-p-1] + _x[k][i] - 1);
@@ -1038,7 +1110,10 @@ void IlpSolver::initObjectivePop()
       _e[k][p] = IloIntVarArray(_env, m-p-1);
       for (int q = p+1; q < m; q++)
       {
-        _e[k][p][q-p-1] = IloIntVar(_env, 0, m-1);
+        std::stringstream ss;
+        ss << "e_" << k << "_" << p << "_" << q-p-1;
+        _e[k][p][q-p-1] = IloIntVar(_env, 0, m-1, ss.str().c_str());
+        _allVar.add(_e[k][p][q-p-1]);
         for (int r = p + 1; r <= q; r++)
         {
           sumofr2 += _d[k][r-1]; // mind the r-1
@@ -1065,8 +1140,11 @@ void IlpSolver::initObjectivePop()
         _hxe[k][i][p] = IloBoolVarArray(_env, m-p-1);
         for (int q = p+1; q < m; q++)
         {
-          _hxe[k][i][p][q-p-1] = IloBoolVar(_env);
-          if (_c[2*i][p] == _c[2*i+1][p] || 
+          std::stringstream ss;
+          ss << "hxe_" << k << "_" << i << "_" << p << "_" << q-p-1;
+          _hxe[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _allVar.add(_hxe[k][i][p][q-p-1]);
+          if (_c[2*i][p] == _c[2*i+1][p] ||
               _c[2*i][q] == _c[2*i+1][q] ||
               !isHomozygousBlock(i,p,q))
           {
@@ -1090,7 +1168,10 @@ void IlpSolver::initObjectivePop()
         _hxe[k][i][p] = IloBoolVarArray(_env, m-p-1);
         for (int q = p+1; q < m; q++)
         {
-          _hxe[k][i][p][q-p-1] = IloBoolVar(_env);
+          std::stringstream ss;
+          ss << "hxe_" << k << "_" << i << "_" << p << "_" << q-p-1;
+          _hxe[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _allVar.add(_hxe[k][i][p][q-p-1]);
           // TODO, maybe better in terms of h and x
           _model.add(_hxe[k][i][p][q-p-1] <= _hx[k][i][p][q-p-1]);
           _model.add(_hxe[k][i][p][q-p-1] <= _e[k][p][q-p-1]);
@@ -1104,6 +1185,10 @@ void IlpSolver::initObjectivePop()
   IloExpr sumoflogprobs(_env);
   for (int j=0; j < _options._bound; j++) 
   {
+    std::stringstream ss;
+    ss << "zb_" << j;
+    _zb[j].setName(ss.str().c_str());
+    _allVar.add(_zb[j]);
     int offset = g <= 1 || j >= _options._bound-g ? 0 : g-2;
     for (int i=0; i<n+j+offset; i++) {
       if (i<n && !_homozygous[i])
@@ -1155,9 +1240,19 @@ void IlpSolver::initObjectivePop()
   {
     _lambda[i] = IloNumVarArray(_env, _breakpoint.size(), 0., 1., IloNumVar::Float);
     _lambda[i][_breakpoint.size()-1] = IloBoolVar(_env);
-         
+    std::stringstream ss;
+    ss << "lambda_" << i << "_" << _breakpoint.size() - 1;
+    _lambda[i][_breakpoint.size()-1].setName(ss.str().c_str());
+    _allVar.add(_lambda[i][_breakpoint.size()-1]);
+
     for(int j=0; j<_breakpoint.size()-1; j++)
+    {
+      std::stringstream ss;
+      ss << "lambda_" << i << "_" << j;
+      _lambda[i][j].setName(ss.str().c_str());
+      _allVar.add(_lambda[i][j]);
       sumoflambdas+=_lambda[i][j];
+    }
     _model.add(sumoflambdas==1-_lambda[i][_breakpoint.size()-1]);
     sumoflambdas.clear();
 

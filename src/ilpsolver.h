@@ -70,6 +70,7 @@ private:
   IdxMap _idx;
   IloEnv _env;
   IloModel _model;
+  IloNumVarArray _allVar;
   IloExpr _obj;
   IloCplex* _pCplex;
   /// Piece-wise linear function breakpoints
