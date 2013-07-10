@@ -44,7 +44,7 @@ int main(int argc, char** argv)
   IlpSolver::Options options;
   bool printRM = false;
   std::string outputFileName;
-  int automatic = -1;
+  bool automatic = false;
   int timeLimit = -1;
   bool saveIntermediate = false;
 
@@ -114,7 +114,7 @@ int main(int argc, char** argv)
   bool timeLimitHit = false;
   CrossingSchedule* pBestSchedule = NULL;
   lemon::Timer t;
-  if (automatic < 0)
+  if (!automatic)
   {
     IlpSolver* pSolver = new IlpSolver(pData, options);
     pSolver->init();
@@ -135,9 +135,10 @@ int main(int argc, char** argv)
     bool foundFeasible = false;
     int a = automatic;
     options._upperBoundPop = std::numeric_limits<double>::max();
-    for (int b = std::max((int)LB.getCrossLB(), options._bound); a > 0; b++)
+    for (int b = std::max((int)LB.getCrossLB(), options._bound);; b++)
     {
       const int lbr = 1+ceil(log(b)/log(2));
+      pData->updateGamma(b);
 
       if (pData->getCost(LB.getPopLB(), lbr, b) > options._upperBoundObj)
       {
@@ -161,7 +162,7 @@ int main(int argc, char** argv)
       //}
 
       bool foundFeasibleCurIt = false;
-      for (int br = lbr; br <= b; br++)
+      for (int br = lbr; br <= std::min(b, pData->getGenMax()); br++)
       {
         options._upperBoundPop = (options._upperBoundObj 
           - b * pData->getCostNode() 
@@ -225,10 +226,6 @@ int main(int argc, char** argv)
 
         delete pSolver;
       }
-      if (foundFeasible && !foundFeasibleCurIt)
-        a--;
-      else
-        a = automatic;
     }
   }
   t.stop();

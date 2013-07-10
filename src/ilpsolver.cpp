@@ -28,23 +28,23 @@ IlpSolver::IlpSolver(const Data* pData, const Options& options)
   , _t2(_env, pData->getNumberOfLoci())
   , _c(_env, 2 * pData->getParents().size())
   , _homozygous(_env, pData->getParents().size())
-  , _x(_env, (2 * options._bound)-1)
-  , _input_bit(_env, (2 * options._bound)-1)
-  , _y(_env, (2 * options._bound)-1)
-  , _p(_env, (2 * options._bound)-1)
-  , _bt(_env, options._bound-1)
-  , _het(_env, options._bound-1)
-  , _hetx(_env, (2 * options._bound)-1)
-  , _d(_env, (2 * options._bound)-1)
+  , _x(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _input_bit(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _y(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _p(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _bt(_env, pData->isIdeotypeHomozygous() ? options._bound-1 : options._bound)
+  , _het(_env, pData->isIdeotypeHomozygous() ? options._bound-1 : options._bound)
+  , _hetx(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _d(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
   , _zb(_env, options._bound, -IloInfinity, 0.0, IloNumVar::Float)
   , _lambda(_env, options._bound)
   , _r(_env, options._bound, 1, options._fixedGen)
-  , _h(_env, options._bound-1)
-  , _hx(_env, (2 * options._bound)-1)
-  , _hxe(_env, (2 * options._bound)-1)
-  , _e(_env, (2 * options._bound)-1)
+  , _h(_env, pData->isIdeotypeHomozygous() ? options._bound-1 : options._bound)
+  , _hx(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _hxe(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
+  , _e(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
   , _uc(_env, options._bound)
-  , _ucx(_env, (2 * options._bound)-1)
+  , _ucx(_env, pData->isIdeotypeHomozygous() ? (2 * options._bound)-1 : 2 * options._bound)
 {
 }
 
@@ -104,10 +104,10 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
   //                                    _p,
   //                                    _allVar));
 
-  if(timeLimit>0)
+  if (timeLimit>0)
     _pCplex->setParam(IloCplex::TiLim, timeLimit);
   
-  if(feasibility)
+  if (feasibility)
     _pCplex->setParam(IloCplex::MIPEmphasis, CPX_MIPEMPHASIS_FEASIBILITY);
 
   _pCplex->setParam(IloCplex::Threads, 1);
@@ -305,6 +305,12 @@ void IlpSolver::initIdeotype()
   // fix target bits
   for (int j=0; j<m; j++)
     _model.add(_p[(2*_options._bound)-2][j]==_t1[j]);
+
+  if (!ideotype.isHomozygous())
+  {
+    for (int j=0; j<m; j++)
+      _model.add(_p[(2*_options._bound)-1][j]==_t2[j]);
+  }
 }
 
 void IlpSolver::initChromosomesFromGenotypes()
@@ -313,6 +319,7 @@ void IlpSolver::initChromosomesFromGenotypes()
   const int n = _pData->getParents().size();
   const int m = _pData->getNumberOfLoci();
   const int g = _options._fixedGen;
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
 
   // backbone chromosomes are the last 2*(g-1) chromosomes
   // + first two chromosomes
@@ -329,7 +336,7 @@ void IlpSolver::initChromosomesFromGenotypes()
     int offset = getNrInnerPred(i);
 
     _x[2*i] = IloBoolVarArray(_env, n+offset);
-    if (i < _options._bound - 1)
+    if (i < _options._bound - 1 || !homozygousIdeotype)
     {
       _x[2*i+1] = IloBoolVarArray(_env, n+offset);
     }
@@ -340,7 +347,7 @@ void IlpSolver::initChromosomesFromGenotypes()
       ss << "x_" << 2*i << "_" << j;
       _x[2*i][j] = IloBoolVar(_env, ss.str().c_str());
       _allVar.add(_x[2*i][j]);
-      if (i < _options._bound - 1)
+      if (i < _options._bound - 1 || !homozygousIdeotype)
       {
         std::stringstream ss2;
         ss2 << "x_" << 2*i+1 << "_" << j;
@@ -359,13 +366,13 @@ void IlpSolver::initChromosomesFromGenotypes()
     for (int j=0; j < n + offset; j++)
     {
       sumofinedges1 += _x[2*i][j];
-      if(i<_options._bound-1)
+      if (i<_options._bound-1 || !homozygousIdeotype)
         sumofinedges2 += _x[2*i+1][j];
     }
     _model.add(sumofinedges1 == 1);
     sumofinedges1.clear();
 
-    if (i < _options._bound-1)
+    if (i < _options._bound-1 || !homozygousIdeotype)
     {
       _model.add(sumofinedges2 == 1);
       sumofinedges2.clear();
@@ -385,7 +392,8 @@ void IlpSolver::initChromosomesFromGenotypes()
       {
         // TODO: maybe upper bound for j can be tighter... DONE!
         // (REMEMBER: last node is only connected to the last but one)
-        for (int j = 2*(i+1); j < 2 * (_options._bound - 1); j++)
+        const int chromosomeUB = homozygousIdeotype ? 2 * (_options._bound - 1) : 2 * _options._bound;
+        for (int j = 2*(i+1); j < chromosomeUB; j++)
         {
           sumofoutedges += _x[j][n+i];
         }
@@ -421,11 +429,12 @@ void IlpSolver::initChromosomesFromGenotypes()
 
   {
     // homozygous ideotype, last step is selfing:
-    for (int j = 0; j < n+_options._bound-2 ; j++)
-    {
-      _model.add(_x[2*_options._bound-2][j] == 0);
-    }
-    _model.add(_x[2*_options._bound-2][n+_options._bound-2] == 1);
+    // REMOVE me, superfluous due to backbone constraints
+    //for (int j = 0; j < n+_options._bound-2 ; j++)
+    //{
+    //  _model.add(_x[2*_options._bound-2][j] == 0);
+    //}
+    //_model.add(_x[2*_options._bound-2][n+_options._bound-2] == 1);
   }
 }
 
@@ -434,13 +443,15 @@ void IlpSolver::initAllelesFromChromosomes()
   const int n = _pData->getParents().size();
   const int m = _pData->getNumberOfLoci();
   const int g = _options._fixedGen;
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
 
   // y-Vars, encodes bit origins
   // y[i][j] = { 0, if j-th bit of chromosome i originates 
   //                from the upper chromosome of the node defined by x
   //             1, if j-th bit of chromosome i originates
   //                from the lower chromosome of the node defined by x
-  for(int i = 0; i < (2 * _options._bound) - 1; i++)
+  const int chromosomeUB = homozygousIdeotype ? 2 * (_options._bound - 1) : 2 * _options._bound;
+  for(int i = 0; i < chromosomeUB; i++)
   {
     _y[i] = IloBoolVarArray(_env, m);
     for (int j = 0; j < m; j++)
@@ -453,7 +464,7 @@ void IlpSolver::initAllelesFromChromosomes()
   }
 
   // the bit variable
-  for(int i = 0; i < (2 * _options._bound) - 1; i++)
+  for(int i = 0; i < chromosomeUB; i++)
   {
     _p[i] = IloBoolVarArray(_env, m);
     for (int t = 0; t < m; t++)
@@ -467,7 +478,8 @@ void IlpSolver::initAllelesFromChromosomes()
 
   // is locus heterozygous, 
   // (not defined for the target node, as it is homozygous by definition)
-  for(int i = 0; i < _options._bound - 1; i++)
+  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  for(int i = 0; i < genotypeUB; i++)
   {
     _bt[i] = IloBoolVarArray(_env, m);
     for (int t = 0; t < m; t++)
@@ -479,7 +491,7 @@ void IlpSolver::initAllelesFromChromosomes()
     }
   }
 
-  for (int i = 0; i < _options._bound - 1; i++)
+  for (int i = 0; i < genotypeUB; i++)
   {
     for (int j = 0; j < m; j++)
     {
@@ -491,7 +503,7 @@ void IlpSolver::initAllelesFromChromosomes()
   }
 
   // is node heterozygous
-  for (int i = 0; i < _options._bound - 1; i++)
+  for (int i = 0; i < genotypeUB; i++)
   {
     std::stringstream ss;
     ss << "het_" << i;
@@ -504,7 +516,7 @@ void IlpSolver::initAllelesFromChromosomes()
   // selfing lemma:
   // if a node i is homozygous (i.e. _het[i]==0), 
   // then it's two predecessors must be the same
-  for (int i = 0; i < _options._bound - 1; i++)
+  for (int i = 0; i < genotypeUB; i++)
   {
     int offset = getNrInnerPred(i);
     for (int j = 0; j < n + offset; j++)
@@ -515,7 +527,7 @@ void IlpSolver::initAllelesFromChromosomes()
   }
 
   // _input_bit[i][j][t] = 1 iff 1-allele at locus j from chr i comes from chr t
-  for (int i = 0; i < (2 * _options._bound) - 1; i++)
+  for (int i = 0; i < chromosomeUB; i++)
   {
     _input_bit[i] = BoolVarMatrix(_env, m);
 
@@ -536,7 +548,7 @@ void IlpSolver::initAllelesFromChromosomes()
   }
 
   IloExpr sumof1dep(_env);
-  for (int i = 0; i < (2 * _options._bound) - 1; i++)
+  for (int i = 0; i < chromosomeUB; i++)
   {
     for (int j = 0; j < m; j++)
     {

@@ -12,22 +12,34 @@
 #include <string>
 #include <sstream>
 #include <limits.h>
+#include <limits>
 #include <math.h>
 
 Data* Data::_pData = NULL;
 
-Data::Data(int nLoci, unsigned long popMax, double gamma, double costCrossover, 
-  double costGen, double costNode, bool allowSelfing, int c0, int c1)
+Data::Data(int nLoci,
+           unsigned long popMax,
+           int genMax,
+           double gamma,
+           double overallGamma,
+           double costCrossover,
+           double costGen,
+           double costNode,
+           bool allowSelfing,
+           int c0,
+           int c1)
   : _nLoci(nLoci)
   , _popMax(popMax)
+  , _genMax(genMax)
   , _RM(nLoci)
   , _logRM(nLoci)
   , _ideotype(c0, c1)
   , _gamma(gamma)
+  , _overallGamma(overallGamma)
   , _costCrossover(costCrossover)
   , _costGen(costGen)
   , _costNode(costNode)
-  , _probLowerBound(popMax == ULONG_MAX ? 0 : 1.0 - pow((1.0 - _gamma), 1.0 / _popMax))
+  , _probLowerBound(popMax == std::numeric_limits<unsigned long>::max() ? 0 : 1.0 - pow((1.0 - _gamma), 1.0 / _popMax))
   , _allowSelfing(allowSelfing)
 {
   for (int i = 0; i < nLoci; i++)
@@ -113,11 +125,21 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
     return NULL;
   }
 
-  /* Get gamma */
-  double gamma;
-  if (!pRootElement->Attribute("gamma", &gamma) || !(0 < gamma && gamma < 1))
+  /* Get gamma or overall gamma */
+  double gamma = -1, overallGamma = -1;
+  if (!(pRootElement->Attribute("gamma", &gamma) && (0 < gamma && gamma < 1))
+      && !(pRootElement->Attribute("overallGamma", &overallGamma) && (0 < overallGamma && overallGamma < 1)))
   {
-    std::cerr << "'/CSO/@gamma' should be in the range (0,1)" << std::endl;
+    std::cerr << "Either '/CSO/@overallGamma' or '/CSO/@gamma' need to be specified\n"
+              << "and they need to be in the range (0,1)" << std::endl;
+    return NULL;
+  }
+
+  /* Get genMax */
+  int genMax = std::numeric_limits<int>::max();
+  if (pRootElement->Attribute("genMax") && genMax < 0)
+  {
+    std::cerr << "'/CSO/@genMax' should be a positive integer" << std::endl;
     return NULL;
   }
 
@@ -129,17 +151,17 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
     return NULL;
   }
 
-  unsigned long popMax = ULONG_MAX;
+  unsigned long popMax = std::numeric_limits<unsigned long>::max();
   if (allowPopMax)
   {
-    int tempPopMax = INT_MAX;
+    int tempPopMax = std::numeric_limits<int>::max();
     pRootElement->Attribute("popMax", &tempPopMax);
     if (tempPopMax < 0)
     {
       std::cerr << "'/CSO/@popMax' should be in the range [0,\\infty)" << std::endl;
       return NULL;
     }
-    else if (tempPopMax != INT_MAX)
+    else if (tempPopMax != std::numeric_limits<int>::max())
     {
       popMax = tempPopMax;
     }
@@ -169,7 +191,17 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
   }
   c1 = fromBitstring(nLoci, buf);
 
-  Data::_pData = new Data(nLoci, popMax, gamma, costCrossover, costGen, costNode, selfing != 0, c0, c1);
+  Data::_pData = new Data(nLoci,
+                          popMax,
+                          genMax,
+                          gamma,
+                          overallGamma,
+                          costCrossover,
+                          costGen,
+                          costNode,
+                          selfing != 0,
+                          c0,
+                          c1);
 
   /* Get RM */
   if (pRootElement->FirstChildElement("cM"))
