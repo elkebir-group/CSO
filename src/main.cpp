@@ -205,6 +205,8 @@ int main(int argc, char** argv)
     for (int b = std::max((int)LB.getCrossLB(), options._bound);; b++)
     {
       const int lbr = 1+ceil(log(b)/log(2));
+      if (lbr > pData->getGenMax())
+        break;
       pData->updateGamma(b);
 
       if (pData->getCost(LB.getPopLB(), lbr, b) > options._upperBoundObj)
@@ -312,6 +314,7 @@ int main(int argc, char** argv)
       inputFileName.c_str(), t.realTime(),
       pBestSchedule->getGen(), pBestSchedule->getCross(), pBestSchedule->getPop(),
       pBestSchedule->getCost(), !timeLimitHit && overallOptimal ? "OPT" : "?");
+    pData->updateGamma(pBestSchedule->getCross());
     pBestSchedule->recomputePop();
     fprintf(stderr, "%.3f,%.3f\n", pBestSchedule->getPop(), pBestSchedule->getCost());
 

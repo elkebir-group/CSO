@@ -137,7 +137,7 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
 
   /* Get genMax */
   int genMax = std::numeric_limits<int>::max();
-  if (pRootElement->Attribute("genMax") && genMax < 0)
+  if (pRootElement->Attribute("genMax", &genMax) && genMax < 0)
   {
     std::cerr << "'/CSO/@genMax' should be a positive integer" << std::endl;
     return NULL;

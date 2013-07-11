@@ -109,7 +109,7 @@ unsigned long LowerBound::solveSetCover()
   if (pCplex->solve())
   {
     _crossLB = pCplex->getObjValue();
-    if (!_pData->isIdeotypeHomozygous()) _crossLB--;
+    if (!_pData->isIdeotypeHomozygous() && _crossLB > 1) _crossLB--;
   }
 
 
