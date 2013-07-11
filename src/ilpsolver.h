@@ -264,8 +264,9 @@ inline void IlpSolver::printE() const
 
 inline void IlpSolver::printX() const
 {
+  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
   const int n = _pData->getParents().size();
-  for (int k = 0; k < 2*_options._bound - 1; k++)
+  for (int k = 0; k < chromosomeUB; k++)
   {
     for (int i = 0; i < n + getNrInnerPred(k/2); i++)
     {

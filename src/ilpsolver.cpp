@@ -143,8 +143,8 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     std::cout << "// Objective value: " << _pCplex->getObjValue() << std::endl;
     //printInnerNodes();
     //printH();
-    //std::cout << "//" << std::endl;
-    //printX();
+    std::cout << "//" << std::endl;
+    printX();
     //std::cout << "//" << std::endl;
     //printE();
     //std::cout << "//" << std::endl;
@@ -392,7 +392,7 @@ void IlpSolver::initChromosomesFromGenotypes()
       {
         // TODO: maybe upper bound for j can be tighter... DONE!
         // (REMEMBER: last node is only connected to the last but one)
-        const int chromosomeUB = homozygousIdeotype ? 2 * (_options._bound - 1) : 2 * _options._bound;
+        const int chromosomeUB = homozygousIdeotype ? 2 * _options._bound - 1 : 2 * _options._bound;
         for (int j = 2*(i+1); j < chromosomeUB; j++)
         {
           sumofoutedges += _x[j][n+i];
@@ -450,7 +450,7 @@ void IlpSolver::initAllelesFromChromosomes()
   //                from the upper chromosome of the node defined by x
   //             1, if j-th bit of chromosome i originates
   //                from the lower chromosome of the node defined by x
-  const int chromosomeUB = homozygousIdeotype ? 2 * (_options._bound - 1) : 2 * _options._bound;
+  const int chromosomeUB = homozygousIdeotype ? 2 * _options._bound - 1 : 2 * _options._bound;
   for(int i = 0; i < chromosomeUB; i++)
   {
     _y[i] = IloBoolVarArray(_env, m);
@@ -599,25 +599,32 @@ void IlpSolver::initAllelesFromChromosomes()
 void IlpSolver::initUsefulCross()
 { 
   const int m = _pData->getNumberOfLoci();
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const int chromosomeUB = homozygousIdeotype ? 2 * _options._bound - 1 : 2 * _options._bound;
 
   IloExpr sumofcollected(_env);
-  for(int i=0; i < (2*_options._bound)-1; i++)
+  for (int i=0; i < chromosomeUB; i++)
   {
-    for(int j=0; j<m-2; j++)
-      for(int l=j+1; l<m-1; l++)
+    for (int j=0; j<m-2; j++)
+    {
+      for (int l=j+1; l<m-1; l++)
       {
         for(int t=j+1; t<l+1; t++)
           sumofcollected+=_p[i][t];
         _model.add(_d[i][j]+_d[i][l]-sumofcollected<=1);
         sumofcollected.clear();
       }
-    for(int j=0; j<m-1; j++) {
-      for(int t=0; t<j+1; t++)
+    }
+
+    for (int j=0; j<m-1; j++)
+    {
+      for (int t=0; t<j+1; t++)
         sumofcollected+=_p[i][t];
       _model.add(_d[i][j]-sumofcollected<=0);
       sumofcollected.clear();
     }      
-    for(int j=0; j<m-1; j++) {
+    for(int j=0; j<m-1; j++)
+    {
       for(int t=j+1; t<m; t++)
         sumofcollected+=_p[i][t];
       _model.add(_d[i][j]-sumofcollected<=0);
@@ -629,21 +636,26 @@ void IlpSolver::initUsefulCross()
 
 void IlpSolver::initDiffParents()
 {
+  // TODO: fix this!
   const int n = _pData->getParents().size();
   const int g = _options._fixedGen;
-  for(int i=0; i < _options._bound-1; i++)
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+
+  for (int i=0; i < genotypeUB; i++)
   {
-    for(int j=0; j<n; j++)
+    for (int j=0; j<n; j++)
       _model.add(_x[2*i][j]+_x[2*i+1][j]<=1);
 
     int offset = g <= 1 || i >= _options._bound-g ? 0 : g-2;
-    for(int j=0; j<i+offset; j++)
+    for (int j=0; j<i+offset; j++)
       _model.add(_x[2*i][j+n]+_x[2*i+1][j+n]<=1);
   }
 }
 
 void IlpSolver::initTree()
 {
+  // TODO: fix this!
   const int m = _pData->getNumberOfLoci();
   const int n = _pData->getParents().size();
   const int g = _options._fixedGen;
@@ -915,6 +927,7 @@ void IlpSolver::initObjectivePop()
   const int m = _pData->getNumberOfLoci();
   const DoubleMatrix& RM = _pData->getRM();
   const int g = _options._fixedGen;
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
 
   // product var for heterozygous and x
   // _hetx[k][i] = _het[i]*_x[k][i]
@@ -922,7 +935,7 @@ void IlpSolver::initObjectivePop()
   {
     int offset = getNrInnerPred(i);
     _hetx[2*i] = IloBoolVarArray(_env, n + offset);
-    if (i <_options._bound - 1)
+    if (i <_options._bound - 1 || !homozygousIdeotype)
       _hetx[2*i+1] = IloBoolVarArray(_env, n + offset);
 
     // leaves
@@ -932,7 +945,7 @@ void IlpSolver::initObjectivePop()
       ss << "hetx_" << 2*i << "_" << j;
       _hetx[2*i][j] = IloBoolVar(_env, ss.str().c_str());
       _allVar.add(_hetx[2*i][j]);
-      if (i < _options._bound - 1)
+      if (i < _options._bound - 1 || !homozygousIdeotype)
       {
         std::stringstream ss;
         ss << "hetx_" << 2*i + 1 << "_" << j;
@@ -942,13 +955,13 @@ void IlpSolver::initObjectivePop()
       if (_homozygous[j])
       {
         _model.add(_hetx[2*i][j]==0);
-        if (i<_options._bound-1)
+        if (i<_options._bound-1 || !homozygousIdeotype)
           _model.add(_hetx[2*i+1][j]==0);
       }
       else
       {
         _hetx[2*i][j] = _x[2*i][j];
-        if(i<_options._bound-1)
+        if (i<_options._bound-1 || !homozygousIdeotype)
           _hetx[2*i+1][j] = _x[2*i+1][j];
       }
     }
@@ -960,7 +973,7 @@ void IlpSolver::initObjectivePop()
       ss << "hetx_" << 2*i << "_" << j;
       _hetx[2*i][j] = IloBoolVar(_env, ss.str().c_str());
       _allVar.add(_hetx[2*i][j]);
-      if (i < _options._bound - 1)
+      if (i < _options._bound - 1 || !homozygousIdeotype)
       {
         std::stringstream ss;
         ss << "hetx_" << 2*i + 1 << "_" << j;
@@ -972,7 +985,7 @@ void IlpSolver::initObjectivePop()
       _model.add(_hetx[2*i][j]<=_x[2*i][j]);
       _model.add(_hetx[2*i][j]>=_het[getAbsNode(i,j-n)]+_x[2*i][j]-1);
 
-      if (i < _options._bound - 1)
+      if (i < _options._bound - 1 || !homozygousIdeotype)
       {
         _model.add(_hetx[2*i+1][j]<=_het[getAbsNode(i,j-n)]);
         _model.add(_hetx[2*i+1][j]<=_x[2*i+1][j]);
@@ -982,7 +995,8 @@ void IlpSolver::initObjectivePop()
   }
 
   // did jth bit in string i result from a crossover event?
-  for (int i = 0; i < (2 * _options._bound) - 1; i++)
+  const int chromosomeUB = homozygousIdeotype ? 2 * _options._bound - 1 : 2 * _options._bound;
+  for (int i = 0; i < chromosomeUB; i++)
   {
     _d[i] = IloBoolVarArray(_env, m-1);
     for (int j = 0; j < m - 1; j++)
@@ -993,7 +1007,7 @@ void IlpSolver::initObjectivePop()
       _allVar.add(_d[i][j]);
     }
   }
-  for (int i = 0; i < (2 * _options._bound) - 1; i++)
+  for (int i = 0; i < chromosomeUB; i++)
   {
     for (int j = 1; j < m; j++)
     {
@@ -1004,8 +1018,9 @@ void IlpSolver::initObjectivePop()
 
   // h_{i,p,q} = 1 iff loci p and q of node i are heterozygous
   // and everything in between is homozygous
+  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
   IloExpr sumofr(_env);
-  for (int i = 0; i < _options._bound-1; i++)
+  for (int i = 0; i < genotypeUB; i++)
   {
     _h[i] = BoolVarMatrix(_env, m - 1);
     for (int p = 0; p < m - 1; p++)
@@ -1033,7 +1048,7 @@ void IlpSolver::initObjectivePop()
 
   // product var of _h and _x:
   // _hx[k][i][p][q] = _h[i][p][q]*_x[k][i]
-  for (int k = 0; k < 2 * _options._bound - 1; k++)
+  for (int k = 0; k < chromosomeUB; k++)
   {
     int offset = getNrInnerPred(k/2);
     _hx[k] = BoolVar3Matrix(_env, n + offset);
@@ -1089,7 +1104,7 @@ void IlpSolver::initObjectivePop()
 
   // var e
   IloExpr sumofr2(_env);
-  for (int k=0; k < 2*_options._bound-1; k++)
+  for (int k=0; k < chromosomeUB; k++)
   {
     _e[k] = IntVarMatrix(_env, m-1);
     for (int p = 0; p < m-1; p++)
@@ -1114,7 +1129,7 @@ void IlpSolver::initObjectivePop()
 
   // product var of _h, _x and _e:
   // _hxe[k][i][p][q] = _h[i][p][q]*_x[k][i]*_e[k][p][q]
-  for (int k=0; k < 2*_options._bound-1; k++)
+  for (int k=0; k < chromosomeUB; k++)
   {
     int offset = getNrInnerPred(k/2);
     _hxe[k] = BoolVar3Matrix(_env, n + offset);
@@ -1184,14 +1199,14 @@ void IlpSolver::initObjectivePop()
       {
         // factor of 0.5 if parent is heterozygous
         sumoflogprobs += log(0.5) * _x[2*j][i];
-        if (j < _options._bound - 1)
+        if (j < _options._bound - 1 || !homozygousIdeotype)
           sumoflogprobs += log(0.5)*_x[2*j+1][i];
       }
       else if (i >= n)
       {
         // factor of 0.5 of parent is heterozygous
         sumoflogprobs += log(0.5)*_hetx[2*j][i];
-        if (j < _options._bound - 1)
+        if (j < _options._bound - 1 || !homozygousIdeotype)
           sumoflogprobs+=log(0.5)*_hetx[2*j+1][i];
       }
 
@@ -1211,13 +1226,13 @@ void IlpSolver::initObjectivePop()
         }
       }
     }
-    if (j < _options._bound - 1)
+    if (j < _options._bound - 1 || !homozygousIdeotype)
     {
       _model.add(_zb[j] == sumoflogprobs);
       if (_options._boundNmax)
         _model.add(sumoflogprobs >= log(_pData->getProbLowerBound()));
     }
-    else
+    else if (homozygousIdeotype)
     {
       // last crossing is a selfing (assumption: homozygous ideotype)
       _model.add(_zb[j] == 2 * sumoflogprobs);
@@ -1305,6 +1320,7 @@ void IlpSolver::constructDAG()
   genotypeVector.push_back(new Genotype(_pData->getIdeotype()));
 
   // reconstruct arcs and nodes
+  bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
   for (int i = 0; i < _options._bound; i++)
   {
     if (!genotypeVector[n+i])
@@ -1322,16 +1338,30 @@ void IlpSolver::constructDAG()
         else
           p1 = j;
       }
-      if (i != _options._bound - 1 && _pCplex->getValue(_x[2*i+1][j]))
+      if (homozygousIdeotype)
       {
-        assert(p2 == -1);
-        if (j>=n+i)
-          p2 = n+getAbsNode(i, j-n);
-        else
-          p2 = j;
+        if (i != _options._bound - 1 && _pCplex->getValue(_x[2*i+1][j]))
+        {
+          assert(p2 == -1);
+          if (j>=n+i)
+            p2 = n+getAbsNode(i, j-n);
+          else
+            p2 = j;
+        }
+        else if (i == _options._bound - 1)
+          p2 = p1;
       }
-      else if (i == _options._bound - 1)
-        p2 = p1;
+      else
+      {
+        if (_pCplex->getValue(_x[2*i+1][j]))
+        {
+          assert(p2 == -1);
+          if (j>=n+i)
+            p2 = n+getAbsNode(i, j-n);
+          else
+            p2 = j;
+        }
+      }
     }
 
     assert(p1 != -1 || p2 != -1);
