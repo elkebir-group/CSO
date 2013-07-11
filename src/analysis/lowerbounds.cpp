@@ -38,8 +38,11 @@ void LowerBound::compute()
   }
 
   _crossLB = solveSetCover();
-  _genLB = ceil(log(_crossLB)/log(2));
+  _genLB = std::max(1., ceil(log(_crossLB)/log(2)));
   _popMaxLB = popAnalysis.getPopMax();
+
+  if (_popLB < _popMaxLB)
+    _popLB = _popMaxLB;
 }
 
 unsigned long LowerBound::solveSetCover()
@@ -104,7 +107,10 @@ unsigned long LowerBound::solveSetCover()
   close(bakfd);
 
   if (pCplex->solve())
+  {
     _crossLB = pCplex->getObjValue();
+    if (!_pData->isIdeotypeHomozygous()) _crossLB--;
+  }
 
 
   delete pCplex;

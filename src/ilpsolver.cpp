@@ -93,6 +93,12 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     _pCplex->setError(std::cout);
   }
 
+  //_pCplex->setParam(IloCplex::AggFill, 0);
+  //_pCplex->setParam(IloCplex::PreInd, 0);
+  //_pCplex->setParam(IloCplex::RelaxPreInd, 0);
+  //_pCplex->setParam(IloCplex::PreslvNd, -1);
+  //_pCplex->setParam(IloCplex::RepeatPresolve, 0);
+
   //_pCplex->use(new IlpSolverHeuristic(_env,
   //                                    static_cast<int>(_pData->getParents().size()),
   //                                    _pData->getNumberOfLoci(),
@@ -112,13 +118,13 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
 
   _pCplex->setParam(IloCplex::Threads, 1);
 
-  char buf[1024];
-  sprintf(buf, "letssee-c%d-g%d.lp", _options._bound, _options._fixedGen);
-  _pCplex->exportModel(buf);
-  std::cout << "// crs: " << _options._bound << std::endl;
-  std::cout << "// gen: " << _options._fixedGen << std::endl;
-  std::cout << "// Number of cols: " << _pCplex->getNcols() << " " << _allVar.getSize() << std::endl;
-  std::cout << "// Number of rows: " << _pCplex->getNrows() << std::endl;
+  //char buf[1024];
+  //sprintf(buf, "letssee-c%d-g%d.lp", _options._bound, _options._fixedGen);
+  //_pCplex->exportModel(buf);
+  //std::cout << "// crs: " << _options._bound << std::endl;
+  //std::cout << "// gen: " << _options._fixedGen << std::endl;
+  //std::cout << "// Number of cols: " << _pCplex->getNcols() << " " << _allVar.getSize() << std::endl;
+  //std::cout << "// Number of rows: " << _pCplex->getNrows() << std::endl;
 
   bool res = false;
 
@@ -143,8 +149,8 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     std::cout << "// Objective value: " << _pCplex->getObjValue() << std::endl;
     //printInnerNodes();
     //printH();
-    std::cout << "//" << std::endl;
-    printX();
+    //std::cout << "//" << std::endl;
+    //printX();
     //std::cout << "//" << std::endl;
     //printE();
     //std::cout << "//" << std::endl;
@@ -162,13 +168,13 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
   }
 }
 
-void IlpSolver::init()
+void IlpSolver::init(bool swapIdeotype)
 {
   initSegments();
   initParentalGenotypes();
   initChromosomesFromGenotypes();
   initAllelesFromChromosomes();
-  initIdeotype();
+  initIdeotype(swapIdeotype);
 
   initObjectiveGen();
 
@@ -200,6 +206,7 @@ void IlpSolver::initBounds()
 {
   const int m = _pData->getNumberOfLoci();
   const int n = _pData->getParents().size();
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
   LowerBound LB(_pData, false);
 
   // generations
@@ -288,7 +295,7 @@ void IlpSolver::initParentalGenotypes()
   }
 }
 
-void IlpSolver::initIdeotype()
+void IlpSolver::initIdeotype(bool swapIdeotype)
 {
   // initialize ideotype, store bits in _t1 and t2, assumed _t1=_t2
   const Genotype& ideotype = _pData->getIdeotype();
@@ -304,12 +311,12 @@ void IlpSolver::initIdeotype()
 
   // fix target bits
   for (int j=0; j<m; j++)
-    _model.add(_p[(2*_options._bound)-2][j]==_t1[j]);
+    _model.add(_p[(2*_options._bound)-2][j]== (swapIdeotype ? _t2[j] : _t1[j]));
 
   if (!ideotype.isHomozygous())
   {
     for (int j=0; j<m; j++)
-      _model.add(_p[(2*_options._bound)-1][j]==_t2[j]);
+      _model.add(_p[(2*_options._bound)-1][j]== (swapIdeotype ? _t1[j] : _t2[j]));
   }
 }
 
@@ -844,6 +851,7 @@ void IlpSolver::initObligatoryLeaves()
   const int m = _pData->getNumberOfLoci();
   const int n = _pData->getParents().size();
   const GenotypeSet& parents = _pData->getParents();
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
 
   // outdegree of obligatory leaves is at least one
   bool* obligatory = new bool[n];
@@ -876,12 +884,14 @@ void IlpSolver::initObligatoryLeaves()
     }
   }
 
+
+  const int chromosomeUB = homozygousIdeotype ? 2 * _options._bound - 1 : 2 * _options._bound;
   IloExpr sumofoutedges(_env);
   for(int i=0; i<n; i++)
   {
     if(!obligatory[i])
       continue;
-    for(int j=0; j < (2 * _options._bound)-1; j++)
+    for(int j=0; j < chromosomeUB; j++)
     {    
       sumofoutedges+=_x[j][i];
     }
@@ -1218,7 +1228,7 @@ void IlpSolver::initObjectivePop()
           sumoflogprobs += log(1-r_pq) * _hx[2*j][i][p][q-p-1];
           sumoflogprobs += log(r_pq/(1.-r_pq)) * _hxe[2*j][i][p][q-p-1];
 
-          if (j < _options._bound - 1)
+          if (j < _options._bound - 1 || !homozygousIdeotype)
           {
             sumoflogprobs += log(1-r_pq) * _hx[2*j+1][i][p][q-p-1];
             sumoflogprobs += log(r_pq/(1.-r_pq)) * _hxe[2*j+1][i][p][q-p-1];

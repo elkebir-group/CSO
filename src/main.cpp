@@ -33,6 +33,83 @@ void handler(int sig)
   exit(1);
 }
 
+IlpSolver::SolverStatus solve(const Data* pData,
+                              const IlpSolver::Options& options,
+                              bool feasiblity,
+                              int timeLimit,
+                              CrossingSchedule*& pBestSchedule)
+{
+  IlpSolver* pSolver1 = new IlpSolver(pData, options);
+  IlpSolver* pSolver2 = new IlpSolver(pData, options);
+  bool solve1 = false;
+  bool solve2 = false;
+  IlpSolver::SolverStatus stat1, stat2, finalStat;
+
+  if (timeLimit < 0)
+  {
+    finalStat = IlpSolver::CSO_SOLVER_INFEASIBLE;
+
+    pSolver1->init(true);
+    stat1 = pSolver1->solve(feasiblity, -1);
+    solve1 =  stat1 == IlpSolver::CSO_SOLVER_OPTIMAL;
+
+    if (!pData->isIdeotypeHomozygous())
+    {
+      pSolver2->init(false);
+      stat2 = pSolver2->solve(feasiblity, -1);
+      solve2 = stat2 == IlpSolver::CSO_SOLVER_OPTIMAL;
+    }
+  }
+  else
+  {
+    finalStat = IlpSolver::CSO_SOLVER_INFEASIBLE;
+
+    pSolver1->init(true);
+    stat1 = pSolver1->solve(feasiblity, timeLimit);
+    solve1 = stat1 != IlpSolver::CSO_SOLVER_INFEASIBLE;
+
+    if (!pData->isIdeotypeHomozygous())
+    {
+      pSolver2->init(false);
+      stat2 = pSolver2->solve(feasiblity, timeLimit);
+      solve2 = stat2 != IlpSolver::CSO_SOLVER_INFEASIBLE;
+    }
+  }
+
+  if (solve1 || solve2)
+  {
+    delete pBestSchedule;
+    if (solve1 && solve2)
+    {
+      if (pSolver1->getObjectiveValue() < pSolver2->getObjectiveValue())
+      {
+        finalStat = stat1;
+        pBestSchedule = new CrossingSchedule(*pSolver1);
+      }
+      else
+      {
+        finalStat = stat2;
+        pBestSchedule = new CrossingSchedule(*pSolver2);
+      }
+    }
+    else if (solve1)
+    {
+      finalStat = stat1;
+      pBestSchedule = new CrossingSchedule(*pSolver1);
+    }
+    else
+    {
+      finalStat = stat2;
+      pBestSchedule = new CrossingSchedule(*pSolver2);
+    }
+  }
+
+  delete pSolver1;
+  delete pSolver2;
+
+  return finalStat;
+}
+
 int main(int argc, char** argv)
 {
 #ifdef NDEBUG
@@ -116,18 +193,8 @@ int main(int argc, char** argv)
   lemon::Timer t;
   if (!automatic)
   {
-    IlpSolver* pSolver = new IlpSolver(pData, options);
-    pSolver->init();
-    if (timeLimit < 0)
-    {
-      if (pSolver->solve(false, -1) == IlpSolver::CSO_SOLVER_OPTIMAL)
-        pBestSchedule = pSolver;
-    }
-    else
-    {
-      if (pSolver->solve(false, timeLimit) != IlpSolver::CSO_SOLVER_INFEASIBLE)
-        pBestSchedule = pSolver;
-    }
+    pData->updateGamma(options._bound);
+    solve(pData, options, false, timeLimit, pBestSchedule);
   }
   else
   {
@@ -174,25 +241,25 @@ int main(int argc, char** argv)
         options._bound = b;
         options._fixedGen = br;
         lemon::Timer t2;
-        IlpSolver* pSolver = new IlpSolver(pData, options);
-        pSolver->init();
-        IlpSolver::SolverStatus stat = 
-          pSolver->solve(foundFeasible, foundFeasible ? timeLimit : -1);
+        IlpSolver::SolverStatus stat = solve(pData,
+                                             options,
+                                             !foundFeasible,
+                                             foundFeasible ? timeLimit : -1,
+                                             pBestSchedule);
 
         if (stat == IlpSolver::CSO_SOLVER_TIME_LIMIT_FEASIBLE)
         {
-          delete pSolver;
-          pSolver = new IlpSolver(pData, options);
-          pSolver->init();
-          stat = pSolver->solve(false, -1);
+          stat = solve(pData,
+                       options,
+                       false,
+                       -1,
+                       pBestSchedule);
           assert(stat == IlpSolver::CSO_SOLVER_OPTIMAL);
         }
 
         if (stat == IlpSolver::CSO_SOLVER_OPTIMAL)
         {
-          delete pBestSchedule;
-          pBestSchedule = new CrossingSchedule(*pSolver);
-          options._upperBoundObj = pSolver->getObjectiveValue();
+          options._upperBoundObj = pBestSchedule->getCost();
 
           foundFeasibleCurIt = true;
           foundFeasible = true;
@@ -223,8 +290,6 @@ int main(int argc, char** argv)
           fprintf(stderr, "\"%s\",%.3f,-,-,-,-,\"%s\"\n", inputFileName.c_str(), t2.realTime(),
               stat == IlpSolver::CSO_SOLVER_INFEASIBLE ? "INFEASIBLE" : "TIME LIMIT");
         }
-
-        delete pSolver;
       }
     }
   }

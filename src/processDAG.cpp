@@ -42,6 +42,8 @@ int main(int argc, char** argv)
   CrossingSchedule G(pData);
   G.loadDAG(is);
 
+  pData->updateGamma(G.getCross());
+
   if (recomputePop)
     G.recomputePop();
 

@@ -124,7 +124,7 @@ private:
   void initFeasibility();
   void initObjective();
   void initParentalGenotypes();
-  void initIdeotype();
+  void initIdeotype(bool swapIdeotype);
   void initChromosomesFromGenotypes();
   void initAllelesFromChromosomes();
   void initUsefulCross();
@@ -161,7 +161,7 @@ protected:
 public:
   IlpSolver(const Data* pData, const Options& options);
   ~IlpSolver();
-  void init();
+  void init(bool swapIdeotype = false);
   SolverStatus solve(bool feasibility, int timeLimit);
   double getObjectiveValue() const;
 };
