@@ -1,0 +1,6 @@
+Solving (1,1)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test3_5g.xml",0.013,-,-,-,-,"INFEASIBLE"
+Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 571.745
+"/home/elkebir/CSO2013/src/cso/data/herman/test3_5g.xml",0.048,2,2,171.74,571.74,"OPT"
+No need to look any further (3,3) as 1.84467e+19 > 571.745
+"/home/elkebir/CSO2013/src/cso/data/herman/test3_5g.xml",0.082,2,2,171.74,571.74,"OPT",111.000,511.000

@@ -1,0 +1,13 @@
+Solving (2,2)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7b_5g.xml",0.159,-,-,-,-,"INFEASIBLE"
+Solving (3,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7b_5g.xml",1.167,-,-,-,-,"INFEASIBLE"
+Solving (4,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7b_5g.xml",20.406,-,-,-,-,"INFEASIBLE"
+Solving (4,4)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7b_5g.xml",19.445,-,-,-,-,"INFEASIBLE"
+Solving (5,4)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7b_5g.xml",976.383,-,-,-,-,"INFEASIBLE"
+Solving (5,5)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7b_5g.xml",626.745,-,-,-,-,"INFEASIBLE"
+Solving (6,4)... pop <= 1.79769e+308 

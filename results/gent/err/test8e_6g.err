@@ -1,0 +1,4 @@
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 792.908
+"/home/elkebir/CSO2013/src/cso/data/herman/test8e_6g.xml",0.089,3,3,192.91,792.91,"OPT"
+No need to look any further (4,3) as 1.84467e+19 > 792.908
+"/home/elkebir/CSO2013/src/cso/data/herman/test8e_6g.xml",0.141,3,3,192.91,792.91,"OPT",192.000,792.000

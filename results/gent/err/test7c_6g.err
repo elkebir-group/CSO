@@ -1,0 +1,31 @@
+Solving (2,2)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",0.116,-,-,-,-,"INFEASIBLE"
+Solving (3,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",0.544,-,-,-,-,"INFEASIBLE"
+Solving (4,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",5.776,-,-,-,-,"INFEASIBLE"
+Solving (4,4)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",4.440,-,-,-,-,"INFEASIBLE"
+Solving (5,4)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",352.863,-,-,-,-,"INFEASIBLE"
+Solving (5,5)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",128.186,-,-,-,-,"INFEASIBLE"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1846.5
+"/home/elkebir/CSO2013/src/cso/data/herman/test7c_6g.xml",7128.159,4,6,846.50,1846.50,"OPT"
+Solving (6,5)... pop <= 746.498 terminate called after throwing an instance of 'IloCplex::Exception'
+Error: signal 6:
+bin/csoilp2[0x471b26]
+/lib/libc.so.6(+0x32230)[0x2adaf4e30230]
+/lib/libc.so.6(gsignal+0x35)[0x2adaf4e301b5]
+/lib/libc.so.6(abort+0x180)[0x2adaf4e32fc0]
+/usr/lib/libstdc++.so.6(_ZN9__gnu_cxx27__verbose_terminate_handlerEv+0x115)[0x2adaf4501dc5]
+/usr/lib/libstdc++.so.6(+0xcb166)[0x2adaf4500166]
+/usr/lib/libstdc++.so.6(+0xcb193)[0x2adaf4500193]
+/usr/lib/libstdc++.so.6(+0xcb28e)[0x2adaf450028e]
+bin/csoilp2[0x493140]
+bin/csoilp2[0x4a2493]
+bin/csoilp2[0xdd0ed5]
+bin/csoilp2[0x471a5c]
+bin/csoilp2[0x47312f]
+/lib/libc.so.6(__libc_start_main+0xfd)[0x2adaf4e1cc8d]
+bin/csoilp2[0x440ae9]
