@@ -167,7 +167,8 @@ void CrossingSchedule::printNode(Node node, std::ostream& out) const
   const Genotype& genotype = _genotype[node];
 
   out << "\t\t";
-  genotype.printGenotype(nLoci, false, out, "");
+  out << _G.id(node);
+  //genotype.printGenotype(nLoci, false, out, "");
   out << " [fontcolor=white,style=rounded,shape=box,";
   out << "label=";
 
@@ -258,9 +259,11 @@ void CrossingSchedule::printEdges(Node node,
     {
       Node parent = _G.source(a);
       out << '\t';
-      _genotype[parent].printGenotype(nLoci, false, out, "");
+      out << _G.id(parent);
+      //_genotype[parent].printGenotype(nLoci, false, out, "");
       out << " -> ";
-      _genotype[node].printGenotype(nLoci, false, out, "");
+      out << _G.id(node);
+      //_genotype[node].printGenotype(nLoci, false, out, "");
       out << " [label=\"" << _pop[node] << "\"];" << std::endl;
       printEdges(parent, visited, out);
     }

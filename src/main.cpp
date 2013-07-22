@@ -78,29 +78,60 @@ IlpSolver::SolverStatus solve(const Data* pData,
 
   if (solve1 || solve2)
   {
-    delete pBestSchedule;
     if (solve1 && solve2)
     {
       if (pSolver1->getObjectiveValue() < pSolver2->getObjectiveValue())
       {
         finalStat = stat1;
-        pBestSchedule = new CrossingSchedule(*pSolver1);
+        if (pBestSchedule && pBestSchedule->getCost() > pSolver1->getObjectiveValue())
+        {
+          delete pBestSchedule;
+          pBestSchedule = new CrossingSchedule(*pSolver1);
+        }
+        else
+        {
+          pBestSchedule = new CrossingSchedule(*pSolver1);
+        }
       }
       else
       {
         finalStat = stat2;
-        pBestSchedule = new CrossingSchedule(*pSolver2);
+        if (pBestSchedule && pBestSchedule->getCost() > pSolver2->getObjectiveValue())
+        {
+          delete pBestSchedule;
+          pBestSchedule = new CrossingSchedule(*pSolver2);
+        }
+        else
+        {
+          pBestSchedule = new CrossingSchedule(*pSolver2);
+        }
       }
     }
     else if (solve1)
     {
       finalStat = stat1;
-      pBestSchedule = new CrossingSchedule(*pSolver1);
+      if (pBestSchedule && pBestSchedule->getCost() > pSolver1->getObjectiveValue())
+      {
+        delete pBestSchedule;
+        pBestSchedule = new CrossingSchedule(*pSolver1);
+      }
+      else
+      {
+        pBestSchedule = new CrossingSchedule(*pSolver1);
+      }
     }
     else
     {
       finalStat = stat2;
-      pBestSchedule = new CrossingSchedule(*pSolver2);
+      if (pBestSchedule && pBestSchedule->getCost() > pSolver2->getObjectiveValue())
+      {
+        delete pBestSchedule;
+        pBestSchedule = new CrossingSchedule(*pSolver2);
+      }
+      else
+      {
+        pBestSchedule = new CrossingSchedule(*pSolver2);
+      }
     }
   }
 
@@ -124,14 +155,16 @@ int main(int argc, char** argv)
   bool automatic = false;
   int timeLimit = -1;
   bool saveIntermediate = false;
+  bool pareto = false;
 
   lemon::ArgParser ap(argc, argv);
   ap.refOption("v", "Verbose CPLEX output", 
         options._verbose, false)
-    .refOption("t", "Enforce crossing schedules to be trees", 
-        options._tree, false)
-    .refOption("p", "Cuts: enforce different parents",
-        options._diffParents, false)
+    .refOption("pareto", "Pareto", pareto, false)
+    //.refOption("t", "Enforce crossing schedules to be trees",
+    //    options._tree, false)
+    //.refOption("p", "Cuts: enforce different parents",
+    //    options._diffParents, false)
     .refOption("c", "Cuts: useful crossovers only",
         options._usefulCross, false)
     .refOption("n", "Cuts: based on bound Nmax",
@@ -200,7 +233,6 @@ int main(int argc, char** argv)
   {
     LowerBound LB(pData, false);
     bool foundFeasible = false;
-    int a = automatic;
     options._upperBoundPop = std::numeric_limits<double>::max();
     for (int b = std::max((int)LB.getCrossLB(), options._bound);; b++)
     {
@@ -209,7 +241,7 @@ int main(int argc, char** argv)
         break;
       pData->updateGamma(b);
 
-      if (pData->getCost(LB.getPopLB(), lbr, b) > options._upperBoundObj)
+      if (!pareto && pData->getCost(LB.getPopLB(), lbr, b) > options._upperBoundObj)
       {
         overallOptimal = true;
         std::cerr << "No need to look any further (" << b << "," << lbr << ")"
@@ -233,9 +265,12 @@ int main(int argc, char** argv)
       bool foundFeasibleCurIt = false;
       for (int br = lbr; br <= std::min(b, pData->getGenMax()); br++)
       {
-        options._upperBoundPop = (options._upperBoundObj 
-          - b * pData->getCostNode() 
-          - br * pData->getCostGen()) / pData->getCostCrossover();
+        if (!pareto)
+        {
+          options._upperBoundPop = (options._upperBoundObj
+            - b * pData->getCostNode()
+            - br * pData->getCostGen()) / pData->getCostCrossover();
+        }
 
         std::cerr << "Solving (" << b << "," << br  << ")... " 
           << "pop <= " << options._upperBoundPop << " " << std::flush;
@@ -261,7 +296,8 @@ int main(int argc, char** argv)
 
         if (stat == IlpSolver::CSO_SOLVER_OPTIMAL)
         {
-          options._upperBoundObj = pBestSchedule->getCost();
+          if (!pareto)
+            options._upperBoundObj = pBestSchedule->getCost();
 
           foundFeasibleCurIt = true;
           foundFeasible = true;
