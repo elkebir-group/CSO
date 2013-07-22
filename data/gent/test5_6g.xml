@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<CSO costCrossover="1" costGen="0" costNode="0" genMax="6" nLoci="3" overallGamma="0.95" popMax="2500">
+  <Parents>
+    <Parent c0="011" c1="101"/>
+    <Parent c0="000" c1="110"/>
+  </Parents>
+  <Ideotype c0="000" c1="111"/>
+  <RM>0 0.3 0.4</RM>
+  <RM>0.3 0 0.25</RM>
+  <RM>0.4 0.25 0</RM>
+</CSO>
