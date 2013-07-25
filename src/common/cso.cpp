@@ -33,10 +33,11 @@ int fromBitstring(int n, const char* buf)
 	 * '0001' = 1
 	 */
 	int val = 0;
-	for (int i = 0; i < n; i++)
+  for (int i = 0; i < n; i++)
 	{
-		if (buf[n - i - 1] == '1')
-		{
+    //if (buf[n - i - 1] == '1')
+    if (buf[i] == '1')
+    {
 			val |= 1 << i;
 		}
 	}
