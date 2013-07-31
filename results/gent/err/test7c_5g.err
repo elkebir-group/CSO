@@ -1,31 +1,17 @@
 Solving (2,2)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",0.115,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",0.087,-,-,-,-,"INFEASIBLE"
 Solving (3,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",0.554,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",0.588,-,-,-,-,"INFEASIBLE"
 Solving (4,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",5.880,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",11.487,-,-,-,-,"INFEASIBLE"
 Solving (4,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",4.433,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",12.616,-,-,-,-,"INFEASIBLE"
 Solving (5,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",353.265,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",398.989,-,-,-,-,"INFEASIBLE"
 Solving (5,5)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",128.037,-,-,-,-,"INFEASIBLE"
-Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1846.5
-"/home/elkebir/CSO2013/src/cso/data/herman/test7c_5g.xml",7111.160,4,6,846.50,1846.50,"OPT"
-Solving (6,5)... pop <= 746.498 terminate called after throwing an instance of 'IloCplex::Exception'
-Error: signal 6:
-bin/csoilp2[0x471b26]
-/lib/libc.so.6(+0x32230)[0x2aab3f2ac230]
-/lib/libc.so.6(gsignal+0x35)[0x2aab3f2ac1b5]
-/lib/libc.so.6(abort+0x180)[0x2aab3f2aefc0]
-/usr/lib/libstdc++.so.6(_ZN9__gnu_cxx27__verbose_terminate_handlerEv+0x115)[0x2aab3e97ddc5]
-/usr/lib/libstdc++.so.6(+0xcb166)[0x2aab3e97c166]
-/usr/lib/libstdc++.so.6(+0xcb193)[0x2aab3e97c193]
-/usr/lib/libstdc++.so.6(+0xcb28e)[0x2aab3e97c28e]
-bin/csoilp2[0x493140]
-bin/csoilp2[0x4a2493]
-bin/csoilp2[0xdd0ed5]
-bin/csoilp2[0x471a5c]
-bin/csoilp2[0x47312f]
-/lib/libc.so.6(__libc_start_main+0xfd)[0x2aab3f298c8d]
-bin/csoilp2[0x440ae9]
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",306.346,-,-,-,-,"INFEASIBLE"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",16439.007,4,6,664.35,664.35,"OPT"
+Solving (6,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7c_5g.xml",19880.057,5,6,574.82,574.82,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 

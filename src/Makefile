@@ -1,5 +1,5 @@
-SYSTEM        = x86-64_sles10_4.1
-#SYSTEM        = x86-64_darwin9_gcc4.0
+#SYSTEM        = x86-64_sles10_4.1
+SYSTEM        = x86-64_darwin
 LIBFORMAT     = static_pic
 ILOGDIR       = $(HOME)/ILOG/CPLEX
 CPLEXDIR      = $(ILOGDIR)/cplex

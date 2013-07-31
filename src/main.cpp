@@ -37,7 +37,8 @@ IlpSolver::SolverStatus solve(const Data* pData,
                               const IlpSolver::Options& options,
                               bool feasiblity,
                               int timeLimit,
-                              CrossingSchedule*& pBestSchedule)
+                              CrossingSchedule*& pBestSchedule,
+                              bool pareto)
 {
   IlpSolver* pSolver1 = new IlpSolver(pData, options);
   IlpSolver* pSolver2 = new IlpSolver(pData, options);
@@ -88,7 +89,7 @@ IlpSolver::SolverStatus solve(const Data* pData,
           delete pBestSchedule;
           pBestSchedule = new CrossingSchedule(*pSolver1);
         }
-        else
+        else if (!pBestSchedule || pareto)
         {
           pBestSchedule = new CrossingSchedule(*pSolver1);
         }
@@ -101,7 +102,7 @@ IlpSolver::SolverStatus solve(const Data* pData,
           delete pBestSchedule;
           pBestSchedule = new CrossingSchedule(*pSolver2);
         }
-        else
+        else if (!pBestSchedule || pareto)
         {
           pBestSchedule = new CrossingSchedule(*pSolver2);
         }
@@ -115,7 +116,7 @@ IlpSolver::SolverStatus solve(const Data* pData,
         delete pBestSchedule;
         pBestSchedule = new CrossingSchedule(*pSolver1);
       }
-      else
+      else if (!pBestSchedule || pareto)
       {
         pBestSchedule = new CrossingSchedule(*pSolver1);
       }
@@ -128,7 +129,7 @@ IlpSolver::SolverStatus solve(const Data* pData,
         delete pBestSchedule;
         pBestSchedule = new CrossingSchedule(*pSolver2);
       }
-      else
+      else if (!pBestSchedule || pareto)
       {
         pBestSchedule = new CrossingSchedule(*pSolver2);
       }
@@ -227,7 +228,7 @@ int main(int argc, char** argv)
   if (!automatic)
   {
     pData->updateGamma(options._bound);
-    solve(pData, options, false, timeLimit, pBestSchedule);
+    solve(pData, options, false, timeLimit, pBestSchedule, pareto);
   }
   else
   {
@@ -282,7 +283,8 @@ int main(int argc, char** argv)
                                              options,
                                              !foundFeasible,
                                              foundFeasible ? timeLimit : -1,
-                                             pBestSchedule);
+                                             pBestSchedule,
+                                             pareto);
 
         if (stat == IlpSolver::CSO_SOLVER_TIME_LIMIT_FEASIBLE)
         {
@@ -290,7 +292,8 @@ int main(int argc, char** argv)
                        options,
                        false,
                        -1,
-                       pBestSchedule);
+                       pBestSchedule,
+                       pareto);
           assert(stat == IlpSolver::CSO_SOLVER_OPTIMAL);
         }
 

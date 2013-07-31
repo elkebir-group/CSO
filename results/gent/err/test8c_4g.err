@@ -1,13 +1,13 @@
 Solving (4,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",0.623,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",0.378,-,-,-,-,"INFEASIBLE"
 Solving (4,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",2.032,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",1.284,-,-,-,-,"INFEASIBLE"
 Solving (5,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",41.367,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",46.435,-,-,-,-,"INFEASIBLE"
 Solving (6,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",535.119,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",532.946,-,-,-,-,"INFEASIBLE"
 Solving (7,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",5108.442,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",4413.932,-,-,-,-,"INFEASIBLE"
 Solving (8,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",6790.359,-,-,-,-,"INFEASIBLE"
-"/home/elkebir/CSO2013/src/cso/data/herman/test8c_4g.xml",12477.946,-,-,-,-,-
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",20901.602,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test8c_4g.xml",25896.582,-,-,-,-,-

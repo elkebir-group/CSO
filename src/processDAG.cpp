@@ -44,9 +44,18 @@ int main(int argc, char** argv)
 
   pData->updateGamma(G.getCross());
 
-  if (recomputePop)
-    G.recomputePop();
+  fprintf(stderr, "\"%s\",%lu,%lu,%.2f,%.2f,",
+    dataFileName.c_str(),
+    G.getGen(), G.getCross(), G.getPop(), G.getCost());
 
-  G.printDAG(std::cout);
+  if (!recomputePop)
+    G.printDAG(std::cout);
+
+  G.recomputePop();
+  if (recomputePop)
+    G.printDAG(std::cout);
+
+  fprintf(stderr, "%.3f,%.3f\n", G.getPop(), G.getCost());
+
   return 0;
 }

@@ -1,11 +1,13 @@
 Solving (2,2)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7b_4g.xml",0.156,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7b_4g.xml",0.165,-,-,-,-,"INFEASIBLE"
 Solving (3,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7b_4g.xml",1.064,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7b_4g.xml",1.502,-,-,-,-,"INFEASIBLE"
 Solving (4,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7b_4g.xml",20.370,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7b_4g.xml",12.572,-,-,-,-,"INFEASIBLE"
 Solving (4,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7b_4g.xml",19.459,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7b_4g.xml",26.996,-,-,-,-,"INFEASIBLE"
 Solving (5,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7b_4g.xml",977.840,-,-,-,-,"INFEASIBLE"
-Solving (6,4)... pop <= 1.79769e+308 
+"/home/elkebir/CSO2013/src/cso/data/gent/test7b_4g.xml",1041.407,-,-,-,-,"INFEASIBLE"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7b_4g.xml",63782.814,4,6,707.21,707.21,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 

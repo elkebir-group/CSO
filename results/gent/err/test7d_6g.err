@@ -1,14 +1,21 @@
 Solving (2,2)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",0.072,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",0.069,-,-,-,-,"INFEASIBLE"
 Solving (3,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",0.175,-,-,-,-,"INFEASIBLE"
-Solving (4,3)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",3.085,-,-,-,-,"INFEASIBLE"
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",0.202,-,-,-,-,"INFEASIBLE"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",6.046,3,4,454.10,454.10,"OPT"
 Solving (4,4)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",2.780,-,-,-,-,"INFEASIBLE"
-Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1407.95
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",149.873,4,5,507.95,1407.95,"OPT"
-Solving (5,5)... pop <= 407.948 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",117.802,-,-,-,-,"INFEASIBLE"
-No need to look any further (6,4) as 1.84467e+19 > 1407.95
-"/home/elkebir/CSO2013/src/cso/data/herman/test7d_6g.xml",273.838,4,5,507.95,1407.95,"OPT",504.000,1404.000
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",5.498,-,-,-,-,"INFEASIBLE"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",245.149,4,5,407.72,407.72,"OPT"
+Solving (5,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",192.055,5,5,448.44,448.44,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",2589.802,4,6,356.24,356.24,"OPT"
+Solving (6,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",2871.106,5,6,317.64,317.64,"OPT"
+Solving (6,6)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",1603.772,6,6,310.14,310.14,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_6g.xml",55274.958,4,7,323.60,323.60,"OPT"
+Solving (7,5)... pop <= 1.79769e+308 

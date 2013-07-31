@@ -1,4 +1,17 @@
-Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 717.434
-"/home/elkebir/CSO2013/src/cso/data/herman/test1_hom1_4g.xml",0.019,2,2,317.43,717.43,"OPT"
-No need to look any further (3,3) as 1.84467e+19 > 717.434
-"/home/elkebir/CSO2013/src/cso/data/herman/test1_hom1_4g.xml",0.032,2,2,317.43,717.43,"OPT",310.000,710.000
+Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",0.014,2,2,133.20,133.20,"OPT"
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",0.123,3,3,145.96,145.96,"OPT"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",0.122,3,4,175.09,175.09,"OPT"
+Solving (4,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",0.648,4,4,120.31,120.31,"OPT"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",0.397,4,5,126.60,126.60,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",0.931,4,6,197.69,197.69,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",1.337,4,7,275.98,275.98,"OPT"
+Solving (8,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",2.122,4,8,369.37,369.37,"OPT"
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_4g.xml",5.921,4,8,369.37,369.37,"?",346.000,346.000

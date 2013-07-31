@@ -18,7 +18,7 @@ void toBitstring(int val, int n, char* buf)
 	 */
 	for (int i = 0; i < n; i++)
 	{
-		buf[n - i - 1] = (val & 1) ? '1' : '0';
+    buf[i] = (val & 1) ? '1' : '0';
 		val >>= 1;
 	}
 

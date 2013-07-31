@@ -1,6 +1,33 @@
-Solving (1,1)... pop <= 1.79769e+308 Infeasible
-"/home/elkebir/CSO2013/src/cso/data/herman/test4_5g.xml",0.007,-,-,-,-,"INFEASIBLE"
-Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 572.564
-"/home/elkebir/CSO2013/src/cso/data/herman/test4_5g.xml",0.066,2,2,172.56,572.56,"OPT"
-No need to look any further (3,3) as 1.84467e+19 > 572.564
-"/home/elkebir/CSO2013/src/cso/data/herman/test4_5g.xml",0.079,2,2,172.56,572.56,"OPT",167.000,567.000
+Solving (1,1)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.009,1,1,712.21,712.21,"OPT"
+Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.057,2,2,196.31,196.31,"OPT"
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.195,3,3,210.73,210.73,"OPT"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.161,3,4,338.84,338.84,"OPT"
+Solving (4,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.353,4,4,199.76,199.76,"OPT"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.468,4,5,210.17,210.17,"OPT"
+Solving (5,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",0.884,5,5,210.17,210.17,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",1.825,4,6,372.11,372.11,"OPT"
+Solving (6,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",1.722,5,6,219.48,219.48,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",6.388,4,7,550.84,550.84,"OPT"
+Solving (7,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",7.092,5,7,228.31,228.31,"OPT"
+Solving (8,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",5.424,4,8,742.35,742.35,"OPT"
+Solving (8,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",18.917,5,8,242.35,242.35,"OPT"
+Solving (9,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",146.901,5,9,260.62,260.62,"OPT"
+Solving (10,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",898.429,5,10,438.73,438.73,"OPT"
+Solving (11,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4_5g.xml",8297.408,5,11,623.20,623.20,"OPT"
+Solving (12,5)... pop <= 1.79769e+308 
