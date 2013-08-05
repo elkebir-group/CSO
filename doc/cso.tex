@@ -64,7 +64,7 @@
 \title{A Mathematical Programming Approach to Marker-Assisted Gene Pyramiding\thanks{A preliminary version of this paper appeared in Proceedings of
  the 11th Workshop on Algorithms in Bioinformatics, WABI 2011 \cite{DBLP:conf/wabi/CanzarE11}}}
 \author{
-    Stefan Canzar\inst{1,}\thanks{Joint first authorship.} \and Mohammed El-Kebir\inst{2,3,*}%$^{, *}$
+    Stefan Canzar\inst{1,}\thanks{Joint first authorship.} \and Mohammed El-Kebir\inst{2,3,**}%$^{, *}$
 }
 
 \titlerunning{Marker-Assisted Gene Pyramiding}
@@ -100,6 +100,7 @@ TODO:
 \begin{itemize}
   \item Describe how to deal with multiple chromosomes. And drawback of assumption.
   \item Describe backbone constraints
+  \item Heterozygous ideotype
 \end{itemize}
 
 %A \emph{genotype} consists of two bitstrings of size $m$. We are given a set of
@@ -447,27 +448,12 @@ Similarly, we omit the details of the implementation of absolute differences of 
 
 The first set of constraints encodes the structure of the underlying directed acyclic graph $D=(V,A)$. We assume a numbering of the vertices
 according to their topological order. In particular, arcs always go from vertices $j<i$ to a vertex $i$ for $i,j\in V$. Based on the node numbering, the lower and upper chromosomes of a node $i \in V$ are respectively $2i-1$ and $2i$. For convenience we introduce a mapping function $\delta(k)$ that returns the node a chromosome $k$ corresponds to.
-Then binary variables $x_{k,i}\in\{0,1\}$, $2n < k \leq 2L$, $i<\delta(k)$, denote whether chromosome $k$ originates from genotype $i$, that is, they indicate an arc $(i,\delta(k))$.
-% \begin{align}
-%   \label{eq:ilp_x}
-%   x_{k,j} \in \{0,1\} && 2n < k \leq 2L, j<\delta(k)
-% \end{align}
+Then binary variables $x_{k,i}\in\{0,1\}$, $2n < k \leq 2L$, $1 \leq i<\delta(k)$, denote whether chromosome $k$ originates from genotype $i$, that is, they indicate an arc $(i,\delta(k))$.
 Since a chromosome originates from exactly one genotype, we have
 \begin{align}
   \label{eq:ilp_x_1}
   \sum_{j=1}^{\delta(k)- 1} x_{k,j} = 1 && 2n < k \leq 2L
 \end{align}
-% In the MIP, $L$ is an upper bound on the number of nodes in any feasible
-% crossing schedule. Since there might be feasible schedules with less than $L$
-% nodes, there can be chromosomes that do not have an originating genotype. That
-% is why the previous constraints are inequality constraints. It must hold,
-% however, that a chromosome has an originating genotype if and only if its
-% counterpart has one as well:
-% \begin{align}
-%   \label{eq:ilp_x_2}
-%   \sum_{j=1}^{i - 1} x_{2i-1,j} - \sum_{j=1}^{i - 1} x_{2i,j} = 0 && n < i\leq L
-% \end{align}
-
 
 To add:
 \begin{enumerate}
@@ -479,7 +465,9 @@ We capture the second condition by fixing a path of length $G$ using the $x$ var
 integer variables, to be at most $G-1$. Implementing this condition requires the assumed ordering on vertices to be extended. For the sake of a clear discussion, we omit the details.
 
 To model the third condition, we introduce 
-binary variables $a_{k,p}$, $1 \leq k \leq 2L$, $1 \leq p \leq m$, which indicate the allele at locus $p$ of chromosome $k$. Note that for chromosomes $k$ corresponding to initial parental genotypes, $a_{k,p}$, $1 \leq p \leq m$, is a constant rather than a variable. In addition to knowing from which genotype a chromosome originates, we also need to know from which of the two chromosomes of that 
+binary variables $a_{k,p}$, $1 \leq k \leq 2L$, $1 \leq p \leq m$, which indicate the allele at locus $p$ of chromosome $k$. 
+%Note that for chromosomes $k$ corresponding to initial parental genotypes, $a_{k,p}$, $1 \leq p \leq m$, is a constant rather than a variable.
+In addition to knowing from which genotype a chromosome originates, we also need to know from which of the two chromosomes of that 
 parental genotype an allele comes. Therefore we define binary variable $y_{k,p}$, $2n < k \leq 2L$, $1 \leq p \leq m$, to be $1$ if the allele at locus $p$
 of chromosome $k$ comes from the lower chromosome of its originating genotype;
 conversely $y_{k,p}$ is $0$ if the allele originates from the upper chromosome.
@@ -544,7 +532,7 @@ Under the assumption that $x_{k,j}=1$,
 \begin{equation*}
 \begin{split}\Pr[]{\xi_k^j}=(1-\frac{h_j}{2})&\prod_{p=1}^{m-1}\prod_{q=p+1}^m \bigg( (1-b_{j,p,q}) \\
 %& + b_{j,p,q}\cdot (r_{p.q}\cdot \sum_{r=p+1}^{q}z_{k,r,j}+(1-r_{p,q})\cdot (1-\sum_{r=p+1}^{q}z_{k,r,j}))   \bigg)  
-& + b_{j,p,q}\cdot (r_{p.q}\cdot z_{k,p,q}+(1-r_{p,q})\cdot (1-z_{k,p,q}))   \bigg)  
+& + b_{j,p,q}\cdot (r_{p,q}\cdot z_{k,p,q}+(1-r_{p,q})\cdot (1-z_{k,p,q}))   \bigg)
 \end{split}
 \end{equation*}
 For a homozygous genotype $j$ all elements in the upper product evaluate to 1 as desired. In the heterozygous case, every maximal homozygous block
@@ -558,7 +546,7 @@ Using the fact that $(1-r_{p,q})\geq r_{p,q}$, $\forall 1\leq p<q<m$, we
 define $\Delta r_{p,q}:=(1-r_{p,q})-r_{p,q}$ and rewrite the probability of event $\xi_k^j$, again assuming $x_{k,j}=1$ as
 \begin{equation*}
 \begin{split}
-\Pr[]{\xi_k^j}&=(1-\frac{h_j}{2})\prod_{p=1}^{m-1}\prod_{q=p+1}^m \left((1-b_{j,p,q}) + b_{j,p,q}\cdot (1-r_{p.q}-\Delta r_{p,q} z_{k,p,q})\right)\notag\\
+\Pr[]{\xi_k^j}&=(1-\frac{h_j}{2})\prod_{p=1}^{m-1}\prod_{q=p+1}^m \left((1-b_{j,p,q}) + b_{j,p,q}\cdot (1-r_{p,q}-\Delta r_{p,q} z_{k,p,q})\right)\notag\\
 &=\exp\bigg(h_j\cdot\ln(\frac{1}{2})+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\cdot \ln(1-r_{p,q}) \\
 &\qquad\qquad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q} \cdot z_{k,p,q}\cdot \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)
 \end{split}
@@ -566,19 +554,15 @@ define $\Delta r_{p,q}:=(1-r_{p,q})-r_{p,q}$ and rewrite the probability of even
 
 
 Finally, if $j_1$ and $j_2$ are the two parental genotypes of chromosomes $k_1$ and $k_2$ forming genotype $i$, we compute in variable $\bar{z}_i$ the $\log$ probability of event $\xi^{j_1}_{k_1}\cap\xi^{j_2}_{k_2}$
-as $\ln(\Pr[]{\xi^{j_1}_{k_1}})+\ln(\Pr[]{\xi^{j_2}_{k_2}})$. For that we have to sum over all possible $j<i$ to identify $j_1$ and $j_2$:
+as $\ln(\Pr[]{\xi^{j_1}_{k_1}})+\ln(\Pr[]{\xi^{j_2}_{k_2}})$. For that we have to sum over all possible $1 \leq j<i$ to identify $j_1$ and $j_2$:
 \begin{equation}
  \label{eq:something}
  \begin{split}
-\bar{z}_i=\sum_{j<i}\sum_{l\in\{1,2\}}x_{k_l,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
+ \bar{z}_i=\sum^{i-1}_{j=1}\sum_{l\in\{1,2\}}x_{k_l,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
  &+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k_l,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
  \end{split}
 \end{equation}
-\obacht{eq differs from conference version, see comment in .tex}
-
-%This is what we had in the latest svn version:
-%\bar{z}_i=\sum_{j<i}\sum_{l\in\{1,2\}}&x_{k_l,j}\bigg(h_j\ln(\frac{1}{2})+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
-%&+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m \sum_{r=p+1}^q b_{j,p,q} \cdot  \ln(\frac{r_{p,q}}{1-r_{p,q}}) \cdot |y_{k,r} - y_{k,r-1}| \bigg)
+\obacht{eq differs from conference version, see comment in .tex, MEK: it's good}
 
 Notice that we neglect the possibility that the two chromosomes $k_1$ and $k_2$ may swap their originating genotypes as accounted for in the 
 second case of equation \eqref{eq:combined_prob} and we therefore might underestimate the probability of success, respectively overestimate
@@ -589,16 +573,16 @@ programming techniques can be utilized.
 More precisely, we are able to re-express the population size w.r.t.\ probability $p:=\Pr[]{j_1,j_2\rightarrow i}$ in separable form as: 
 $$ N(p,\gamma) = \frac{\ln(1-\gamma)}{\ln(1-\mathrm e^{\bar{z}_i})} $$
 We use $\ell$ segments to approximate the nonlinear function $N$ by a
-piecewise-linear curve specified by the points $(a_j,N(a_j,\gamma))$ for
+piecewise-linear curve specified by the points $(d_j,N(d_j,\gamma))$ for
 $j=1,\dots,\ell+1$. The idea of the \emph{$\lambda$-method} \cite{Steuer:1986} is to
-express any point $p\in[a_1,a_{\ell+1}]$ as a convex combination of two adjacent
-breakpoints $a_j$ and $a_{j+1}$, where  $p\in[a_j,a_{j+1}]$, and derive an
-approximation for $N$ by weighting the function's values $N(a_j,\gamma)$ and
-$N(a_{j+1},\gamma)$ accordingly. More precisely, we add for every $i$ the following
-constraints:
+express any point $p\in[d_1,d_{\ell+1}]$ as a convex combination of two adjacent
+breakpoints $d_j$ and $d_{j+1}$, where  $p\in[d_j,d_{j+1}]$, and derive an
+approximation for $N$ by weighing the function's values $N(d_j,\gamma)$ and
+$N(d_{j+1},\gamma)$ accordingly. More precisely, we add for every $i$ the following
+constraints (where $n < i \leq L$):
 \begin{align}
   \sum_{j=1}^{\ell+1} \lambda^i_j &= 1&\\
-  \sum_{j=1}^{\ell+1} \lambda^i_j\cdot a_j &= \bar{z}_i&\label{ttt}\\
+  \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j &= \bar{z}_i&\label{ttt}\\
   \lambda^i_j&\geq 0& j=1,\dots,\ell+1
 \end{align}
 Note that the adjacency condition on the positive coefficients $\lambda^i_j$ will
@@ -617,18 +601,18 @@ The log probabilities that occur are at most $\log(0.5) = -0.69$ or exactly $\lo
 
 Finally, we replace the populations size $N(\mathrm e^{\bar{z}_i},\gamma)$ for each crossing $i$
 in the objective function by a convex combination of the respective breakpoint scores to derive 
-$\lambda_{\mathrm{pop}}\cdot\left(\sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{a_j},\gamma)\right) + \lambda_{\mathrm{gen}}\cdot G + \lambda_{\mathrm{crs}}\cdot F.$
+$\lambda_{\mathrm{pop}}\cdot\left(\sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{d_j},\gamma)\right) + \lambda_{\mathrm{gen}}\cdot G + \lambda_{\mathrm{crs}}\cdot F.$
 
 
 
 \subsubsection{Additional cuts.} We consider three additional cuts. The first one is due to Lemma~\ref{lem:selfing}. The following constraints enforce that a homozygous genotype results via selfing: $|x_{2i-1,j} - x_{2i,j}| \leq h_j$ for $n < i \leq L, 1 \leq j < i$.
 In addition, the lower and upper bound on the population size correspond to
-  $\mathit{LB}_\mathrm{pop} \leq \sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{a_j},\gamma) \leq \mathit{UB}_\mathrm{pop}$ for $n < i \leq L$.
+  $\mathit{LB}_\mathrm{pop} \leq \sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{d_j},\gamma) \leq \mathit{UB}_\mathrm{pop}$ for $n < i \leq L$.
   For the sake of simplicity we omit the additional constraints required to enforce compulsory parental genotypes to be contained in the solution \obacht[mohammed]{We can be complete here, give compulsory leaves constraints. Also we don't have to do the constraints inline.}.
 
 To come back to condition five of our characterization of feasible solutions in the beginning of this section, 
-we simply set $a_1=\log(1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}})$. Then any $\bar{z}_i<a_1$ implying a population size larger than $N_{\mathrm{max}}$
-cannot be expressed as a convex combination of break points $a_j$, $j=1,\dots,\ell+1$,  and hence any feasible solution must satisfy the bound on the population size.
+we simply set $d_1=\log(1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}})$. Then any $\bar{z}_i<d_1$ implying a population size larger than $N_{\mathrm{max}}$
+cannot be expressed as a convex combination of break points $d_j$, $j=1,\dots,\ell+1$,  and hence any feasible solution must satisfy the bound on the population size.
 
 In total, our MIP formulation comprises $\BigOh(L(Lm^2+\ell))$ many variables and $\BigOh(L^2 m)$ constraints. In Appenidx \ref{sec:complete_mip}) we present the complete ILP formulation.
 \section{Experimental results}
@@ -738,6 +722,43 @@ The NP-hardness proof involves only the number of crossings; as for the number o
 \section{Complete MIP}
 \label{sec:complete_mip}
 
+Given $(F, G)$ as the number of crossings and the number of generations, respectively, and $L = F + n$, the MIP is as follows.
+
+\begingroup
+\allowdisplaybreaks
+\begin{align*}
+\min\quad        & \sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{a_j},\gamma) & \label{CS} \tag{CSO}\\
+\text{s.t.}\quad & \sum_{j=1}^{\delta(k)- 1} x_{k,j}                                  && =     1              && {\scriptstyle 2n < k \leq 2L}\\
+                 & g_{k,p,2i}   - a_{2i,p}   \cdot x_{k,i} \cdot (1-y_{k,p})          && =     0              && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
+                 & g_{k,p,2i-1} - a_{2i-1,p} \cdot x_{k,i} \cdot y_{k,p}              && =     0              && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
+                 & \sum_{i = 1}^{\delta(k) - 1} (g_{k,p,2i-1} + g_{k,p,2i})           && = a_{k,p}            && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m}\\
+                 & a_{2i-1,p}                                                         && = c^i_{1,p}          && {\scriptstyle 1 \leq i \leq n, 1 \leq p \leq m}\\
+                 & a_{2i,p}                                                           && = c^i_{2,p}          && {\scriptstyle 1 \leq i \leq n, 1 \leq p \leq m}\\
+                 & a_{2L-1,p}                                                         && = c^*_{1,p}          && {\scriptstyle 1 \leq p \leq m}\\
+                 & a_{2L,p}                                                           && = c^*_{2,p}          && {\scriptstyle 1 \leq p \leq m}\\
+                 & |a_{2i-1,p} - a_{2i,p}|                                            && = \tilde{a}_{i,p}    && {\scriptstyle 1 \leq i \leq L, 1 \leq p \leq m}\\
+                 & h_i                                                                && \geq \tilde{a}_{i,p} && {\scriptstyle 1 \leq i \leq L, 1 \leq p \leq m}\\
+                 & \sum_{r=p+1}^q |y_{k,r} - y_{k,r-1}|                               && = z_{k,p,q}          && {\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
+                 & \tilde{a}_{i,p}\cdot\tilde{a}_{i,q}\cdot\prod_{r=p+1}^{q-1}(1-\tilde{a}_{i,r}) &&  = b_{i,p,q} && {\scriptstyle 1 \leq i \leq L, 1 \leq p<q \leq m}\\
+                 & \sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i}x_{k,j}\bigg(h_j\ln(\frac{1}{2})\\
+                 & \quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
+                 & \quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg) && = \bar{z}_i && {\scriptstyle n < i \leq L}\\
+                 & \sum_{j=1}^{\ell+1} \lambda^i_j                                    && = 1                  && {\scriptstyle n < i \leq L}\\
+                 & \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j                           && = \bar{z}_i          && {\scriptstyle n < i \leq L}\\
+                 & \lambda^i_j                                                        && \geq 0               && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
+                 & |x_{2i-1,j} - x_{2i,j}|                                            && \leq h_j             && {\scriptstyle n < i \leq L, 1 \leq j < i}\\
+                 & x_{k,j}                                                            && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq i < \delta(k)}\\
+                 & g_{k,p,l}                                                          && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq l<2\delta(k)-1}\\
+                 & a_{k,p}                                                            && \in \{0,1\}          && {\scriptstyle 1 \leq k \leq 2L, 1 \leq p \leq m}\\
+                 & y_{k,p}                                                            && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m}\\
+                 & \tilde{a}_{i,p}                                                    && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L, 1 \leq p \leq m}\\
+                 & h_{i}                                                              && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L}\\
+                 & b_{i,p,q}                                                          && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L, 1 \leq p<q \leq m}\\
+                 & z_{k,p,q}                                                          && \in \mathbb{N}       && {\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
+                 & \bar{z}_{i}                                                        && \in \mathbb{R}       && {\scriptstyle n < i \leq L}\\
+                 & \lambda^i_j                                                        && \in \mathbb{R}       && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}
+\end{align*}
+\endgroup
 
 \begin{align*}
 {\scriptstyle\min\;}& {\scriptstyle\alpha\cdot\sum_{j=2}^{k}  c_j \sum_{i=1}^{2L} z_{i,j} + \beta\cdot\sum_{i-1}^L v_i +\gamma\cdot d }&\label{CS} \tag{CSO}\\
@@ -775,6 +796,5 @@ The NP-hardness proof involves only the number of crossings; as for the number o
    {\scriptstyle z_{i,t} }&{\scriptstyle \in \{0,1\} }&&{\scriptstyle 1\leq i\leq 2L, 2\leq t \leq k}\notag\\
 {\scriptstyle r_i, d }&\; \text{integer.}&& \notag
 \end{align*}
-
 
 \end{document}
