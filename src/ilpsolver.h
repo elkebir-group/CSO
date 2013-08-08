@@ -83,6 +83,8 @@ private:
   IloBoolArray _homozygous;
   /// Encodes whether a chromosome originates from a certain node
   BoolVarMatrix _x;
+  /// Encodes whether a chromosome originates from a certain node (shadow)
+  BoolVarMatrix _xx;
   /// Encodes g_{k,p,l} where l corresponds to a parental chromosome
   BoolVar3Matrix _input_bit; 
   /// y[i][j] = { 0, if j-th bit of chromosome i originates 
@@ -139,6 +141,7 @@ private:
   void printH() const;
   void printE() const;
   void printX() const;
+  void printXX() const;
   void printHX() const;
   void printHXE() const;
   void printInnerNodes() const;
@@ -258,6 +261,21 @@ inline void IlpSolver::printE() const
         std::cout << "// e[" << k << "][" << p << "][" << q << "] = "
           << _pCplex->getValue(_e[k][p][q-p-1]) << std::endl;
       }
+    }
+  }
+}
+
+inline void IlpSolver::printXX() const
+{
+  // todo: fix me, chromosomeUB - 1 is not correct for heterozygous ideotype
+  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const int n = _pData->getParents().size();
+  for (int k = 0; k < chromosomeUB - 1; k++)
+  {
+    for (int i = 0; i < n + getNrInnerPred(k/2); i++)
+    {
+      std::cout << "// xx[" << k << "][" << i << "] = "
+        << _pCplex->getValue(_xx[k][i]) << std::endl;
     }
   }
 }
