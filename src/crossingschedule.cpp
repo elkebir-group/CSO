@@ -16,6 +16,7 @@ CrossingSchedule::CrossingSchedule(const Data* pData)
   , _genotype(_G)
   , _ancestorSet(_G)
   , _pop(_G)
+  , _prob(_G)
   , _gen(_G)
   , _cumPop(_G)
   , _cumCross(_G)
@@ -30,6 +31,7 @@ CrossingSchedule::CrossingSchedule(const CrossingSchedule& cs)
   , _genotype(_G)
   , _ancestorSet(_G)
   , _pop(_G)
+  , _prob(_G)
   , _gen(_G)
   , _cumPop(_G)
   , _cumCross(_G)
@@ -41,6 +43,7 @@ CrossingSchedule::CrossingSchedule(const CrossingSchedule& cs)
   lemon::DigraphCopy<DAG, DAG> copier(cs._G, _G);
   copier.nodeMap(cs._genotype, _genotype);
   copier.nodeMap(cs._pop, _pop);
+  copier.nodeMap(cs._prob, _prob);
   copier.nodeMap(cs._gen, _gen);
   copier.nodeMap(cs._cumPop, _cumPop);
   copier.nodeMap(cs._cumCross, _cumCross);
@@ -127,6 +130,7 @@ void CrossingSchedule::recomputePop(Node node)
   if (isLeaf(node))
   {
     _pop[node] = 0;
+    _prob[node] = 0;
   }
   else
   {
@@ -143,6 +147,8 @@ void CrossingSchedule::recomputePop(Node node)
 
     _pop[node] = _genotype[node].computePop(_pData->getNumberOfLoci(),
         _pData->getRM(), _pData->getGamma(), _genotype[nodeP1], _genotype[nodeP2]);
+    _prob[node] = _genotype[node].computeProb(_pData->getNumberOfLoci(),
+        _pData->getRM(), _genotype[nodeP1], _genotype[nodeP2]);
 
     recomputePop(nodeP1);
     recomputePop(nodeP2);
@@ -249,7 +255,8 @@ void CrossingSchedule::printNodes(std::ostream& out) const
 
 void CrossingSchedule::printEdges(Node node, 
                                   BoolNodeMap& visited, 
-                                  std::ostream& out) const
+                                  std::ostream& out,
+                                  bool prob) const
 {
   static const int nLoci = _pData->getNumberOfLoci();
 
@@ -260,23 +267,28 @@ void CrossingSchedule::printEdges(Node node,
       Node parent = _G.source(a);
       out << '\t';
       out << _G.id(parent);
-      //_genotype[parent].printGenotype(nLoci, false, out, "");
       out << " -> ";
       out << _G.id(node);
-      //_genotype[node].printGenotype(nLoci, false, out, "");
-      out << " [label=\"" << _pop[node] << "\"];" << std::endl;
-      printEdges(parent, visited, out);
+      if (prob)
+      {
+        out << " [label=\"" << _prob[node] << "\"];" << std::endl;
+      }
+      else
+      {
+        out << " [label=\"" << _pop[node] << "\"];" << std::endl;
+      }
+      printEdges(parent, visited, out, prob);
     }
     visited[node] = true;
   }
 }
 
-void CrossingSchedule::printDAG(std::ostream& out) const
+void CrossingSchedule::printDAG(std::ostream& out, bool prob) const
 {
   out << "digraph G {" << std::endl;
   printNodes(out);
   BoolNodeMap visited(_G, false);
-  printEdges(_targetNode, visited, out);
+  printEdges(_targetNode, visited, out, prob);
   out << "}" << std::endl;
 }
 
@@ -286,6 +298,7 @@ void CrossingSchedule::loadDAG(std::istream& in)
     .node("target", _targetNode)
     .nodeMap("genotype", _genotype)
     .nodeMap("pop", _pop)
+    .nodeMap("prob", _prob)
     .nodeMap("gen", _gen)
     .nodeMap("cumCross", _cumCross)
     .arcMap("upperChr", _upperChr)
@@ -301,6 +314,7 @@ void CrossingSchedule::saveDAG(std::ostream& out) const
     .node("target", _targetNode)
     .nodeMap("genotype", _genotype)
     .nodeMap("pop", _pop)
+    .nodeMap("prob", _prob)
     .nodeMap("gen", _gen)
     .nodeMap("cumCross", _cumCross)
     .arcMap("upperChr", _upperChr)

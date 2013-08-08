@@ -40,8 +40,9 @@ public:
 	int operator ()(const int i, const int j) const;
 	double computeProb(int nLoci, const DoubleMatrix& RM, int c) const;
 	void printGenotype(int nLoci, bool newline = true, std::ostream& out = std::cout, const char* separator = "/") const;
-	unsigned long computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const;
-	bool isHomozygous() const;
+  unsigned long computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
+  unsigned long computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const;
+  bool isHomozygous() const;
 	int getNumberOfHomozygousLoci(int nLoci) const;
 	LinkageType getLinkage(int locus1, int locus2, int targetChromosome) const;
   friend std::istream& operator >>(std::istream& is, Genotype& genotype);
@@ -219,19 +220,26 @@ inline void Genotype::printGenotype(int nLoci, bool newline, std::ostream& out, 
 		out << std::endl;
 }
 
+inline unsigned long Genotype::computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const
+{
+  double p;
+
+  if (_c0 == _c1)
+  {
+    p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
+  }
+  else
+  {
+    p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
+    p += D.computeProb(nLoci, RM, _c1) * E.computeProb(nLoci, RM, _c0);
+  }
+
+  return p;
+}
+
 inline unsigned long Genotype::computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const
 {
-	double p;
-
-	if (_c0 == _c1)
-	{
-		p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
-	}
-	else
-	{
-		p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
-		p += D.computeProb(nLoci, RM, _c1) * E.computeProb(nLoci, RM, _c0);
-	}
+  double p = computeProb(nLoci, RM, D, E);
 
 	if ((1 - p) <= (2 * DBL_EPSILON)) return 1;
 

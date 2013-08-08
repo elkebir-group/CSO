@@ -18,12 +18,11 @@ class IlpSolver : public CrossingSchedule
 public:
   struct Options {
     bool _tree;
-    bool _diffParents;
+    bool _noSelfing;
     bool _usefulCross;
     bool _verbose;
     int _bound;     // fixes the number of internal nodes
     int _fixedGen;  // fixes the number of generations
-    bool _printProb;
     bool _boundNmax;
     int _nof_segs;
     bool _servin;
@@ -33,12 +32,11 @@ public:
     /// Default constructor with default values
     Options()
       : _tree(false)
-      , _diffParents(false)
+      , _noSelfing(false)
       , _usefulCross(false)
       , _verbose(false)
       , _bound(1)
       , _fixedGen(1)
-      , _printProb(false)
       , _boundNmax(false)
       , _nof_segs(7)
       , _servin(false)
@@ -74,49 +72,65 @@ private:
   /// Piece-wise linear function breakpoints
   DoubleVector _breakpoint;
   /// C^*_1
-  IloBoolArray _t1;
+  IloBoolArray _cs1;
   /// C^*_2
-  IloBoolArray _t2;
+  IloBoolArray _cs2;
   /// Encodes parental genotypes
   IloArray<IloBoolArray> _c;
   /// Encodes whether a parental genotype is homozygous
   IloBoolArray _homozygous;
   /// Encodes whether a chromosome originates from a certain node
   BoolVarMatrix _x;
-  /// Encodes whether a chromosome originates from a certain node (shadow)
+  /// Shadow x
   BoolVarMatrix _xx;
   /// Encodes g_{k,p,l} where l corresponds to a parental chromosome
-  BoolVar3Matrix _input_bit; 
-  /// y[i][j] = { 0, if j-th bit of chromosome i originates 
+  BoolVar3Matrix _g;
+  /// Shadow g
+  BoolVar3Matrix _gg;
+  /// y[i][j] = { 0, if j-th bit of chromosome i originates
   ///                from the upper chromosome of the node defined by x
   ///             1, if j-th bit of chromosome i originates
   ///                from the lower chromosome of the node defined by x
   BoolVarMatrix _y;
+  /// Shadow y
+  BoolVarMatrix _yy;
   /// Allele value at given chromosome and locus
-  BoolVarMatrix _p;
+  BoolVarMatrix _a;
   /// Encodes whether a locus at given node is heterozygous
-  BoolVarMatrix _bt;
+  BoolVarMatrix _at;
   /// Encodes whether a given node is heterozygous
-  IloBoolVarArray _het;
-  /// Encodes product variable for heterozygous and x
-  BoolVarMatrix _hetx;
+  IloBoolVarArray _h;
+  /// Encodes product variable for h and x
+  BoolVarMatrix _hx;
+  /// Shadow hx
+  BoolVarMatrix _hxx;
   /// Encodes whether allele is the result of a crossover event
   BoolVarMatrix _d;
-  /// Population size needed for obtaining a node
-  IloNumVarArray _zb;
+  /// Shadow d
+  BoolVarMatrix _dd;
+  /// Probability for obtaining a node
+  IloNumVarArray _p;
+  /// Shadow p
+  IloNumVarArray _pp;
   /// Lambda for piece-wise linear approximation of pop size
   NumVarMatrix _lambda;
   /// Encodes depth of a node
   IloIntVarArray _r;
-  /// Encodes h_{i,p,q}
-  BoolVar3Matrix _h;
-  /// Encodes product of h and x
-  BoolVar4Matrix _hx;
-  /// Encodes product of h and x and e
-  BoolVar4Matrix _hxe;
-  /// Encodes e_{k,p,q}: 
+  /// Encodes b_{i,p,q}
+  BoolVar3Matrix _b;
+  /// Encodes product of b and x
+  BoolVar4Matrix _bx;
+  /// Shadow bx
+  BoolVar4Matrix _bxx;
+  /// Encodes product of b and x and z
+  BoolVar4Matrix _bxz;
+  /// Shadow bxz
+  BoolVar4Matrix _bxxzz;
+  /// Encodes z_{k,p,q}:
   /// the alleles at loci p and q of chromosome k are the result of a crossover
-  IntVar3Matrix _e;
+  IntVar3Matrix _z;
+  /// Shadow z
+  IntVar3Matrix _zz;
   /// Uniquely covered
   BoolVarMatrix _uc;
   /// Product variable uc*x
@@ -130,7 +144,7 @@ private:
   void initChromosomesFromGenotypes();
   void initAllelesFromChromosomes();
   void initUsefulCross();
-  void initDiffParents();
+  void initNoSelfing();
   void initTree();
   void initObligatoryLeaves();
   void initObjectiveGen();
@@ -138,12 +152,16 @@ private:
   void initObjectivePop();
   void initBounds();
   bool isHomozygousBlock(int i, int p, int q) const;
-  void printH() const;
-  void printE() const;
+  void printB() const;
+  void printZ() const;
   void printX() const;
   void printXX() const;
-  void printHX() const;
-  void printHXE() const;
+  void printBX() const;
+  void printBXZ() const;
+  void printG() const;
+  void printGG() const;
+  void printP() const;
+  void printPP() const;
   void printInnerNodes() const;
 
   Genotype parseGenotype(int i) const;
@@ -157,9 +175,6 @@ private:
 
   bool isBackboneNode(int i) const;
   int getNrInnerPred(int i) const;
-
-protected:
-  void printEdges(Node node, BoolNodeMap& visited, std::ostream& out) const;
 
 public:
   IlpSolver(const Data* pData, const Options& options);
@@ -233,7 +248,7 @@ inline void IlpSolver::printInnerNodes() const
   }
 }
 
-inline void IlpSolver::printH() const
+inline void IlpSolver::printB() const
 {
   const int m = _pData->getNumberOfLoci();
   for (int i = 0; i < _options._bound - 1; i++)
@@ -242,14 +257,34 @@ inline void IlpSolver::printH() const
     {
       for (int q = p+1; q < m; q++)
       {
-        std::cout << "// h[" << i << "][" << p << "][" << q << "] = "
-          << _pCplex->getValue(_h[i][p][q-p-1]) << std::endl;
+        std::cout << "// b[" << i << "][" << p << "][" << q << "] = "
+          << _pCplex->getValue(_b[i][p][q-p-1]) << std::endl;
       }
     }
   }
 }
 
-inline void IlpSolver::printE() const
+inline void IlpSolver::printP() const
+{
+  for (int i = 0; i < _options._bound; i++)
+  {
+    double val = _pCplex->getValue(_p[i]);
+    std::cout << "// p[" << i << "] = "
+      << val << " " << exp(val) << std::endl;
+  }
+}
+
+inline void IlpSolver::printPP() const
+{
+  for (int i = 0; i < _options._bound; i++)
+  {
+    double val = _pCplex->getValue(_pp[i]);
+    std::cout << "// pp[" << i << "] = "
+      << val << " " << exp(val) << std::endl;
+  }
+}
+
+inline void IlpSolver::printZ() const
 {
   const int m = _pData->getNumberOfLoci();
   for (int k = 0; k < 2*_options._bound - 1; k++)
@@ -258,8 +293,8 @@ inline void IlpSolver::printE() const
     {
       for (int q = p+1; q < m; q++)
       {
-        std::cout << "// e[" << k << "][" << p << "][" << q << "] = "
-          << _pCplex->getValue(_e[k][p][q-p-1]) << std::endl;
+        std::cout << "// z[" << k << "][" << p << "][" << q << "] = "
+          << _pCplex->getValue(_z[k][p][q-p-1]) << std::endl;
       }
     }
   }
@@ -267,15 +302,18 @@ inline void IlpSolver::printE() const
 
 inline void IlpSolver::printXX() const
 {
-  // todo: fix me, chromosomeUB - 1 is not correct for heterozygous ideotype
-  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
   const int n = _pData->getParents().size();
-  for (int k = 0; k < chromosomeUB - 1; k++)
+  for (int j = 0; j < genotypeUB; j++)
   {
-    for (int i = 0; i < n + getNrInnerPred(k/2); i++)
+    for (int k = 2*j; k <= 2*j+1; k++)
     {
-      std::cout << "// xx[" << k << "][" << i << "] = "
-        << _pCplex->getValue(_xx[k][i]) << std::endl;
+      for (int i = 0; i < n + getNrInnerPred(j); i++)
+      {
+        std::cout << "// xx[" << k << "][" << i << "] = "
+          << _pCplex->getValue(_xx[k][i]) << std::endl;
+      }
     }
   }
 }
@@ -294,7 +332,43 @@ inline void IlpSolver::printX() const
   }
 }
 
-inline void IlpSolver::printHX() const
+inline void IlpSolver::printG() const
+{
+  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const int n = _pData->getParents().size();
+  const int m = _pData->getNumberOfLoci();
+  for (int k = 0; k < chromosomeUB; k++)
+  {
+    for (int p = 0; p < m; p++)
+    {
+      for (int i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
+      {
+        std::cout << "// g[" << k << "][" << p << "][" << i << "] = "
+          << _pCplex->getValue(_g[k][p][i]) << std::endl;
+      }
+    }
+  }
+}
+
+inline void IlpSolver::printGG() const
+{
+  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const int n = _pData->getParents().size();
+  const int m = _pData->getNumberOfLoci();
+  for (int k = 0; k < chromosomeUB; k++)
+  {
+    for (int p = 0; p < m; p++)
+    {
+      for (int i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
+      {
+        std::cout << "// gg[" << k << "][" << p << "][" << i << "] = "
+          << _pCplex->getValue(_gg[k][p][i]) << std::endl;
+      }
+    }
+  }
+}
+
+inline void IlpSolver::printBX() const
 {
   const int m = _pData->getNumberOfLoci();
   const int n = _pData->getParents().size();
@@ -306,7 +380,7 @@ inline void IlpSolver::printHX() const
       {
         for (int q = p+1; q < m; q++)
         {
-          int val1 = _pCplex->getValue(_hx[k][i][p][q-p-1]);
+          int val1 = _pCplex->getValue(_bx[k][i][p][q-p-1]);
           int val2 = 0;
 
           if (i < n)
@@ -325,10 +399,10 @@ inline void IlpSolver::printHX() const
           }
           else
           {
-            val2 = _pCplex->getValue(_h[i-n][p][q-p-1]) * _pCplex->getValue(_x[k][i]);
+            val2 = _pCplex->getValue(_b[i-n][p][q-p-1]) * _pCplex->getValue(_x[k][i]);
           }
 
-          std::cout << "// hx[" << k << "][" << i << "]["
+          std::cout << "// bx[" << k << "][" << i << "]["
             << p << "][" << q << "] = " << val1 
             << (val1 == val2 ? "=" : "!=") << val2 << std::endl;
         }
@@ -337,7 +411,7 @@ inline void IlpSolver::printHX() const
   }
 }
 
-inline void IlpSolver::printHXE() const
+inline void IlpSolver::printBXZ() const
 {
   const int m = _pData->getNumberOfLoci();
   const int n = _pData->getParents().size();
@@ -349,7 +423,7 @@ inline void IlpSolver::printHXE() const
       {
         for (int q = p+1; q < m; q++)
         {
-          int val1 = _pCplex->getValue(_hxe[k][i][p][q-p-1]);
+          int val1 = _pCplex->getValue(_bxz[k][i][p][q-p-1]);
           int val2 = 0;
 
           if (i < n)
@@ -363,15 +437,15 @@ inline void IlpSolver::printHXE() const
             }
             else
             {
-              val2 = _pCplex->getValue(_x[k][i]) * _pCplex->getValue(_e[k][p][q-p-1]);
+              val2 = _pCplex->getValue(_x[k][i]) * _pCplex->getValue(_z[k][p][q-p-1]);
             }
           }
           else
           {
-            val2 = _pCplex->getValue(_h[i-n][p][q-p-1]) * 
-              _pCplex->getValue(_x[k][i]) * _pCplex->getValue(_e[k][p][q-p-1]);
+            val2 = _pCplex->getValue(_b[i-n][p][q-p-1]) *
+              _pCplex->getValue(_x[k][i]) * _pCplex->getValue(_z[k][p][q-p-1]);
           }
-          std::cout << "// hxe[" << k << "][" << i << "]["
+          std::cout << "// bxe[" << k << "][" << i << "]["
             << p << "][" << q << "] = " << val1 
             << (val1 == val2 ? "=" : "!=") << val2 << std::endl;
         }
@@ -404,8 +478,8 @@ inline Genotype IlpSolver::parseGenotype(int i) const
   int c0 = 0, c1 = 0;
   for (int l = 0; l < m; l++)
   {
-    bool b0 = _pCplex->getValue(_p[2*i][l]) != 0;
-    bool b1 = _pCplex->getValue(_p[2*i+1][l]) != 0;
+    bool b0 = _pCplex->getValue(_a[2*i][l]) != 0;
+    bool b1 = _pCplex->getValue(_a[2*i+1][l]) != 0;
 
     c0 |= (int)b0 << (m - l - 1);
     c1 |= (int)b1 << (m - l - 1);
@@ -439,7 +513,7 @@ inline double IlpSolver::parseLogProb(int i) const
 {
   assert(0 <= i && i < _options._bound);
 
-  return _pCplex->getValue(_zb[i]);
+  return _pCplex->getValue(_p[i]);
 }
 
 inline unsigned long IlpSolver::parseGen(int i) const

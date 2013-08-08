@@ -157,6 +157,7 @@ int main(int argc, char** argv)
   int timeLimit = -1;
   bool saveIntermediate = false;
   bool pareto = false;
+  bool printProb = false;
 
   lemon::ArgParser ap(argc, argv);
   ap.refOption("v", "Verbose CPLEX output", 
@@ -164,8 +165,8 @@ int main(int argc, char** argv)
     .refOption("pareto", "Pareto", pareto, false)
     //.refOption("t", "Enforce crossing schedules to be trees",
     //    options._tree, false)
-    //.refOption("p", "Cuts: enforce different parents",
-    //    options._diffParents, false)
+    .refOption("ns", "Cuts: no selfing",
+        options._noSelfing, false)
     .refOption("c", "Cuts: useful crossovers only",
         options._usefulCross, false)
     .refOption("n", "Cuts: based on bound Nmax",
@@ -187,7 +188,7 @@ int main(int argc, char** argv)
     .refOption("g", "Number of segments used to approximate population size",
         options._nof_segs, false)
     .refOption("print-prob", "Print prob on edges",
-        options._printProb, false)
+        printProb, false)
     .refOption("print-RM", "Print RM", printRM, false)
     .refOption("o", "Output file name",
         outputFileName, false)
@@ -346,7 +347,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      pBestSchedule->printDAG(std::cout);
+      pBestSchedule->printDAG(std::cout, printProb);
     }
 
     fprintf(stderr, "\"%s\",%.3f,%lu,%lu,%.2f,%.2f,\"%s\",", 

@@ -43,6 +43,7 @@ protected:
   GenotypeMap _genotype;
   AncestorMap _ancestorSet;
   PopMap _pop;
+  PopMap _prob;
   GenMap _gen;
   CumPopMap _cumPop;
   CumCrossMap _cumCross;
@@ -54,13 +55,13 @@ protected:
   bool isLeaf(Node node) const;
   void printNode(Node node, std::ostream& out) const;
   void printNodes(std::ostream& out) const;
-  virtual void printEdges(Node node, BoolNodeMap& visited, std::ostream& out) const;
+  virtual void printEdges(Node node, BoolNodeMap& visited, std::ostream& out, bool prob) const;
 
 public:
   CrossingSchedule(const Data* pData);
   CrossingSchedule(const CrossingSchedule& cs);
-  virtual ~CrossingSchedule() {};
-  void printDAG(std::ostream& out) const;
+  virtual ~CrossingSchedule() {}
+  void printDAG(std::ostream& out, bool prob = false) const;
   bool isFeasible() const;
   double getPop() const;
   unsigned long getGen() const;

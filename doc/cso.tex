@@ -4,6 +4,7 @@
 \usepackage{url}
 \usepackage{cite}
 \usepackage{subfig}
+\usepackage{color}
 %\usepackage{algorithmic}
 %\usepackage{algorithm}
 \usepackage{multirow}
@@ -32,6 +33,7 @@
 \newcommand{\BigOh}{\ensuremath{\mathcal{O}}}
 \newcommand{\ie}{i.e.\ }
 \newcommand{\cf}{cf.\ }
+\newcommand{\HL}[1]{\textcolor{red}{#1}}
 
 \newcommand{\obacht}[2][nobody]{\marginpar{\raggedright \tiny \textbf{obacht:} #2 (#1)}}
 
@@ -101,6 +103,8 @@ TODO:
   \item Describe how to deal with multiple chromosomes. And drawback of assumption.
   \item Describe backbone constraints
   \item Heterozygous ideotype
+  \item No selfing
+  \item Identify two founding lines (goal: hybrid)
 \end{itemize}
 
 %A \emph{genotype} consists of two bitstrings of size $m$. We are given a set of
@@ -512,10 +516,10 @@ maximal block of homozygous loci between heterozygous loci $p$ and $q$, $1 \leq 
 \begin{align}
   b_{i,p,q} & = \tilde{a}_{i,p}\cdot\tilde{a}_{i,q}\cdot\prod_{r=p+1}^{q-1}(1-\tilde{a}_{i,r})  && 1 \leq i \leq L, 1 \leq p<q \leq m
 \end{align}
-%Then binary variable $\bar{z}_{k,p,q,j}$, $1 \leq k \leq 2L$, $1 \leq p<q \leq m$, and $j<\delta(k)$, denotes the existence of at least one crossover event in a maximal homozygous block between loci
+%Then binary variable $p_{k,p,q,j}$, $1 \leq k \leq 2L$, $1 \leq p<q \leq m$, and $j<\delta(k)$, denotes the existence of at least one crossover event in a maximal homozygous block between loci
 %$p$ and $q$ of chromosome $k$'s originating genotype $j$:
 %\begin{align}\label{eq:whatever}
-%  \bar{z}_{k,p,q,j} & = b_{j,p,q}\cdot\sum_{r=p+1}^{q}z_{k,r,j}  && 2n < k \leq 2L, 1 \leq p<q \leq m, j < \delta(k)
+%  p_{k,p,q,j} & = b_{j,p,q}\cdot\sum_{r=p+1}^{q}z_{k,r,j}  && 2n < k \leq 2L, 1 \leq p<q \leq m, j < \delta(k)
 %\end{align}
 %To allow for a linearization of constraint \ref{eq:whatever} according to the scheme described in the beginning of Section \ref{sec:ilp} we have to ensure that at most one crossover occurs in each maximal
 %homozygous block. We accomplish this through constraints
@@ -526,7 +530,7 @@ maximal block of homozygous loci between heterozygous loci $p$ and $q$, $1 \leq 
 %the number of homozygous blocks enclosed by loci $p$ and $q$ is at most  $\sum_{k=p+1}^{q-1} \tilde{b}_{j,k}+1$ and hence we do not cut off any feasible solution.
 %%\prod_{1\leq p<q\leq m}
 We are now able to formulate the probability given in \eqref{eq:single_prob} in terms of our new binary variables. For that, let $\xi_k^j$ denote
-the event of obtaining a chromosome $k$ from a genotype $j$. %where we have replaced in the second inequality $b_{j,p,q}\cdot\sum_{r=p+1}^{q}z_{k,r,j}$ by $\bar{z}_{k,p,q,j}$ according to \eqref{eq:whatever}.
+the event of obtaining a chromosome $k$ from a genotype $j$. %where we have replaced in the second inequality $b_{j,p,q}\cdot\sum_{r=p+1}^{q}z_{k,r,j}$ by $p_{k,p,q,j}$ according to \eqref{eq:whatever}.
 Using variables $h$, $b$, and $z$, we can express $\Pr[]{\xi_k^j}$ as follows.
 Under the assumption that $x_{k,j}=1$,
 \begin{equation*}
@@ -553,12 +557,12 @@ define $\Delta r_{p,q}:=(1-r_{p,q})-r_{p,q}$ and rewrite the probability of even
 \end{equation*}
 
 
-Finally, if $j_1$ and $j_2$ are the two parental genotypes of chromosomes $k_1$ and $k_2$ forming genotype $i$, we compute in variable $\bar{z}_i$ the $\log$ probability of event $\xi^{j_1}_{k_1}\cap\xi^{j_2}_{k_2}$
+Finally, if $j_1$ and $j_2$ are the two parental genotypes of chromosomes $k_1$ and $k_2$ forming genotype $i$, we compute in variable $p_i$ the $\log$ probability of event $\xi^{j_1}_{k_1}\cap\xi^{j_2}_{k_2}$
 as $\ln(\Pr[]{\xi^{j_1}_{k_1}})+\ln(\Pr[]{\xi^{j_2}_{k_2}})$. For that we have to sum over all possible $1 \leq j<i$ to identify $j_1$ and $j_2$:
 \begin{equation}
  \label{eq:something}
  \begin{split}
- \bar{z}_i=\sum^{i-1}_{j=1}\sum_{l\in\{1,2\}}x_{k_l,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
+ p_i=\sum^{i-1}_{j=1}\sum_{l\in\{1,2\}}x_{k_l,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
  &+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k_l,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
  \end{split}
 \end{equation}
@@ -571,7 +575,7 @@ the population size. We will discuss this simplification in Section \ref{sec:dis
 We develop an appropriate approximation of the nonlinear function $N(\rho, \gamma)$ defining the required population size so that integer linear 
 programming techniques can be utilized.
 More precisely, we are able to re-express the population size w.r.t.\ probability $p:=\Pr[]{j_1,j_2\rightarrow i}$ in separable form as: 
-$$ N(p,\gamma) = \frac{\ln(1-\gamma)}{\ln(1-\mathrm e^{\bar{z}_i})} $$
+$$ N(p,\gamma) = \frac{\ln(1-\gamma)}{\ln(1-\mathrm e^{p_i})} $$
 We use $\ell$ segments to approximate the nonlinear function $N$ by a
 piecewise-linear curve specified by the points $(d_j,N(d_j,\gamma))$ for
 $j=1,\dots,\ell+1$. The idea of the \emph{$\lambda$-method} \cite{Steuer:1986} is to
@@ -582,7 +586,7 @@ $N(d_{j+1},\gamma)$ accordingly. More precisely, we add for every $i$ the follow
 constraints (where $n < i \leq L$):
 \begin{align}
   \sum_{j=1}^{\ell+1} \lambda^i_j &= 1&\\
-  \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j &= \bar{z}_i&\label{ttt}\\
+  \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j &= p_i&\label{ttt}\\
   \lambda^i_j&\geq 0& j=1,\dots,\ell+1
 \end{align}
 Note that the adjacency condition on the positive coefficients $\lambda^i_j$ will
@@ -599,7 +603,7 @@ where $W(z)$ is the product log function.
 The log probabilities that occur are at most $\log(0.5) = -0.69$ or exactly $\log(1)=0$. 
 
 
-Finally, we replace the populations size $N(\mathrm e^{\bar{z}_i},\gamma)$ for each crossing $i$
+Finally, we replace the populations size $N(\mathrm e^{p_i},\gamma)$ for each crossing $i$
 in the objective function by a convex combination of the respective breakpoint scores to derive 
 $\lambda_{\mathrm{pop}}\cdot\left(\sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{d_j},\gamma)\right) + \lambda_{\mathrm{gen}}\cdot G + \lambda_{\mathrm{crs}}\cdot F.$
 
@@ -611,7 +615,7 @@ In addition, the lower and upper bound on the population size correspond to
   For the sake of simplicity we omit the additional constraints required to enforce compulsory parental genotypes to be contained in the solution \obacht[mohammed]{We can be complete here, give compulsory leaves constraints. Also we don't have to do the constraints inline.}.
 
 To come back to condition five of our characterization of feasible solutions in the beginning of this section, 
-we simply set $d_1=\log(1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}})$. Then any $\bar{z}_i<d_1$ implying a population size larger than $N_{\mathrm{max}}$
+we simply set $d_1=\log(1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}})$. Then any $p_i<d_1$ implying a population size larger than $N_{\mathrm{max}}$
 cannot be expressed as a convex combination of break points $d_j$, $j=1,\dots,\ell+1$,  and hence any feasible solution must satisfy the bound on the population size.
 
 In total, our MIP formulation comprises $\BigOh(L(Lm^2+\ell))$ many variables and $\BigOh(L^2 m)$ constraints. In Appenidx \ref{sec:complete_mip}) we present the complete ILP formulation.
@@ -725,38 +729,59 @@ The NP-hardness proof involves only the number of crossings; as for the number o
 Given $(F, G)$ as the number of crossings and the number of generations, respectively, and $L = F + n$, the MIP is as follows.
 
 \begingroup
-\allowdisplaybreaks
+\allowdisplaybreaks%
 \begin{align*}
-\min\quad        & \sum_{i=n+1}^L\sum_{j=1}^{\ell+1} \lambda^i_j\cdot N(\mathrm e^{a_j},\gamma) & \label{CS} \tag{CSO}\\
+\min\quad        & \HL{\sum_{i=n+1}^L \sum_{j=1}^{\ell+1} \alpha^i_j N(\bar{p}_i,\gamma)} & \label{CS} \tag{CSO}\\
 \text{s.t.}\quad & \sum_{j=1}^{\delta(k)- 1} x_{k,j}                                  && =     1              && {\scriptstyle 2n < k \leq 2L}\\
                  & g_{k,p,2i}   - a_{2i,p}   \cdot x_{k,i} \cdot (1-y_{k,p})          && =     0              && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
                  & g_{k,p,2i-1} - a_{2i-1,p} \cdot x_{k,i} \cdot y_{k,p}              && =     0              && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
                  & \sum_{i = 1}^{\delta(k) - 1} (g_{k,p,2i-1} + g_{k,p,2i})           && = a_{k,p}            && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m}\\
+                 & \HL{\tilde{x}_{2i-1,j}}                                            && \HL{\leq x_{2i,j}}   && \HL{\scriptstyle n < i \leq L, 1 \leq j < i}\\
+                 & \HL{\tilde{x}_{2i,j}}                                              && \HL{\leq x_{2i-1,j}} && \HL{\scriptstyle n < i \leq L, 1 \leq j < i}\\
+                 & \HL{\sum_{j=1}^{i-1} \tilde{x}_{2i-1,j} - \sum_{j=1}^{i-1} \tilde{x}_{2i,j}} && \HL{= 0}   && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{i-1} \tilde{x}_{2i-1,j}}                           && \HL{= \tilde{f}_i}   && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\tilde{g}_{k,p,2i}   - a_{2i,p}   \cdot \tilde{x}_{k,i} \cdot (1-\tilde{y}_{k,p})}     && \HL{=     0} && \HL{\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
+                 & \HL{\tilde{g}_{k,p,2i-1} - a_{2i-1,p} \cdot \tilde{x}_{k,i} \cdot \tilde{y}_{k,p}}         && \HL{=     0} && \HL{\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
+                 & \HL{\tilde{g}_{k,p,2i} + \tilde{g}_{k,p,2i-1} - a_{k,p} \cdot \tilde{x}_{k,i}} && \HL{= 0} && \HL{\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
                  & a_{2i-1,p}                                                         && = c^i_{1,p}          && {\scriptstyle 1 \leq i \leq n, 1 \leq p \leq m}\\
                  & a_{2i,p}                                                           && = c^i_{2,p}          && {\scriptstyle 1 \leq i \leq n, 1 \leq p \leq m}\\
                  & a_{2L-1,p}                                                         && = c^*_{1,p}          && {\scriptstyle 1 \leq p \leq m}\\
                  & a_{2L,p}                                                           && = c^*_{2,p}          && {\scriptstyle 1 \leq p \leq m}\\
                  & |a_{2i-1,p} - a_{2i,p}|                                            && = \tilde{a}_{i,p}    && {\scriptstyle 1 \leq i \leq L, 1 \leq p \leq m}\\
                  & h_i                                                                && \geq \tilde{a}_{i,p} && {\scriptstyle 1 \leq i \leq L, 1 \leq p \leq m}\\
+                 & \HL{\tilde{x}_{2i-1,j}}                                            && \HL{\leq h_i}        && \HL{\scriptstyle n < i \leq L, 1 \leq j < i}\\
+                 & \HL{\tilde{x}_{2i,j}}                                              && \HL{\leq h_i}        && \HL{\scriptstyle n < i \leq L, 1 \leq j < i}\\
                  & \sum_{r=p+1}^q |y_{k,r} - y_{k,r-1}|                               && = z_{k,p,q}          && {\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
+                 & \HL{\sum_{r=p+1}^q |\tilde{y}_{k,r} - \tilde{y}_{k,r-1}|}          && \HL{= \tilde{z}_{k,p,q}} && \HL{\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
+                 & |x_{2i-1,j} - x_{2i,j}|                                            && \leq h_j             && {\scriptstyle n < i \leq L, 1 \leq j < i}\\
                  & \tilde{a}_{i,p}\cdot\tilde{a}_{i,q}\cdot\prod_{r=p+1}^{q-1}(1-\tilde{a}_{i,r}) &&  = b_{i,p,q} && {\scriptstyle 1 \leq i \leq L, 1 \leq p<q \leq m}\\
                  & \sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i}x_{k,j}\bigg(h_j\ln(\frac{1}{2})\\
                  & \quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
-                 & \quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg) && = \bar{z}_i && {\scriptstyle n < i \leq L}\\
+                 & \quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg) && = p_i && {\scriptstyle n < i \leq L}\\
+                 & \HL{\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i}\tilde{x}_{k,j}\bigg(h_j\ln(\frac{1}{2})}\\
+                 & \HL{\quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})}\\
+                 & \HL{\quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot \tilde{z}_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)} && \HL{= \tilde{p}_i} && \HL{\scriptstyle n < i \leq L}\\
                  & \sum_{j=1}^{\ell+1} \lambda^i_j                                    && = 1                  && {\scriptstyle n < i \leq L}\\
-                 & \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j                           && = \bar{z}_i          && {\scriptstyle n < i \leq L}\\
+                 & \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j                           && = p_i                && {\scriptstyle n < i \leq L}\\
                  & \lambda^i_j                                                        && \geq 0               && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
-                 & |x_{2i-1,j} - x_{2i,j}|                                            && \leq h_j             && {\scriptstyle n < i \leq L, 1 \leq j < i}\\
-                 & x_{k,j}                                                            && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq i < \delta(k)}\\
-                 & g_{k,p,l}                                                          && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq l<2\delta(k)-1}\\
+                 & \HL{\sum_{j=1}^{\ell+1} \tilde{\lambda}^i_j}                       && \HL{= \tilde{f}_i}   && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell+1} \tilde{\lambda}^i_j\cdot d_j}              && \HL{= \tilde{p}_i}   && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\tilde{\lambda}^i_j}                                           && \HL{\geq 0}          && \HL{\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
+                 & \HL{\sum_{j=1}^{\ell+1} \lambda^i_j \cdot e_j + \sum_{j=1}^{\ell+1} \tilde{\lambda}^i_j \cdot d_j} && \HL{= \bar{p}_i} && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell+1} \alpha^i_j}                                && \HL{= 1}             && {\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell+1} \alpha^i_j\cdot e_j}                       && \HL{= \bar{p}_i}     && {\scriptstyle n < i \leq L}\\
+                 & \HL{\alpha^i_j}                                                    && \HL{\geq 0}          && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
+                 & x_{k,j}\HL{, \tilde{x}_{k,j}}                                      && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq i < \delta(k)}\\
+                 & \HL{\tilde{f}_i}                                                   && \HL{\in \{0,1\}}     && \HL{\scriptstyle n < i \leq L}\\
+                 & g_{k,p,l}\HL{, \tilde{g}_{k,p,l}}                                  && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq l<2\delta(k)-1}\\
                  & a_{k,p}                                                            && \in \{0,1\}          && {\scriptstyle 1 \leq k \leq 2L, 1 \leq p \leq m}\\
-                 & y_{k,p}                                                            && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m}\\
+                 & y_{k,p}\HL{, \tilde{y}_{k,p}}                                      && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m}\\
                  & \tilde{a}_{i,p}                                                    && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L, 1 \leq p \leq m}\\
                  & h_{i}                                                              && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L}\\
                  & b_{i,p,q}                                                          && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L, 1 \leq p<q \leq m}\\
-                 & z_{k,p,q}                                                          && \in \mathbb{N}       && {\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
-                 & \bar{z}_{i}                                                        && \in \mathbb{R}       && {\scriptstyle n < i \leq L}\\
-                 & \lambda^i_j                                                        && \in \mathbb{R}       && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}
+                 & z_{k,p,q}\HL{, \tilde{z}_{k,p,q}}                                  && \in \mathbb{N}       && {\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
+                 & p_{i}\HL{, \tilde{p}_i}                                            && \in \mathbb{R}       && {\scriptstyle n < i \leq L}\\
+                 & \lambda^i_j\HL{, \tilde{\lambda}^i_j, \alpha^i_j}                  && \in \mathbb{R}       && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}
 \end{align*}
 \endgroup
 
