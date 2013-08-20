@@ -40,7 +40,7 @@ public:
 	int operator ()(const int i, const int j) const;
 	double computeProb(int nLoci, const DoubleMatrix& RM, int c) const;
 	void printGenotype(int nLoci, bool newline = true, std::ostream& out = std::cout, const char* separator = "/") const;
-  unsigned long computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
+  double computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
   unsigned long computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const;
   bool isHomozygous() const;
 	int getNumberOfHomozygousLoci(int nLoci) const;
@@ -220,7 +220,7 @@ inline void Genotype::printGenotype(int nLoci, bool newline, std::ostream& out, 
 		out << std::endl;
 }
 
-inline unsigned long Genotype::computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const
+inline double Genotype::computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const
 {
   double p;
 

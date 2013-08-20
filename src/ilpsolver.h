@@ -69,8 +69,10 @@ private:
   IloNumVarArray _allVar;
   IloExpr _obj;
   IloCplex* _pCplex;
-  /// Piece-wise linear function breakpoints
-  DoubleVector _breakpoint;
+  /// Piece-wise linear function breakpoints: for probablities
+  DoubleVector _breakpoint1;
+  DoubleVector _breakpoint2;
+  DoubleMatrix _N;
   /// C^*_1
   IloBoolArray _cs1;
   /// C^*_2
@@ -83,6 +85,8 @@ private:
   BoolVarMatrix _x;
   /// Shadow x
   BoolVarMatrix _xx;
+  /// Denotes whether node i is ambiguous
+  IloBoolVarArray _f;
   /// Encodes g_{k,p,l} where l corresponds to a parental chromosome
   BoolVar3Matrix _g;
   /// Shadow g
@@ -113,7 +117,7 @@ private:
   /// Shadow p
   IloNumVarArray _pp;
   /// Lambda for piece-wise linear approximation of pop size
-  NumVarMatrix _lambda;
+  NumVar3Matrix _lambda;
   /// Encodes depth of a node
   IloIntVarArray _r;
   /// Encodes b_{i,p,q}
@@ -162,11 +166,13 @@ private:
   void printGG() const;
   void printP() const;
   void printPP() const;
+  void printLambda() const;
   void printInnerNodes() const;
 
   Genotype parseGenotype(int i) const;
   double parsePop(int i) const;
-  double parseLogProb(int i) const;
+  double parseProb1(int i) const;
+  double parseProb2(int i) const;
   unsigned long parseGen(int i) const;
   void constructDAG();
   int getRelNode(int base_i, int backbone_i) const;
@@ -175,6 +181,7 @@ private:
 
   bool isBackboneNode(int i) const;
   int getNrInnerPred(int i) const;
+  void initPopExpr(IloExpr& expr) const;
 
 public:
   IlpSolver(const Data* pData, const Options& options);
@@ -274,9 +281,31 @@ inline void IlpSolver::printP() const
   }
 }
 
+inline void IlpSolver::printLambda() const
+{
+  for (size_t i = 0; i < _options._bound; i++)
+  {
+    for (size_t j = 0; j < _breakpoint1.size(); j++)
+    {
+      size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
+      for (size_t k = 0; k <= k_max; k++)
+      {
+        if (_breakpoint1[j] <= _breakpoint2[k])
+        {
+          double val = _pCplex->getValue(_lambda[i][j][k]);
+          std::cout << "// lambda[" << i << "][" << j
+                    << "][" << k << "] = " << val << std::endl;
+        }
+      }
+    }
+  }
+}
+
 inline void IlpSolver::printPP() const
 {
-  for (int i = 0; i < _options._bound; i++)
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  int genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  for (int i = 0; i < genotypeUB2; i++)
   {
     double val = _pCplex->getValue(_pp[i]);
     std::cout << "// pp[" << i << "] = "
@@ -493,27 +522,45 @@ inline double IlpSolver::parsePop(int i) const
   assert(0 <= i && i < _options._bound);
 
   double pop = 0;
-  for(size_t j=0; j<_breakpoint.size(); j++)
+  for (size_t j = 0; j < _breakpoint1.size(); j++)
   {
-    if (j == _breakpoint.size() - 1)
+    size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
+    for (size_t k = 0; k <= k_max; k++)
     {
-      assert(_breakpoint[j] == 0 && _pData->getGamma() >= .5);
-      pop+=_pCplex->getValue(_lambda[i][j]);
-    }
-    else
-    {
-      pop+=(log(1-_pData->getGamma())/log(1-exp(_breakpoint[j])))*_pCplex->getValue(_lambda[i][j]);
+      if (_breakpoint1[j] <= _breakpoint2[k])
+      {
+        pop += _pCplex->getValue(_lambda[i][j][k]) * _N[j][k];
+      }
     }
   }
 
   return pop;
 }
 
-inline double IlpSolver::parseLogProb(int i) const
+inline double IlpSolver::parseProb1(int i) const
 {
   assert(0 <= i && i < _options._bound);
 
-  return _pCplex->getValue(_p[i]);
+  return exp(_pCplex->getValue(_p[i]));
+}
+
+inline double IlpSolver::parseProb2(int i) const
+{
+  assert(0 <= i && i < _options._bound);
+
+  if (_pData->isIdeotypeHomozygous() && i == _options._bound - 1)
+ {
+    return 0;
+  }
+
+  if (_pCplex->getValue(_f[i]))
+  {
+    return exp(_pCplex->getValue(_pp[i]));
+  }
+  else
+  {
+    return 0;
+  }
 }
 
 inline unsigned long IlpSolver::parseGen(int i) const
