@@ -290,7 +290,7 @@ inline void IlpSolver::printLambda() const
       size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
       for (size_t k = 0; k <= k_max; k++)
       {
-        if (_breakpoint1[j] <= _breakpoint2[k])
+        if (_breakpoint1[j] >= _breakpoint2[k] || k == 0)
         {
           double val = _pCplex->getValue(_lambda[i][j][k]);
           std::cout << "// lambda[" << i << "][" << j
@@ -527,7 +527,7 @@ inline double IlpSolver::parsePop(int i) const
     size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
     for (size_t k = 0; k <= k_max; k++)
     {
-      if (_breakpoint1[j] <= _breakpoint2[k])
+      if (_breakpoint1[j] >= _breakpoint2[k] || k == 0)
       {
         pop += _pCplex->getValue(_lambda[i][j][k]) * _N[j][k];
       }

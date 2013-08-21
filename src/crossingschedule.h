@@ -44,6 +44,8 @@ protected:
   AncestorMap _ancestorSet;
   PopMap _pop;
   PopMap _prob;
+  PopMap _prob1;
+  PopMap _prob2;
   GenMap _gen;
   CumPopMap _cumPop;
   CumCrossMap _cumCross;

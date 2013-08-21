@@ -41,6 +41,8 @@ public:
 	double computeProb(int nLoci, const DoubleMatrix& RM, int c) const;
 	void printGenotype(int nLoci, bool newline = true, std::ostream& out = std::cout, const char* separator = "/") const;
   double computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
+  double computeProb1(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
+  double computeProb2(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
   unsigned long computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const;
   bool isHomozygous() const;
 	int getNumberOfHomozygousLoci(int nLoci) const;
@@ -220,7 +222,10 @@ inline void Genotype::printGenotype(int nLoci, bool newline, std::ostream& out, 
 		out << std::endl;
 }
 
-inline double Genotype::computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const
+inline double Genotype::computeProb(int nLoci,
+                                    const DoubleMatrix& RM,
+                                    const Genotype& D,
+                                    const Genotype& E) const
 {
   double p;
 
@@ -237,7 +242,49 @@ inline double Genotype::computeProb(int nLoci, const DoubleMatrix& RM, const Gen
   return p;
 }
 
-inline unsigned long Genotype::computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const
+inline double Genotype::computeProb1(int nLoci,
+                                     const DoubleMatrix& RM,
+                                     const Genotype& D,
+                                     const Genotype& E) const
+{
+  double p;
+
+  if (_c0 == _c1)
+  {
+    p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
+  }
+  else
+  {
+    p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
+  }
+
+  return p;
+}
+
+inline double Genotype::computeProb2(int nLoci,
+                                     const DoubleMatrix& RM,
+                                     const Genotype& D,
+                                     const Genotype& E) const
+{
+  double p;
+
+  if (_c0 == _c1)
+  {
+    p = 0;
+  }
+  else
+  {
+    p = D.computeProb(nLoci, RM, _c1) * E.computeProb(nLoci, RM, _c0);
+  }
+
+  return p;
+}
+
+inline unsigned long Genotype::computePop(int nLoci,
+                                          const DoubleMatrix& RM,
+                                          double gamma,
+                                          const Genotype& D,
+                                          const Genotype& E) const
 {
   double p = computeProb(nLoci, RM, D, E);
 

@@ -249,6 +249,9 @@ void IlpSolver::init(bool swapIdeotype)
 
   //if (!(_options._tree && _options._servin))
   initBounds();
+
+  std::cout << "// Prob lower bound: " << log(_pData->getProbLowerBound())
+            << "\t" << _pData->getProbLowerBound() << std::endl;
 }
 
 void IlpSolver::initPopExpr(IloExpr& expr) const
@@ -261,7 +264,7 @@ void IlpSolver::initPopExpr(IloExpr& expr) const
       for (size_t k = 0; k < _breakpoint2.size(); k++)
       {
         if (j == _breakpoint1.size() - 1 && k > 0) continue;
-        if (_breakpoint1[j] > _breakpoint2[k]) continue;
+        if (_breakpoint1[j] < _breakpoint2[k] && k != 0) continue;
         expr += _lambda[i][j][k] * _N[j][k];
       }
     }
@@ -1753,7 +1756,7 @@ void IlpSolver::initObjectivePop()
       size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
       for (size_t k = 0; k <= k_max; k++)
       {
-        if (_breakpoint1[j] > _breakpoint2[k]) continue;
+        if (_breakpoint1[j] < _breakpoint2[k] && k != 0) continue;
 
         std::stringstream ss;
         ss << "lambda_" << i << "_" << j << "_" << k;
@@ -1879,6 +1882,8 @@ void IlpSolver::constructDAG()
     double prob1 = parseProb1(i);
     double prob2 = parseProb2(i);
     _prob[node] = prob1 + prob2;
+    _prob1[node] = prob1;
+    _prob2[node] = prob2;
     _gen[node] = parseGen(i);
     _idx[node] = i;
     constructed[n+i] = node;
