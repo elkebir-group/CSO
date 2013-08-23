@@ -179,26 +179,27 @@ void IlpSolverExt::initObj()
     sumofnus_y.clear();
   }
 
-  _obj.clear();
-
-  //_obj += -_p[0] + -_pp[0];
-  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  const int n = _pData->getParents().size();
-  for (int j = 0; j < genotypeUB; j++)
+  for (int i = 0; i < _options._bound; i++)
   {
-    for (int k = 2*j; k <= 2*j+1; k++)
-    {
-      for (int i = 0; i < n + getNrInnerPred(j); i++)
-      {
-        _obj -= _x[k][i] + _xx[k][i];
-      }
-    }
+    // todo binary constraints
   }
-  //_model.add(IloMaximize(_env, _obj));
 
-  //_obj += -_pp[0];
-  //initPopExpr(_obj);
+
+  //const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  //const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  //const int n = _pData->getParents().size();
+  //for (int j = 0; j < genotypeUB; j++)
+  //{
+  //  for (int k = 2*j; k <= 2*j+1; k++)
+  //  {
+  //    for (int i = 0; i < n + getNrInnerPred(j); i++)
+  //    {
+  //      _obj -= _x[k][i] + _xx[k][i];
+  //    }
+  //  }
+  //}
+
+  initPopExpr(_obj);
 }
 
 void IlpSolverExt::initChromosomesFromGenotypes()
