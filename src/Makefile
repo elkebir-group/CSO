@@ -18,7 +18,7 @@ endif
 
 all: csoilp2 processDAG computeLB
 
-csoilp2: ilpsolverheuristic.o crossingschedule.o ilpsolver.o main.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
+csoilp2: ilpsolverheuristic.o crossingschedule.o ilpsolver.o ilpsolverext.o main.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
 	$(CXX) $(CXXFLAGS) -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 csoilp: schedule3.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o

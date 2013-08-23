@@ -53,7 +53,7 @@ public:
     CSO_SOLVER_TIME_LIMIT_FEASIBLE
   } SolverStatus;
 
-private:
+protected:
   typedef IloArray<IloBoolVarArray> BoolVarMatrix;
   typedef IloArray<BoolVarMatrix> BoolVar3Matrix;
   typedef IloArray<BoolVar3Matrix> BoolVar4Matrix;
@@ -69,10 +69,10 @@ private:
   IloNumVarArray _allVar;
   IloExpr _obj;
   IloCplex* _pCplex;
-  /// Piece-wise linear function breakpoints: for probablities
-  DoubleVector _breakpoint1;
-  DoubleVector _breakpoint2;
-  DoubleMatrix _N;
+  /// Piece-wise linear function breakpoints: log probablities
+  DoubleVector _breakpoint;
+  /// Piece-wise linear function breakpoints: population sizes
+  DoubleVector _N;
   /// C^*_1
   IloBoolArray _cs1;
   /// C^*_2
@@ -83,21 +83,13 @@ private:
   IloBoolArray _homozygous;
   /// Encodes whether a chromosome originates from a certain node
   BoolVarMatrix _x;
-  /// Shadow x
-  BoolVarMatrix _xx;
-  /// Denotes whether node i is ambiguous
-  IloBoolVarArray _f;
   /// Encodes g_{k,p,l} where l corresponds to a parental chromosome
   BoolVar3Matrix _g;
-  /// Shadow g
-  BoolVar3Matrix _gg;
   /// y[i][j] = { 0, if j-th bit of chromosome i originates
   ///                from the upper chromosome of the node defined by x
   ///             1, if j-th bit of chromosome i originates
   ///                from the lower chromosome of the node defined by x
   BoolVarMatrix _y;
-  /// Shadow y
-  BoolVarMatrix _yy;
   /// Allele value at given chromosome and locus
   BoolVarMatrix _a;
   /// Encodes whether a locus at given node is heterozygous
@@ -106,73 +98,58 @@ private:
   IloBoolVarArray _h;
   /// Encodes product variable for h and x
   BoolVarMatrix _hx;
-  /// Shadow hx
-  BoolVarMatrix _hxx;
   /// Encodes whether allele is the result of a crossover event
   BoolVarMatrix _d;
-  /// Shadow d
-  BoolVarMatrix _dd;
   /// Probability for obtaining a node
   IloNumVarArray _p;
-  /// Shadow p
-  IloNumVarArray _pp;
   /// Lambda for piece-wise linear approximation of pop size
-  NumVar3Matrix _lambda;
+  NumVarMatrix _lambda;
   /// Encodes depth of a node
   IloIntVarArray _r;
   /// Encodes b_{i,p,q}
   BoolVar3Matrix _b;
   /// Encodes product of b and x
   BoolVar4Matrix _bx;
-  /// Shadow bx
-  BoolVar4Matrix _bxx;
   /// Encodes product of b and x and z
   BoolVar4Matrix _bxz;
-  /// Shadow bxz
-  BoolVar4Matrix _bxxzz;
   /// Encodes z_{k,p,q}:
   /// the alleles at loci p and q of chromosome k are the result of a crossover
   IntVar3Matrix _z;
-  /// Shadow z
-  IntVar3Matrix _zz;
   /// Uniquely covered
   BoolVarMatrix _uc;
   /// Product variable uc*x
   BoolVar3Matrix _ucx;
 
-  void initSegments();
-  void initFeasibility();
-  void initObjective();
-  void initParentalGenotypes();
-  void initIdeotype(bool swapIdeotype);
-  void initChromosomesFromGenotypes();
-  void initAllelesFromChromosomes();
-  void initUsefulCross();
-  void initNoSelfing();
-  void initTree();
-  void initObligatoryLeaves();
-  void initObjectiveGen();
-  void initObjectiveCross();
-  void initObjectivePop();
-  void initBounds();
+  virtual void initSegments();
+  virtual void initParentalGenotypes();
+  virtual void initIdeotype(bool swapIdeotype);
+  virtual void initChromosomesFromGenotypes();
+  virtual void initAllelesFromChromosomes();
+  virtual void initUsefulCross();
+  virtual void initNoSelfing();
+  virtual void initTree();
+  virtual void initObligatoryLeaves();
+  virtual void initGen();
+  virtual void initPop();
+  virtual void initBounds();
+  virtual void initObj();
+  virtual void initPopExpr(IloExpr& expr) const;
+
   bool isHomozygousBlock(int i, int p, int q) const;
   void printB() const;
   void printZ() const;
   void printX() const;
-  void printXX() const;
   void printBX() const;
   void printBXZ() const;
   void printG() const;
-  void printGG() const;
   void printP() const;
-  void printPP() const;
   void printLambda() const;
   void printInnerNodes() const;
 
   Genotype parseGenotype(int i) const;
   double parsePop(int i) const;
   double parseProb1(int i) const;
-  double parseProb2(int i) const;
+  virtual double parseProb2(int i) const;
   unsigned long parseGen(int i) const;
   void constructDAG();
   int getRelNode(int base_i, int backbone_i) const;
@@ -181,13 +158,12 @@ private:
 
   bool isBackboneNode(int i) const;
   int getNrInnerPred(int i) const;
-  void initPopExpr(IloExpr& expr) const;
 
 public:
   IlpSolver(const Data* pData, const Options& options);
-  ~IlpSolver();
+  virtual ~IlpSolver();
   void init(bool swapIdeotype = false);
-  SolverStatus solve(bool feasibility, int timeLimit);
+  virtual SolverStatus solve(bool feasibility, int timeLimit);
   double getObjectiveValue() const;
 };
 
@@ -285,31 +261,12 @@ inline void IlpSolver::printLambda() const
 {
   for (size_t i = 0; i < _options._bound; i++)
   {
-    for (size_t j = 0; j < _breakpoint1.size(); j++)
+    for (size_t j = 0; j < _breakpoint.size(); j++)
     {
-      size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
-      for (size_t k = 0; k <= k_max; k++)
-      {
-        if (_breakpoint1[j] >= _breakpoint2[k] || k == 0)
-        {
-          double val = _pCplex->getValue(_lambda[i][j][k]);
-          std::cout << "// lambda[" << i << "][" << j
-                    << "][" << k << "] = " << val << std::endl;
-        }
-      }
+      double val = _pCplex->getValue(_lambda[i][j]);
+      std::cout << "// lambda[" << i << "][" << j
+                << "] = " << val << std::endl;
     }
-  }
-}
-
-inline void IlpSolver::printPP() const
-{
-  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  int genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  for (int i = 0; i < genotypeUB2; i++)
-  {
-    double val = _pCplex->getValue(_pp[i]);
-    std::cout << "// pp[" << i << "] = "
-      << val << " " << exp(val) << std::endl;
   }
 }
 
@@ -324,24 +281,6 @@ inline void IlpSolver::printZ() const
       {
         std::cout << "// z[" << k << "][" << p << "][" << q << "] = "
           << _pCplex->getValue(_z[k][p][q-p-1]) << std::endl;
-      }
-    }
-  }
-}
-
-inline void IlpSolver::printXX() const
-{
-  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  const int n = _pData->getParents().size();
-  for (int j = 0; j < genotypeUB; j++)
-  {
-    for (int k = 2*j; k <= 2*j+1; k++)
-    {
-      for (int i = 0; i < n + getNrInnerPred(j); i++)
-      {
-        std::cout << "// xx[" << k << "][" << i << "] = "
-          << _pCplex->getValue(_xx[k][i]) << std::endl;
       }
     }
   }
@@ -374,24 +313,6 @@ inline void IlpSolver::printG() const
       {
         std::cout << "// g[" << k << "][" << p << "][" << i << "] = "
           << _pCplex->getValue(_g[k][p][i]) << std::endl;
-      }
-    }
-  }
-}
-
-inline void IlpSolver::printGG() const
-{
-  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
-  const int n = _pData->getParents().size();
-  const int m = _pData->getNumberOfLoci();
-  for (int k = 0; k < chromosomeUB; k++)
-  {
-    for (int p = 0; p < m; p++)
-    {
-      for (int i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
-      {
-        std::cout << "// gg[" << k << "][" << p << "][" << i << "] = "
-          << _pCplex->getValue(_gg[k][p][i]) << std::endl;
       }
     }
   }
@@ -522,16 +443,9 @@ inline double IlpSolver::parsePop(int i) const
   assert(0 <= i && i < _options._bound);
 
   double pop = 0;
-  for (size_t j = 0; j < _breakpoint1.size(); j++)
+  for (size_t j = 0; j < _breakpoint.size(); j++)
   {
-    size_t k_max = j == _breakpoint1.size() - 1 ? 0 : _breakpoint2.size() - 1;
-    for (size_t k = 0; k <= k_max; k++)
-    {
-      if (_breakpoint1[j] >= _breakpoint2[k] || k == 0)
-      {
-        pop += _pCplex->getValue(_lambda[i][j][k]) * _N[j][k];
-      }
-    }
+    pop += _pCplex->getValue(_lambda[i][j]) * _N[j];
   }
 
   return pop;
@@ -540,27 +454,13 @@ inline double IlpSolver::parsePop(int i) const
 inline double IlpSolver::parseProb1(int i) const
 {
   assert(0 <= i && i < _options._bound);
-
   return exp(_pCplex->getValue(_p[i]));
 }
 
 inline double IlpSolver::parseProb2(int i) const
 {
   assert(0 <= i && i < _options._bound);
-
-  if (_pData->isIdeotypeHomozygous() && i == _options._bound - 1)
- {
-    return 0;
-  }
-
-  if (_pCplex->getValue(_f[i]))
-  {
-    return exp(_pCplex->getValue(_pp[i]));
-  }
-  else
-  {
-    return 0;
-  }
+  return 0;
 }
 
 inline unsigned long IlpSolver::parseGen(int i) const

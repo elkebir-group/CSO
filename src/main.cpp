@@ -12,6 +12,7 @@
 #include <lemon/time_measure.h>
 #include "common/data.h"
 #include "ilpsolver.h"
+#include "ilpsolverext.h"
 #include "analysis/lowerbounds.h"
 #include <sstream>
 #include <execinfo.h>
@@ -38,10 +39,13 @@ IlpSolver::SolverStatus solve(const Data* pData,
                               bool feasiblity,
                               int timeLimit,
                               CrossingSchedule*& pBestSchedule,
-                              bool pareto)
+                              bool pareto,
+                              bool correctProb)
 {
-  IlpSolver* pSolver1 = new IlpSolver(pData, options);
-  IlpSolver* pSolver2 = new IlpSolver(pData, options);
+  IlpSolver* pSolver1 = correctProb ? new IlpSolverExt(pData, options) :
+                                      new IlpSolver(pData, options);
+  IlpSolver* pSolver2 = correctProb ? new IlpSolverExt(pData, options) :
+                                      new IlpSolver(pData, options);
   bool solve1 = false;
   bool solve2 = false;
   IlpSolver::SolverStatus stat1, stat2, finalStat;
@@ -158,6 +162,7 @@ int main(int argc, char** argv)
   bool saveIntermediate = false;
   bool pareto = false;
   bool printProb = false;
+  bool correctProb = false;
 
   lemon::ArgParser ap(argc, argv);
   ap.refOption("v", "Verbose CPLEX output", 
@@ -165,6 +170,7 @@ int main(int argc, char** argv)
     .refOption("pareto", "Pareto", pareto, false)
     //.refOption("t", "Enforce crossing schedules to be trees",
     //    options._tree, false)
+    .refOption("cc", "Correct probability function", correctProb, false)
     .refOption("ns", "Cuts: no selfing",
         options._noSelfing, false)
     .refOption("c", "Cuts: useful crossovers only",
@@ -229,7 +235,7 @@ int main(int argc, char** argv)
   if (!automatic)
   {
     pData->updateGamma(options._bound);
-    solve(pData, options, false, timeLimit, pBestSchedule, pareto);
+    solve(pData, options, false, timeLimit, pBestSchedule, pareto, correctProb);
   }
   else
   {
@@ -285,7 +291,8 @@ int main(int argc, char** argv)
                                              !foundFeasible,
                                              foundFeasible ? timeLimit : -1,
                                              pBestSchedule,
-                                             pareto);
+                                             pareto,
+                                             correctProb);
 
         if (stat == IlpSolver::CSO_SOLVER_TIME_LIMIT_FEASIBLE)
         {
@@ -294,7 +301,8 @@ int main(int argc, char** argv)
                        false,
                        -1,
                        pBestSchedule,
-                       pareto);
+                       pareto,
+                       correctProb);
           assert(stat == IlpSolver::CSO_SOLVER_OPTIMAL);
         }
 

@@ -135,3 +135,5 @@ processDAG.cpp
 schedule3.cpp
 ilpsolverheuristic.h
 ilpsolverheuristic.cpp
+ilpsolverext.h
+ilpsolverext.cpp
