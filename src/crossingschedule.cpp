@@ -270,8 +270,6 @@ void CrossingSchedule::printEdges(Node node,
                                   std::ostream& out,
                                   bool prob) const
 {
-  static const int nLoci = _pData->getNumberOfLoci();
-
   if (!visited[node])
   {
     int i = 0;

@@ -33,15 +33,20 @@ protected:
   BoolVar4Matrix _bxxzz;
   /// Shadow z
   IntVar3Matrix _zz;
-  /// Piece-wise linear function breakpoints (pop): log probablities
-  DoubleVector _breakpoint2;
   /// Mu for piece-wise linear approximation of probablities (_p)
   NumVarMatrix _mu;
   /// Nu for piece-wise linear approximation of probablities (_pp)
   NumVarMatrix _nu;
   /// Decision variables
-  BoolVarMatrix _b_mu;
-  BoolVarMatrix _b_nu;
+  BoolVarMatrix _b_lambda1;
+  BoolVarMatrix _b_lambda2;
+  /// Piece-wise linear function breakpoints: log probablities
+  DoubleVector _breakpoint1;
+  DoubleVector _breakpoint2;
+  /// Piece-wise linear function breakpoints: population sizes
+  DoubleMatrix _N;
+  /// Lambda for piece-wise linear approximation of pop size
+  NumVar3Matrix _lambda;
 
   virtual void initPopExpr(IloExpr& expr) const;
   virtual void initSegments();
@@ -54,9 +59,11 @@ protected:
   void printXX() const;
   void printPP() const;
   void printGG() const;
-  void printMu() const;
-  void printNu() const;
-  virtual double parseProb2(int i) const;
+  void printBLambda1() const;
+  void printBLambda2() const;
+  virtual void printLambda() const;
+  virtual double parsePop(size_t i) const;
+  virtual double parseProb2(size_t i) const;
 
 public:
   IlpSolverExt(const Data* pData, const Options& options);
@@ -64,16 +71,50 @@ public:
   virtual SolverStatus solve(bool feasibility, int timeLimit);
 };
 
+inline void IlpSolverExt::printLambda() const
+{
+  for (size_t i = 0; i < _options._bound; i++)
+  {
+    for (size_t j = 0; j < _breakpoint1.size(); j++)
+    {
+      const size_t k_max = j == _breakpoint1.size() - 1 ? 0 : j + 1;
+      for (size_t k = 0; k <= k_max; k++)
+      {
+        double val = _pCplex->getValue(_lambda[i][j][k]);
+        std::cout << "// lambda[" << i << "][" << j
+                  << "][" << k << "] = " << val << std::endl;
+      }
+    }
+  }
+}
+
+inline double IlpSolverExt::parsePop(size_t i) const
+{
+  assert(0 <= i && i < _options._bound);
+
+  double pop = 0;
+  for (size_t j = 0; j < _breakpoint1.size(); j++)
+  {
+    const size_t k_max = j == _breakpoint1.size() - 1 ? 0 : j + 1;
+    for (size_t k = 0; k <= k_max; k++)
+    {
+      pop += _pCplex->getValue(_lambda[i][j][k]) * _N[j][k];
+    }
+  }
+
+  return pop;
+}
+
 inline void IlpSolverExt::printXX() const
 {
   const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  const int n = _pData->getParents().size();
-  for (int j = 0; j < genotypeUB; j++)
+  const size_t genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  const size_t n = _pData->getParents().size();
+  for (size_t j = 0; j < genotypeUB; j++)
   {
-    for (int k = 2*j; k <= 2*j+1; k++)
+    for (size_t k = 2*j; k <= 2*j+1; k++)
     {
-      for (int i = 0; i < n + getNrInnerPred(j); i++)
+      for (size_t i = 0; i < n + getNrInnerPred(j); i++)
       {
         std::cout << "// xx[" << k << "][" << i << "] = "
           << _pCplex->getValue(_xx[k][i]) << std::endl;
@@ -82,37 +123,35 @@ inline void IlpSolverExt::printXX() const
   }
 }
 
-inline void IlpSolverExt::printMu() const
+inline void IlpSolverExt::printBLambda1() const
 {
   for (size_t i = 0; i < _options._bound; i++)
   {
-    for (size_t j = 0; j < _breakpoint.size(); j++)
+    for (size_t j = 0; j < _breakpoint1.size() - 1; j++)
     {
-      double val = _pCplex->getValue(_mu[i][j]);
-      std::cout << "// mu[" << i << "][" << j
-                << "] = " << val << std::endl;
+      std::cout << "// b_lambda1[" << i << "][" << j
+                << "] = " << _pCplex->getValue(_b_lambda1[i][j]) << std::endl;
     }
   }
 }
 
-inline void IlpSolverExt::printNu() const
+inline void IlpSolverExt::printBLambda2() const
 {
-  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  const size_t genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  for (size_t i = 0; i < genotypeUB2; i++)
+  for (size_t i = 0; i < _options._bound; i++)
   {
-    for (size_t j = 0; j < _breakpoint.size(); j++)
+    for (size_t k = 0; k < _breakpoint2.size() - 1; k++)
     {
-      double val = _pCplex->getValue(_nu[i][j]);
-      std::cout << "// nu[" << i << "][" << j
-                << "] = " << val << std::endl;
+      std::cout << "// b_lambda2[" << i << "][" << k
+                << "] = " << _pCplex->getValue(_b_lambda2[i][k]) << std::endl;
     }
   }
 }
 
 inline void IlpSolverExt::printH() const
 {
-  for (int i = 0; i < _options._bound; i++)
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const size_t genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  for (size_t i = 0; i < genotypeUB2; i++)
   {
     std::cout << "// h[" << i << "] = "
               << _pCplex->getValue(_h[i]) << std::endl;
@@ -122,8 +161,8 @@ inline void IlpSolverExt::printH() const
 inline void IlpSolverExt::printF() const
 {
   const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  const int genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  for (int i = 0; i < genotypeUB2; i++)
+  const size_t genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  for (size_t i = 0; i < genotypeUB2; i++)
   {
     std::cout << "// f[" << i << "] = "
               << _pCplex->getValue(_f[i]) << std::endl;
@@ -134,8 +173,8 @@ inline void IlpSolverExt::printF() const
 inline void IlpSolverExt::printPP() const
 {
   const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  const int genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  for (int i = 0; i < genotypeUB2; i++)
+  const size_t genotypeUB2 = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  for (size_t i = 0; i < genotypeUB2; i++)
   {
     double val = _pCplex->getValue(_pp[i]);
     std::cout << "// pp[" << i << "] = "
@@ -145,14 +184,14 @@ inline void IlpSolverExt::printPP() const
 
 inline void IlpSolverExt::printGG() const
 {
-  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
-  const int n = _pData->getParents().size();
-  const int m = _pData->getNumberOfLoci();
-  for (int k = 0; k < chromosomeUB; k++)
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const size_t n = _pData->getParents().size();
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t k = 0; k < chromosomeUB; k++)
   {
-    for (int p = 0; p < m; p++)
+    for (size_t p = 0; p < m; p++)
     {
-      for (int i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
+      for (size_t i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
       {
         std::cout << "// gg[" << k << "][" << p << "][" << i << "] = "
           << _pCplex->getValue(_gg[k][p][i]) << std::endl;
@@ -161,7 +200,7 @@ inline void IlpSolverExt::printGG() const
   }
 }
 
-inline double IlpSolverExt::parseProb2(int i) const
+inline double IlpSolverExt::parseProb2(size_t i) const
 {
   assert(0 <= i && i < _options._bound);
 
@@ -170,15 +209,14 @@ inline double IlpSolverExt::parseProb2(int i) const
     return 0;
   }
 
-  //if (_pCplex->getValue(_f[i]))
-  //{
-  //  return exp(_pCplex->getValue(_pp[i]));
-  //}
-  //else
+  if (_pCplex->getValue(_f[i]))
+  {
+    return exp(_pCplex->getValue(_pp[i]));
+  }
+  else
   {
     return 0;
   }
 }
-
 
 #endif // ILPSOLVEREXT_H

@@ -21,8 +21,8 @@ public:
     bool _noSelfing;
     bool _usefulCross;
     bool _verbose;
-    int _bound;     // fixes the number of internal nodes
-    int _fixedGen;  // fixes the number of generations
+    size_t _bound;     // fixes the number of internal nodes
+    size_t _fixedGen;  // fixes the number of generations
     bool _boundNmax;
     int _nof_segs;
     bool _servin;
@@ -135,7 +135,7 @@ protected:
   virtual void initObj();
   virtual void initPopExpr(IloExpr& expr) const;
 
-  bool isHomozygousBlock(int i, int p, int q) const;
+  bool isHomozygousBlock(size_t i, size_t p, size_t q) const;
   void printB() const;
   void printZ() const;
   void printX() const;
@@ -143,21 +143,21 @@ protected:
   void printBXZ() const;
   void printG() const;
   void printP() const;
-  void printLambda() const;
+  virtual void printLambda() const;
   void printInnerNodes() const;
 
-  Genotype parseGenotype(int i) const;
-  double parsePop(int i) const;
-  double parseProb1(int i) const;
-  virtual double parseProb2(int i) const;
-  unsigned long parseGen(int i) const;
+  Genotype parseGenotype(size_t i) const;
+  virtual double parsePop(size_t i) const;
+  virtual double parseProb1(size_t i) const;
+  virtual double parseProb2(size_t i) const;
+  unsigned long parseGen(size_t i) const;
   void constructDAG();
-  int getRelNode(int base_i, int backbone_i) const;
-  int getAbsChromosome(int base_i, int backbone_k) const;
-  int getAbsNode(int base_i, int backbone_i) const;
+  size_t getRelNode(size_t base_i, size_t backbone_i) const;
+  size_t getAbsChromosome(size_t base_i, size_t backbone_k) const;
+  size_t getAbsNode(size_t base_i, size_t backbone_i) const;
 
-  bool isBackboneNode(int i) const;
-  int getNrInnerPred(int i) const;
+  bool isBackboneNode(size_t i) const;
+  size_t getNrInnerPred(size_t i) const;
 
 public:
   IlpSolver(const Data* pData, const Options& options);
@@ -167,13 +167,13 @@ public:
   double getObjectiveValue() const;
 };
 
-inline bool IlpSolver::isBackboneNode(int i) const
+inline bool IlpSolver::isBackboneNode(size_t i) const
 {
   return i == 0 ||
       (_options._bound - _options._fixedGen < i && i < _options._bound);
 }
 
-inline int IlpSolver::getNrInnerPred(int i) const
+inline size_t IlpSolver::getNrInnerPred(size_t i) const
 {
   if (isBackboneNode(i))
   {
@@ -187,7 +187,7 @@ inline int IlpSolver::getNrInnerPred(int i) const
   }
 }
 
-inline int IlpSolver::getAbsChromosome(int i, int k) const
+inline size_t IlpSolver::getAbsChromosome(size_t i, size_t k) const
 {
   if (k < 2*i)
     return k;
@@ -195,7 +195,7 @@ inline int IlpSolver::getAbsChromosome(int i, int k) const
     return k - 2*i + 2*(_options._bound - _options._fixedGen + 1);
 }
 
-inline int IlpSolver::getAbsNode(int i, int j) const
+inline size_t IlpSolver::getAbsNode(size_t i, size_t j) const
 {
   if (j < i)
     return j;
@@ -203,11 +203,11 @@ inline int IlpSolver::getAbsNode(int i, int j) const
     return j - i + _options._bound - _options._fixedGen + 1;
 }
 
-inline int IlpSolver::getRelNode(int base_i, int backbone_i) const
+inline size_t IlpSolver::getRelNode(size_t base_i, size_t backbone_i) const
 {
   abort();
   // TODO
-  const int firstBackboneNode = _options._bound - _options._fixedGen;
+  const size_t firstBackboneNode = _options._bound - _options._fixedGen;
   return base_i + backbone_i - firstBackboneNode;
 }
 
@@ -218,8 +218,8 @@ inline double IlpSolver::getObjectiveValue() const
 
 inline void IlpSolver::printInnerNodes() const
 {
-  const int m = _pData->getNumberOfLoci();
-  for (int i = 0; i < _options._bound; i++)
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t i = 0; i < _options._bound; i++)
   {
     std::cout << "// _r[" << i << "] = "
       << _pCplex->getValue(_r[i]) << ": ";
@@ -233,12 +233,12 @@ inline void IlpSolver::printInnerNodes() const
 
 inline void IlpSolver::printB() const
 {
-  const int m = _pData->getNumberOfLoci();
-  for (int i = 0; i < _options._bound - 1; i++)
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t i = 0; i < _options._bound - 1; i++)
   {
-    for (int p = 0; p < m-1; p++)
+    for (size_t p = 0; p < m-1; p++)
     {
-      for (int q = p+1; q < m; q++)
+      for (size_t q = p+1; q < m; q++)
       {
         std::cout << "// b[" << i << "][" << p << "][" << q << "] = "
           << _pCplex->getValue(_b[i][p][q-p-1]) << std::endl;
@@ -249,7 +249,7 @@ inline void IlpSolver::printB() const
 
 inline void IlpSolver::printP() const
 {
-  for (int i = 0; i < _options._bound; i++)
+  for (size_t i = 0; i < _options._bound; i++)
   {
     double val = _pCplex->getValue(_p[i]);
     std::cout << "// p[" << i << "] = "
@@ -272,12 +272,12 @@ inline void IlpSolver::printLambda() const
 
 inline void IlpSolver::printZ() const
 {
-  const int m = _pData->getNumberOfLoci();
-  for (int k = 0; k < 2*_options._bound - 1; k++)
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t k = 0; k < 2*_options._bound - 1; k++)
   {
-    for (int p = 0; p < m-1; p++)
+    for (size_t p = 0; p < m-1; p++)
     {
-      for (int q = p+1; q < m; q++)
+      for (size_t q = p+1; q < m; q++)
       {
         std::cout << "// z[" << k << "][" << p << "][" << q << "] = "
           << _pCplex->getValue(_z[k][p][q-p-1]) << std::endl;
@@ -288,11 +288,11 @@ inline void IlpSolver::printZ() const
 
 inline void IlpSolver::printX() const
 {
-  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
-  const int n = _pData->getParents().size();
-  for (int k = 0; k < chromosomeUB; k++)
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const size_t n = _pData->getParents().size();
+  for (size_t k = 0; k < chromosomeUB; k++)
   {
-    for (int i = 0; i < n + getNrInnerPred(k/2); i++)
+    for (size_t i = 0; i < n + getNrInnerPred(k/2); i++)
     {
       std::cout << "// x[" << k << "][" << i << "] = "
         << _pCplex->getValue(_x[k][i]) << std::endl;
@@ -302,14 +302,14 @@ inline void IlpSolver::printX() const
 
 inline void IlpSolver::printG() const
 {
-  const int chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
-  const int n = _pData->getParents().size();
-  const int m = _pData->getNumberOfLoci();
-  for (int k = 0; k < chromosomeUB; k++)
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const size_t n = _pData->getParents().size();
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t k = 0; k < chromosomeUB; k++)
   {
-    for (int p = 0; p < m; p++)
+    for (size_t p = 0; p < m; p++)
     {
-      for (int i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
+      for (size_t i = 0; i < 2*(n + getNrInnerPred(k/2)); i++)
       {
         std::cout << "// g[" << k << "][" << p << "][" << i << "] = "
           << _pCplex->getValue(_g[k][p][i]) << std::endl;
@@ -320,15 +320,15 @@ inline void IlpSolver::printG() const
 
 inline void IlpSolver::printBX() const
 {
-  const int m = _pData->getNumberOfLoci();
-  const int n = _pData->getParents().size();
-  for (int k = 0; k < 2*_options._bound - 1; k++)
+  const size_t m = _pData->getNumberOfLoci();
+  const size_t  n = _pData->getParents().size();
+  for (size_t k = 0; k < 2*_options._bound - 1; k++)
   {
-    for (int i = 0; i < n+k/2; i++)
+    for (size_t i = 0; i < n+k/2; i++)
     {
-      for (int p = 0; p < m-1; p++)
+      for (size_t p = 0; p < m-1; p++)
       {
-        for (int q = p+1; q < m; q++)
+        for (size_t q = p+1; q < m; q++)
         {
           int val1 = _pCplex->getValue(_bx[k][i][p][q-p-1]);
           int val2 = 0;
@@ -363,15 +363,15 @@ inline void IlpSolver::printBX() const
 
 inline void IlpSolver::printBXZ() const
 {
-  const int m = _pData->getNumberOfLoci();
-  const int n = _pData->getParents().size();
-  for (int k = 0; k < 2*_options._bound - 1; k++)
+  const size_t m = _pData->getNumberOfLoci();
+  const size_t  n = _pData->getParents().size();
+  for (size_t k = 0; k < 2*_options._bound - 1; k++)
   {
-    for (int i = 0; i < n+k/2; i++)
+    for (size_t i = 0; i < n+k/2; i++)
     {
-      for (int p = 0; p < m-1; p++)
+      for (size_t p = 0; p < m-1; p++)
       {
-        for (int q = p+1; q < m; q++)
+        for (size_t q = p+1; q < m; q++)
         {
           int val1 = _pCplex->getValue(_bxz[k][i][p][q-p-1]);
           int val2 = 0;
@@ -404,15 +404,15 @@ inline void IlpSolver::printBXZ() const
   }
 }
 
-inline bool IlpSolver::isHomozygousBlock(int i, int p, int q) const
+inline bool IlpSolver::isHomozygousBlock(size_t i, size_t p, size_t q) const
 {
-  const int m = _pData->getNumberOfLoci();
-  const int n = _pData->getParents().size();
+  const size_t m = _pData->getNumberOfLoci();
+  const size_t n = _pData->getParents().size();
 
   assert(0 <= i && i < n);
   assert(0 <= p && p < q && q < m);
 
-  for (int r = p + 1; r < q; r++)
+  for (size_t r = p + 1; r < q; r++)
   {
     if (_c[2*i][r] != _c[2*i+1][r])
       return false;
@@ -420,13 +420,13 @@ inline bool IlpSolver::isHomozygousBlock(int i, int p, int q) const
   return true;
 }
 
-inline Genotype IlpSolver::parseGenotype(int i) const
+inline Genotype IlpSolver::parseGenotype(size_t i) const
 {
   assert(0 <= i && i < _options._bound);
-  const int m = _pData->getNumberOfLoci();
+  const size_t m = _pData->getNumberOfLoci();
 
   int c0 = 0, c1 = 0;
-  for (int l = 0; l < m; l++)
+  for (size_t l = 0; l < m; l++)
   {
     bool b0 = _pCplex->getValue(_a[2*i][l]) != 0;
     bool b1 = _pCplex->getValue(_a[2*i+1][l]) != 0;
@@ -438,7 +438,7 @@ inline Genotype IlpSolver::parseGenotype(int i) const
   return Genotype(c0, c1);
 }
 
-inline double IlpSolver::parsePop(int i) const
+inline double IlpSolver::parsePop(size_t i) const
 {
   assert(0 <= i && i < _options._bound);
 
@@ -451,19 +451,19 @@ inline double IlpSolver::parsePop(int i) const
   return pop;
 }
 
-inline double IlpSolver::parseProb1(int i) const
+inline double IlpSolver::parseProb1(size_t i) const
 {
   assert(0 <= i && i < _options._bound);
   return exp(_pCplex->getValue(_p[i]));
 }
 
-inline double IlpSolver::parseProb2(int i) const
+inline double IlpSolver::parseProb2(size_t i) const
 {
   assert(0 <= i && i < _options._bound);
   return 0;
 }
 
-inline unsigned long IlpSolver::parseGen(int i) const
+inline unsigned long IlpSolver::parseGen(size_t i) const
 {
   assert(0 <= i && i < _options._bound);
   return lround(_pCplex->getValue(_r[i]));

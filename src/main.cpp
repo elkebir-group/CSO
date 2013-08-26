@@ -163,6 +163,8 @@ int main(int argc, char** argv)
   bool pareto = false;
   bool printProb = false;
   bool correctProb = false;
+  int nInternalNodes = 0;
+  int nGen = 0;
 
   lemon::ArgParser ap(argc, argv);
   ap.refOption("v", "Verbose CPLEX output", 
@@ -178,9 +180,9 @@ int main(int argc, char** argv)
     .refOption("n", "Cuts: based on bound Nmax",
         options._boundNmax, false)
     .refOption("b", "Number of internal nodes",
-        options._bound, false)
+        nInternalNodes, false)
     .refOption("br", "Generation",
-        options._fixedGen, false)
+        nGen, false)
     .refOption("ub", "Upper bound on the objective value",
         options._upperBoundObj, false)
     .refOption("ub", "Upper bound on the total population size",
@@ -200,6 +202,20 @@ int main(int argc, char** argv)
         outputFileName, false)
     .refOption("a", "Automatic mode", automatic, false);
   ap.parse();
+
+  if (nInternalNodes < 0)
+  {
+    std::cerr << "Number of internal nodes must be a nonzero integer" << std::endl;
+    return 1;
+  }
+  options._bound = static_cast<size_t>(nInternalNodes);
+
+  if (nGen < 0)
+  {
+    std::cerr << "Number of generations must be a nonzero integer" << std::endl;
+    return 1;
+  }
+  options._fixedGen = static_cast<size_t>(nGen);
 
   if (ap.files().size() == 0)
   {
@@ -242,7 +258,7 @@ int main(int argc, char** argv)
     LowerBound LB(pData, false);
     bool foundFeasible = false;
     options._upperBoundPop = std::numeric_limits<double>::max();
-    for (int b = std::max((int)LB.getCrossLB(), options._bound);; b++)
+    for (int b = std::max(LB.getCrossLB(), options._bound);; b++)
     {
       const int lbr = 1+ceil(log(b)/log(2));
       if (lbr > pData->getGenMax())
@@ -270,7 +286,6 @@ int main(int argc, char** argv)
       //  break;
       //}
 
-      bool foundFeasibleCurIt = false;
       for (int br = lbr; br <= std::min(b, pData->getGenMax()); br++)
       {
         if (!pareto)
@@ -311,7 +326,6 @@ int main(int argc, char** argv)
           if (!pareto)
             options._upperBoundObj = pBestSchedule->getCost();
 
-          foundFeasibleCurIt = true;
           foundFeasible = true;
 
           std::cerr << "Done... Obj value: " << options._upperBoundObj << std::endl;
