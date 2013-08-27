@@ -99,7 +99,9 @@ void IlpSolverExt::initPopExpr(IloExpr& expr) const
 IlpSolver::SolverStatus IlpSolverExt::solve(bool feasibility, int timeLimit)
 {
   SolverStatus stat = IlpSolver::solve(feasibility, timeLimit);
-  if (stat != CSO_SOLVER_INFEASIBLE && stat != CSO_SOLVER_TIME_LIMIT_INFEASIBLE)
+  if (stat != CSO_SOLVER_INFEASIBLE &&
+      stat != CSO_SOLVER_TIME_LIMIT_INFEASIBLE &&
+      _options._verbose)
   {
     std::cout << "//" << std::endl;
     printH();
@@ -110,14 +112,8 @@ IlpSolver::SolverStatus IlpSolverExt::solve(bool feasibility, int timeLimit)
     std::cout << "//" << std::endl;
     printPP();
     std::cout << "//" << std::endl;
-    printLambda();
-    std::cout << "//" << std::endl;
     printBLambda1();
     std::cout << "//" << std::endl;
-    //printNu();
-    //std::cout << "//" << std::endl;
-    //printBNu();
-    //std::cout << "//" << std::endl;
   }
   return stat;
 }
@@ -168,7 +164,7 @@ void IlpSolverExt::initObj()
       _model.add(sumoflambdas_only_pp == _f[i]);
       _model.add(sumoflambdas_pp == _pp[i]);
     }
-    else
+    else if (homozygousIdeotype)
     {
       _model.add(sumoflambdas_only_pp == 0);
     }
@@ -332,6 +328,7 @@ void IlpSolverExt::initChromosomesFromGenotypes()
     _model.add(sumofxx == _f[i]);
     sumofxx.clear();
   }
+  _model.add(_f[0] == 1);
 }
 
 void IlpSolverExt::initAllelesFromChromosomes()

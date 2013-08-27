@@ -82,7 +82,11 @@ inline void IlpSolverExt::printLambda() const
       {
         double val = _pCplex->getValue(_lambda[i][j][k]);
         std::cout << "// lambda[" << i << "][" << j
-                  << "][" << k << "] = " << val << std::endl;
+                  << "][" << k << "] = " << val
+                  << "\t" << _breakpoint1[j]
+                  << "\t" << _breakpoint2[k]
+                  << "\t" << _N[j][k]
+                  << std::endl;
       }
     }
   }

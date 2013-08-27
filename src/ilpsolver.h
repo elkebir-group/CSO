@@ -136,9 +136,11 @@ protected:
   virtual void initPopExpr(IloExpr& expr) const;
 
   bool isHomozygousBlock(size_t i, size_t p, size_t q) const;
+  void printAt() const;
   void printB() const;
   void printZ() const;
   void printX() const;
+  void printY() const;
   void printBX() const;
   void printBXZ() const;
   void printG() const;
@@ -231,10 +233,27 @@ inline void IlpSolver::printInnerNodes() const
   }
 }
 
+inline void IlpSolver::printAt() const
+{
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const size_t genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t i = 0; i < genotypeUB; i++)
+  {
+    for (size_t p = 0; p < m; p++)
+    {
+      std::cout << "// at[" << i << "][" << p << "] = "
+                << _pCplex->getValue(_at[i][p]) << std::endl;
+    }
+  }
+}
+
 inline void IlpSolver::printB() const
 {
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const size_t genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
   const size_t m = _pData->getNumberOfLoci();
-  for (size_t i = 0; i < _options._bound - 1; i++)
+  for (size_t i = 0; i < genotypeUB; i++)
   {
     for (size_t p = 0; p < m-1; p++)
     {
@@ -273,7 +292,8 @@ inline void IlpSolver::printLambda() const
 inline void IlpSolver::printZ() const
 {
   const size_t m = _pData->getNumberOfLoci();
-  for (size_t k = 0; k < 2*_options._bound - 1; k++)
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  for (size_t k = 0; k < chromosomeUB; k++)
   {
     for (size_t p = 0; p < m-1; p++)
     {
@@ -282,6 +302,20 @@ inline void IlpSolver::printZ() const
         std::cout << "// z[" << k << "][" << p << "][" << q << "] = "
           << _pCplex->getValue(_z[k][p][q-p-1]) << std::endl;
       }
+    }
+  }
+}
+
+inline void IlpSolver::printY() const
+{
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t k = 0; k < chromosomeUB; k++)
+  {
+    for (size_t p = 0; p < m; p++)
+    {
+      std::cout << "// y[" << k << "][" << p << "] = "
+        << _pCplex->getValue(_y[k][p]) << std::endl;
     }
   }
 }
@@ -320,9 +354,10 @@ inline void IlpSolver::printG() const
 
 inline void IlpSolver::printBX() const
 {
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
   const size_t m = _pData->getNumberOfLoci();
   const size_t  n = _pData->getParents().size();
-  for (size_t k = 0; k < 2*_options._bound - 1; k++)
+  for (size_t k = 0; k < chromosomeUB; k++)
   {
     for (size_t i = 0; i < n+k/2; i++)
     {
@@ -363,9 +398,10 @@ inline void IlpSolver::printBX() const
 
 inline void IlpSolver::printBXZ() const
 {
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
   const size_t m = _pData->getNumberOfLoci();
   const size_t  n = _pData->getParents().size();
-  for (size_t k = 0; k < 2*_options._bound - 1; k++)
+  for (size_t k = 0; k < chromosomeUB; k++)
   {
     for (size_t i = 0; i < n+k/2; i++)
     {

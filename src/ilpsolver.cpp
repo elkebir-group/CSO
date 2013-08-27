@@ -119,9 +119,9 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
 
   _pCplex->setParam(IloCplex::Threads, 1);
 
-  char buf[1024];
-  sprintf(buf, "letssee-c%lu-g%lu.lp", _options._bound, _options._fixedGen);
-  _pCplex->exportModel(buf);
+  //char buf[1024];
+  //sprintf(buf, "letssee-c%lu-g%lu.lp", _options._bound, _options._fixedGen);
+  //_pCplex->exportModel(buf);
   //std::cout << "// crs: " << _options._bound << std::endl;
   //std::cout << "// gen: " << _options._fixedGen << std::endl;
   //std::cout << "// Number of cols: " << _pCplex->getNcols() << " " << _allVar.getSize() << std::endl;
@@ -147,29 +147,35 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
   }
   else
   {
-    std::cout << "// Objective value: " << _pCplex->getObjValue() << std::endl;
-    //printInnerNodes();
-    //printH();
-    std::cout << "//" << std::endl;
-    printX();
-    //std::cout << "//" << std::endl;
-    //printXX();
-    std::cout << "//" << std::endl;
-    printP();
-    //std::cout << "//" << std::endl;
-    //printPP();
-    std::cout << "//" << std::endl;
-    printLambda();
-    //std::cout << "//" << std::endl;
-    //printG();
-    //std::cout << "//" << std::endl;
-    //printGG();
-    //std::cout << "//" << std::endl;
-    //printE();
-    //std::cout << "//" << std::endl;
-    //printHX();
-    //std::cout << "//" << std::endl;
-    //printHXE();
+    if (_options._verbose)
+    {
+      std::cout << "// Objective value: " << _pCplex->getObjValue() << std::endl;
+      //printInnerNodes();
+      std::cout << "//" << std::endl;
+      printX();
+      std::cout << "//" << std::endl;
+      printY();
+      std::cout << "//" << std::endl;
+      printAt();
+      std::cout << "//" << std::endl;
+      printP();
+      std::cout << "//" << std::endl;
+      printLambda();
+      std::cout << "//" << std::endl;
+      printB();
+      std::cout << "//" << std::endl;
+      printZ();
+      //std::cout << "//" << std::endl;
+      //printG();
+      //std::cout << "//" << std::endl;
+      //printGG();
+      //std::cout << "//" << std::endl;
+      //printE();
+      //std::cout << "//" << std::endl;
+      //printHX();
+      //std::cout << "//" << std::endl;
+      //printHXE();
+    }
     constructDAG();
 
     if (_pCplex->getCplexStatus() == CPX_STAT_ABORT_TIME_LIM)
@@ -195,21 +201,6 @@ void IlpSolver::init(bool swapIdeotype)
 
   _model.add(IloMinimize(_env, _obj));
 
-  //const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  //const int genotypeUB = homozygousIdeotype ? _options._bound - 1 : _options._bound;
-  //const int n = _pData->getParents().size();
-  //for (int j = 0; j < genotypeUB; j++)
-  //{
-  //  for (int k = 2*j; k <= 2*j+1; k++)
-  //  {
-  //    for (int i = 0; i < n + getNrInnerPred(j); i++)
-  //    {
-  //      _obj += _x[k][i] + _xx[k][i];
-  //    }
-  //  }
-  //}
-  //_model.add(IloMaximize(_env, _obj));
-
   if (_options._usefulCross)
     initUsefulCross();
 
@@ -224,8 +215,11 @@ void IlpSolver::init(bool swapIdeotype)
   //if (!(_options._tree && _options._servin))
   initBounds();
 
-  std::cout << "// Prob lower bound: " << log(_pData->getProbLowerBound())
-            << "\t" << _pData->getProbLowerBound() << std::endl;
+  //if (_options._verbose)
+  //{
+  //  std::cout << "// Prob lower bound: " << log(_pData->getProbLowerBound())
+  //            << "\t" << _pData->getProbLowerBound() << std::endl;
+  //}
 }
 
 void IlpSolver::initPopExpr(IloExpr& expr) const
@@ -245,7 +239,7 @@ void IlpSolver::initBounds()
   //const size_t m = _pData->getNumberOfLoci();
   //const size_t n = _pData->getParents().size();
   //const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
-  //LowerBound LB(_pData, false);
+  LowerBound LB(_pData, false);
 
   // generations
   // fix generations of the backbone
@@ -267,8 +261,8 @@ void IlpSolver::initBounds()
 
   // bounds on pop
   IloExpr sumofpopsize(_env);
-  //initPopExpr(sumofpopsize);
-  //_model.add(sumofpopsize >= (int)LB.getPopLB());
+  initPopExpr(sumofpopsize);
+  _model.add(sumofpopsize >= (int)LB.getPopLB());
 
   // at most the specified upper bond
   if (_options._upperBoundPop < std::numeric_limits<double>::max())
@@ -1278,9 +1272,9 @@ void IlpSolver::initPop()
     else if (homozygousIdeotype)
     {
       // last crossing is a selfing (assumption: homozygous ideotype)
-      _model.add(2*_p[j] == sumoflogprobs);
+      _model.add(_p[j] == sumoflogprobs + sumoflogprobs);
       if (_options._boundNmax)
-        _model.add(2*sumoflogprobs >= log(_pData->getProbLowerBound()));
+        _model.add(sumoflogprobs + sumoflogprobs >= log(_pData->getProbLowerBound()));
     }
     sumoflogprobs.clear();
   }
