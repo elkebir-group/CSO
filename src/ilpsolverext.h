@@ -56,6 +56,7 @@ protected:
   virtual void initObj();
   void printH() const;
   void printF() const;
+  void printYY() const;
   void printXX() const;
   void printPP() const;
   void printGG() const;
@@ -109,6 +110,20 @@ inline double IlpSolverExt::parsePop(size_t i) const
   return pop;
 }
 
+inline void IlpSolverExt::printYY() const
+{
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t k = 0; k < chromosomeUB; k++)
+  {
+    for (size_t p = 0; p < m; p++)
+    {
+      std::cout << "// yy[" << k << "][" << p << "] = "
+                << _pCplex->getValue(_yy[k][p]) << std::endl;
+    }
+  }
+}
+
 inline void IlpSolverExt::printXX() const
 {
   const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
@@ -121,7 +136,7 @@ inline void IlpSolverExt::printXX() const
       for (size_t i = 0; i < n + getNrInnerPred(j); i++)
       {
         std::cout << "// xx[" << k << "][" << i << "] = "
-          << _pCplex->getValue(_xx[k][i]) << std::endl;
+                  << _pCplex->getValue(_xx[k][i]) << std::endl;
       }
     }
   }

@@ -119,9 +119,9 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
 
   _pCplex->setParam(IloCplex::Threads, 1);
 
-  //char buf[1024];
-  //sprintf(buf, "letssee-c%lu-g%lu.lp", _options._bound, _options._fixedGen);
-  //_pCplex->exportModel(buf);
+  char buf[1024];
+  sprintf(buf, "letssee-c%lu-g%lu.lp", _options._bound, _options._fixedGen);
+  _pCplex->exportModel(buf);
   //std::cout << "// crs: " << _options._bound << std::endl;
   //std::cout << "// gen: " << _options._fixedGen << std::endl;
   //std::cout << "// Number of cols: " << _pCplex->getNcols() << " " << _allVar.getSize() << std::endl;
@@ -151,6 +151,8 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     {
       std::cout << "// Objective value: " << _pCplex->getObjValue() << std::endl;
       //printInnerNodes();
+      std::cout << "//" << std::endl;
+      printA();
       std::cout << "//" << std::endl;
       printX();
       std::cout << "//" << std::endl;

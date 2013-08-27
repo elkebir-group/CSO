@@ -136,6 +136,7 @@ protected:
   virtual void initPopExpr(IloExpr& expr) const;
 
   bool isHomozygousBlock(size_t i, size_t p, size_t q) const;
+  void printA() const;
   void printAt() const;
   void printB() const;
   void printZ() const;
@@ -230,6 +231,20 @@ inline void IlpSolver::printInnerNodes() const
       parseGenotype(i).printGenotype(m);
     else
       _pData->getIdeotype().printGenotype(m);
+  }
+}
+
+inline void IlpSolver::printA() const
+{
+  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const size_t m = _pData->getNumberOfLoci();
+  for (size_t k = 0; k < chromosomeUB; k++)
+  {
+    for (size_t p = 0; p < m; p++)
+    {
+      std::cout << "// a[" << k << "][" << p << "] = "
+                << _pCplex->getValue(_a[k][p]) << std::endl;
+    }
   }
 }
 

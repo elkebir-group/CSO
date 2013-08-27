@@ -110,9 +110,13 @@ IlpSolver::SolverStatus IlpSolverExt::solve(bool feasibility, int timeLimit)
     std::cout << "//" << std::endl;
     printXX();
     std::cout << "//" << std::endl;
+    printYY();
+    std::cout << "//" << std::endl;
+    printGG();
+    std::cout << "//" << std::endl;
     printPP();
     std::cout << "//" << std::endl;
-    printBLambda1();
+    printBLambda2();
     std::cout << "//" << std::endl;
   }
   return stat;
@@ -159,7 +163,7 @@ void IlpSolverExt::initObj()
 
     _model.add(sumoflambdas == 1);
 
-    if (i < genotypeUB2 - 1)
+    if (i < genotypeUB2 - 1 || !homozygousIdeotype)
     {
       _model.add(sumoflambdas_only_pp == _f[i]);
       _model.add(sumoflambdas_pp == _pp[i]);
@@ -179,21 +183,21 @@ void IlpSolverExt::initObj()
 
   for (size_t i = 0; i < _options._bound; i++)
   {
-    _b_lambda1[i] = IloBoolVarArray(_env, _breakpoint1.size() - 1);
+    //_b_lambda1[i] = IloBoolVarArray(_env, _breakpoint1.size() - 1);
     _b_lambda2[i] = IloBoolVarArray(_env, _breakpoint2.size() - 1);
 
-    IloExpr sum_b_lambda1(_env);
+    //IloExpr sum_b_lambda1(_env);
     IloExpr sum_b_lambda2(_env);
-    for (size_t j = 0; j < _breakpoint1.size() - 1; j++)
-    {
-      std::stringstream ss;
-      ss << "b_lambda1_" << i << "_" << j;
-      _b_lambda1[i][j] = IloBoolVar(_env);
-      _b_lambda1[i][j].setName(ss.str().c_str());
-      _allVar.add(_b_lambda1[i][j]);
-
-      sum_b_lambda1 += _b_lambda1[i][j];
-    }
+    //for (size_t j = 0; j < _breakpoint1.size() - 1; j++)
+    //{
+    //  std::stringstream ss;
+    //  ss << "b_lambda1_" << i << "_" << j;
+    //  _b_lambda1[i][j] = IloBoolVar(_env);
+    //  _b_lambda1[i][j].setName(ss.str().c_str());
+    //  _allVar.add(_b_lambda1[i][j]);
+//
+    //  sum_b_lambda1 += _b_lambda1[i][j];
+    //}
 
     for (size_t k = 0; k < _breakpoint2.size() - 1; k++)
     {
@@ -206,29 +210,29 @@ void IlpSolverExt::initObj()
       sum_b_lambda2 += _b_lambda2[i][k];
     }
 
-    for (size_t j = 0; j < _breakpoint1.size(); j++)
-    {
-      const size_t k_max = j == _breakpoint1.size() - 1 ? 0 : j + 1;
-      for (size_t k = 0; k <= k_max; k++)
-      {
-        sumoflambdas += _lambda[i][j][k];
-      }
-
-      if (j == 0)
-      {
-        _model.add(sumoflambdas <= _b_lambda1[i][0]);
-      }
-      else if (j != _breakpoint1.size() - 1)
-      {
-        _model.add(sumoflambdas <= _b_lambda1[i][j-1] + _b_lambda1[i][j]);
-      }
-      else
-      {
-        _model.add(sumoflambdas <= _b_lambda1[i][j-1]);
-      }
-      sumoflambdas.clear();
-    }
-    _model.add(sum_b_lambda1 == 1);
+    //for (size_t j = 0; j < _breakpoint1.size(); j++)
+    //{
+    //  const size_t k_max = j == _breakpoint1.size() - 1 ? 0 : j + 1;
+    //  for (size_t k = 0; k <= k_max; k++)
+    //  {
+    //    sumoflambdas += _lambda[i][j][k];
+    //  }
+//
+    //  if (j == 0)
+    //  {
+    //    _model.add(sumoflambdas <= _b_lambda1[i][0]);
+    //  }
+    //  else if (j != _breakpoint1.size() - 1)
+    //  {
+    //    _model.add(sumoflambdas <= _b_lambda1[i][j-1] + _b_lambda1[i][j]);
+    //  }
+    //  else
+    //  {
+    //    _model.add(sumoflambdas <= _b_lambda1[i][j-1]);
+    //  }
+    //  sumoflambdas.clear();
+    //}
+    //_model.add(sum_b_lambda1 == 1);
 
     for (size_t k = 0; k < _breakpoint2.size(); k++)
     {
@@ -328,7 +332,6 @@ void IlpSolverExt::initChromosomesFromGenotypes()
     _model.add(sumofxx == _f[i]);
     sumofxx.clear();
   }
-  _model.add(_f[0] == 1);
 }
 
 void IlpSolverExt::initAllelesFromChromosomes()
@@ -408,9 +411,9 @@ void IlpSolverExt::initAllelesFromChromosomes()
           _model.add(_gg[i][j][2*n+l] <= 1-_yy[i][j]);
           _model.add(_gg[i][j][2*n+l] >= _xx[i][l/2+n] + _a[getAbsChromosome(i/2,l)][j] + (1-_yy[i][j])-2);
 
-          _model.add(_gg[i][j][2*n+l] + _gg[i][j][2*n+l+1] <= _a[getAbsChromosome(i/2,l)][j]);
+          _model.add(_gg[i][j][2*n+l] + _gg[i][j][2*n+l+1] <= _a[i][j]);
           _model.add(_gg[i][j][2*n+l] + _gg[i][j][2*n+l+1] <= _xx[i][l/2+n]);
-          _model.add(_gg[i][j][2*n+l] + _gg[i][j][2*n+l+1] >= _a[getAbsChromosome(i/2,l)][j] + _xx[i][l/2+n] - 1);
+          _model.add(_gg[i][j][2*n+l] + _gg[i][j][2*n+l+1] >= _a[i][j] + _xx[i][l/2+n] - 1);
         }
         else
         {
