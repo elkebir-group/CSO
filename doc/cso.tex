@@ -731,7 +731,7 @@ Given $(F, G)$ as the number of crossings and the number of generations, respect
 \begingroup
 \allowdisplaybreaks%
 \begin{align*}
-\min\quad        & \HL{\sum_{i=n+1}^L \sum_{j=1}^{\ell+1} \alpha^i_j N(\bar{p}_i,\gamma)} & \label{CS} \tag{CSO}\\
+\min\quad        & \HL{\sum_{i=n+1}^L \left( \sum_{j=1}^{\ell-1} \sum_{k=1}^{j+1} \lambda^i_{j,k} \cdot N_{j,k} + \lambda^i_{\ell,1} \cdot N_{\ell,1} \right)} & \label{CS} \tag{CSO}\\
 \text{s.t.}\quad & \sum_{j=1}^{\delta(k)- 1} x_{k,j}                                  && =     1              && {\scriptstyle 2n < k \leq 2L}\\
                  & g_{k,p,2i}   - a_{2i,p}   \cdot x_{k,i} \cdot (1-y_{k,p})          && =     0              && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
                  & g_{k,p,2i-1} - a_{2i-1,p} \cdot x_{k,i} \cdot y_{k,p}              && =     0              && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)}\\
@@ -761,16 +761,16 @@ Given $(F, G)$ as the number of crossings and the number of generations, respect
                  & \HL{\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i}\tilde{x}_{k,j}\bigg(h_j\ln(\frac{1}{2})}\\
                  & \HL{\quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})}\\
                  & \HL{\quad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot \tilde{z}_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)} && \HL{= \tilde{p}_i} && \HL{\scriptstyle n < i \leq L}\\
-                 & \sum_{j=1}^{\ell+1} \lambda^i_j                                    && = 1                  && {\scriptstyle n < i \leq L}\\
-                 & \sum_{j=1}^{\ell+1} \lambda^i_j\cdot d_j                           && = p_i                && {\scriptstyle n < i \leq L}\\
-                 & \lambda^i_j                                                        && \geq 0               && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
-                 & \HL{\sum_{j=1}^{\ell+1} \tilde{\lambda}^i_j}                       && \HL{= \tilde{f}_i}   && \HL{\scriptstyle n < i \leq L}\\
-                 & \HL{\sum_{j=1}^{\ell+1} \tilde{\lambda}^i_j\cdot d_j}              && \HL{= \tilde{p}_i}   && \HL{\scriptstyle n < i \leq L}\\
-                 & \HL{\tilde{\lambda}^i_j}                                           && \HL{\geq 0}          && \HL{\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
-                 & \HL{\sum_{j=1}^{\ell+1} \lambda^i_j \cdot e_j + \sum_{j=1}^{\ell+1} \tilde{\lambda}^i_j \cdot d_j} && \HL{= \bar{p}_i} && \HL{\scriptstyle n < i \leq L}\\
-                 & \HL{\sum_{j=1}^{\ell+1} \alpha^i_j}                                && \HL{= 1}             && {\scriptstyle n < i \leq L}\\
-                 & \HL{\sum_{j=1}^{\ell+1} \alpha^i_j\cdot e_j}                       && \HL{= \bar{p}_i}     && {\scriptstyle n < i \leq L}\\
-                 & \HL{\alpha^i_j}                                                    && \HL{\geq 0}          && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}\\
+                 & \HL{\sum_{j=1}^{\ell-1} \sum_{k=1}^{j+1} \lambda^i_{j,k} + \lambda_{\ell,1}} && \HL{= 1}   && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell-1} \sum_{k=2}^{j+1} \lambda^i_{j,k}}                    && \HL{= f_i} && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell-1} \sum_{j=1}^{j+1} \lambda^i_{j,k} \cdot d_j + \lambda_{\ell,1} \cdot d_\ell} && \HL{= p_i}           && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell-1} \sum_{k=1}^{j+1} \lambda^i_{j,k} \cdot e_k + \lambda_{\ell,1} \cdot e_1}    && \HL{= \tilde{p}_i}   && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\lambda^i_{j,k}}                                               && \HL{\geq 0}          && \HL{\scriptstyle n < i \leq L, 1 \leq j \leq \ell-1, 1 \leq k \leq j + 1}\\
+                 & \HL{\lambda^i_{\ell,1}}                                            && \HL{\geq 0}          && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=1}^{\ell} \lambda^i_{j,1}}                             && \HL{\leq v^i_1}      && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{j=k-1}^{\ell-1} \lambda^i_{j,k}}                         && \HL{\leq v^i_{k-1} + v^i_k} && \HL{\scriptstyle n < i \leq L, 2 \leq k < \ell - 1}\\
+                 & \HL{\lambda^i_{\ell-1,\ell}}                                       && \HL{\leq v^i_{\ell-1}}      && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{\sum_{k=1}^{\ell-1} v^i_k}                                     && \HL{= 1}             && \HL{\scriptstyle n < i \leq L}\\
                  & x_{k,j}\HL{, \tilde{x}_{k,j}}                                      && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq i < \delta(k)}\\
                  & \HL{\tilde{f}_i}                                                   && \HL{\in \{0,1\}}     && \HL{\scriptstyle n < i \leq L}\\
                  & g_{k,p,l}\HL{, \tilde{g}_{k,p,l}}                                  && \in \{0,1\}          && {\scriptstyle 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq l<2\delta(k)-1}\\
@@ -781,7 +781,9 @@ Given $(F, G)$ as the number of crossings and the number of generations, respect
                  & b_{i,p,q}                                                          && \in \{0,1\}          && {\scriptstyle 1 \leq i \leq L, 1 \leq p<q \leq m}\\
                  & z_{k,p,q}\HL{, \tilde{z}_{k,p,q}}                                  && \in \mathbb{N}       && {\scriptstyle 2n < k \leq 2L,\, 2 \leq p < q \leq m}\\
                  & p_{i}\HL{, \tilde{p}_i}                                            && \in \mathbb{R}       && {\scriptstyle n < i \leq L}\\
-                 & \lambda^i_j\HL{, \tilde{\lambda}^i_j, \alpha^i_j}                  && \in \mathbb{R}       && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell+1}
+                 & \HL{\lambda^i_{j,k}}                                               && \in \mathbb{R}       && {\scriptstyle n < i \leq L, 1 \leq j \leq \ell-1, 1 \leq k \leq j+1}\\
+                 & \HL{\lambda^i_{\ell,1}}                                            && \HL{\in \{0,1\}}     && \HL{\scriptstyle n < i \leq L}\\
+                 & \HL{v^i_k}                                                         && \HL{\in \{0,1\}}     && \HL{\scriptstyle n < i \leq L, 1 \leq k \leq \ell-1}
 \end{align*}
 \endgroup
 
