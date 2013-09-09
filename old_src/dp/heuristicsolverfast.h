@@ -15,7 +15,7 @@
 #include "heuristiccorrectalleles.h"
 #include "heuristicindividualcost.h"
 #include "heuristiclinkage.h"
-#include "linkageanalysis.h"
+#include "../analysis/linkageanalysis.h"
 
 class HeuristicSolverFast : public HeuristicSolver
 {

@@ -1,64 +1,21 @@
 /*
  * genotype.cpp
  *
- *  Created on: 9-may-2009
+ *  Created on: 28-apr-2011
  *      Author: M. El-Kebir
  *
  */
 
 #include "genotype.h"
-#include <utility>
 
-double Genotype::computeProb(int nLoci, const DoubleMatrix& RM, int c) const
+std::istream& operator >>(std::istream& is, Genotype& genotype)
 {
-	std::vector<int> homozygousLoci;
-	std::vector<int> heterozygousLoci;
-
-	chromosomeCompare(nLoci, _c0, _c1, homozygousLoci, heterozygousLoci);
-	return computeProb(nLoci, RM, c, homozygousLoci, heterozygousLoci);
+  return is >> genotype._c0 >> genotype._c1;
 }
 
-void Genotype::printGenotype(int nLoci, bool newline, std::ostream& out, const char* separator) const
+std::ostream& operator <<(std::ostream& os, const Genotype& genotype)
 {
-	char c0[33], c1[33];
-	assert(nLoci < 32);
-
-	toBitstring(_c0, nLoci, c0);
-	toBitstring(_c1, nLoci, c1);
-
-	out << c0 << separator << c1;
-
-	if (newline)
-		out << std::endl;
-}
-
-unsigned long Genotype::computePop(int nLoci, const DoubleMatrix& RM, double gamma, const Genotype& D, const Genotype& E) const
-{
-	double p;
-
-	if (_c0 == _c1)
-	{
-		p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
-	}
-	else
-	{
-		p = D.computeProb(nLoci, RM, _c0) * E.computeProb(nLoci, RM, _c1);
-		p += D.computeProb(nLoci, RM, _c1) * E.computeProb(nLoci, RM, _c0);
-	}
-
-	if ((1 - p) <= (2 * DBL_EPSILON)) return 1;
-
-	/*int pop = (int) ceil(log(1 - _gamma) / log(1 - p));
-	if (pop < 0)
-	{
-		std::cout << "\n1 - _gamma = " << 1 - _gamma << std::endl;
-		std::cout << "log(1 - _gamma) = " << log(1 - _gamma) << std::endl;
-		std::cout << "p = " << p << std::endl;
-		std::cout << "1 - p = " << 1 - p << std::endl;
-		std::cout << "log(1 - p) = " << log(1 - p) << std::endl;
-	}*/
-
-	return (unsigned long) ceil(log(1 - gamma) / log(1 - p));
+  return os << genotype._c0 << " " << genotype._c1;
 }
 
 int Genotype::getMask(int nLoci, int target) const

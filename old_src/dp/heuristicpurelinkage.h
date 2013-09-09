@@ -14,7 +14,7 @@
 #include "data.h"
 #include "genotype.h"
 #include "dpitem.h"
-#include "linkageanalysis.h"
+#include "../analysis/linkageanalysis.h"
 #include "heuristicbase.h"
 #include "heuristiclargestsubgroupsize.h"
 

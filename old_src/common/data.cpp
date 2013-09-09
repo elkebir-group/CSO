@@ -88,9 +88,9 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
 
 	/* Get constants */
 	double costPop = 1, costGen = 1, costCross = 1;
-	pRootElement->Attribute("costPop", &costPop);
+    pRootElement->Attribute("costCrossover", &costPop);
 	pRootElement->Attribute("costGen", &costGen);
-	pRootElement->Attribute("costCross", &costCross);
+    pRootElement->Attribute("costNode", &costCross);
 
 	/* Get number of loci */
 	int nLoci;
@@ -186,7 +186,7 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
 
 			for (int i = 0; i < nLoci; i++)
 			{
-				stream >> Data::_pData->_RM[row][i];
+                stream >> Data::_pData->_RM[nLoci - row - 1][nLoci - i - 1];
 			}
 
 			row++;

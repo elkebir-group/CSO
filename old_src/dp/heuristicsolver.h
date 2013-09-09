@@ -10,7 +10,7 @@
 
 #include "solver.h"
 #include "csodp.h"
-#include "linkageanalysis.h"
+#include "../analysis/linkageanalysis.h"
 
 class HeuristicSolver : public Solver
 {

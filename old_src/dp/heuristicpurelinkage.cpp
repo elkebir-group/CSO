@@ -6,7 +6,7 @@
  */
 
 #include "heuristicpurelinkage.h"
-#include "linkageanalysis.h"
+#include "../analysis/linkageanalysis.h"
 
 const int HeuristicPureLinkage::_costMatrix[3][3] = { {0, 0, 0}, {10, 10, 1}, {10, 10, 10} };
 
