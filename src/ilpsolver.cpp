@@ -118,7 +118,29 @@ IlpSolver::SolverStatus IlpSolver::solve(bool feasibility, int timeLimit)
     _pCplex->setParam(IloCplex::MIPEmphasis, CPX_MIPEMPHASIS_FEASIBILITY);
 
   _pCplex->setParam(IloCplex::Threads, 1);
+  //_pCplex->setParam(IloCplex::AggFill, 0);
+  //_pCplex->setParam(IloCplex::PreInd, 0);
+  //_pCplex->setParam(IloCplex::RelaxPreInd, 0);
+  //_pCplex->setParam(IloCplex::PreslvNd, -1);
+  //_pCplex->setParam(IloCplex::RepeatPresolve, 0);
 
+  //_model.add(_x[0][3] == 1);
+  //_model.add(_x[1][1] == 1);
+  //_model.add(_x[2][4] == 1);
+  //_model.add(_x[3][2] == 1);
+  //_model.add(_a[0][3] == 0);
+  //_model.add(_a[0][2] == 0);
+  //_model.add(_a[0][1] == 1);
+  //_model.add(_a[0][0] == 0);
+  //_model.add(_a[1][3] == 1);
+  //_model.add(_a[1][2] == 0);
+  //_model.add(_a[1][1] == 0);
+  //_model.add(_a[1][0] == 1);
+  //_model.add(_a[2][3] == 1);
+  //_model.add(_a[2][2] == 0);
+  //_model.add(_a[2][1] == 1);
+  //_model.add(_a[2][0] == 1);
+  //_model.add(_d[2][2] == 1);
   char buf[1024];
   sprintf(buf, "letssee-c%lu-g%lu.lp", _options._bound, _options._fixedGen);
   _pCplex->exportModel(buf);
@@ -203,8 +225,8 @@ void IlpSolver::init(bool swapIdeotype)
 
   _model.add(IloMinimize(_env, _obj));
 
-  if (_options._usefulCross)
-    initUsefulCross();
+  //if (_options._usefulCross)
+  //  initUsefulCross();
 
   if (_options._noSelfing)
     initNoSelfing();
@@ -1171,19 +1193,19 @@ void IlpSolver::initPop()
   for (size_t k=0; k < chromosomeUB; k++)
   {
     int offset = getNrInnerPred(k/2);
-    _bxz[k] = BoolVar3Matrix(_env, n + offset);
+    _bxz[k] = IntVar3Matrix(_env, n + offset);
     
     for (size_t i = 0; i < n; i++)
     {
-      _bxz[k][i] = BoolVarMatrix(_env, m - 1);
+      _bxz[k][i] = IntVarMatrix(_env, m - 1);
       for (size_t p = 0; p < m - 1; p++)
       {
-        _bxz[k][i][p] = IloBoolVarArray(_env, m-p-1);
+        _bxz[k][i][p] = IloIntVarArray(_env, m-p-1);
         for (size_t q = p+1; q < m; q++)
         {
           std::stringstream ss;
           ss << "bxz_" << k << "_" << i << "_" << p << "_" << q-p-1;
-          _bxz[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _bxz[k][i][p][q-p-1] = IloIntVar(_env, 0, m-1, ss.str().c_str());
           _allVar.add(_bxz[k][i][p][q-p-1]);
           if (_c[2*i][p] == _c[2*i+1][p] ||
               _c[2*i][q] == _c[2*i+1][q] ||
@@ -1194,29 +1216,29 @@ void IlpSolver::initPop()
           }
           else
           {
-            _model.add(_bxz[k][i][p][q-p-1] <= _x[k][i]);
+            _model.add(_bxz[k][i][p][q-p-1] <= _x[k][i] * static_cast<int>(m-1));
             _model.add(_bxz[k][i][p][q-p-1] <= _z[k][p][q-p-1]);
-            _model.add(_bxz[k][i][p][q-p-1] >= _x[k][i] + _z[k][p][q-p-1] - 1);
+            _model.add(_bxz[k][i][p][q-p-1] >= _x[k][i] + (1./(m-1)) * _z[k][p][q-p-1] - 1);
           }
         }
       }
     }
     for (size_t i = n; i < n + offset; i++)
     {
-      _bxz[k][i] = BoolVarMatrix(_env, m-1);
+      _bxz[k][i] = IntVarMatrix(_env, m-1);
       for (size_t p = 0; p < m-1; p++)
       {
-        _bxz[k][i][p] = IloBoolVarArray(_env, m-p-1);
+        _bxz[k][i][p] = IloIntVarArray(_env, m-p-1);
         for (size_t q = p+1; q < m; q++)
         {
           std::stringstream ss;
           ss << "bxz_" << k << "_" << i << "_" << p << "_" << q-p-1;
-          _bxz[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _bxz[k][i][p][q-p-1] = IloIntVar(_env, 0, m-1, ss.str().c_str());
           _allVar.add(_bxz[k][i][p][q-p-1]);
           // TODO, maybe better in terms of b and x
-          _model.add(_bxz[k][i][p][q-p-1] <= _bx[k][i][p][q-p-1]);
+          _model.add(_bxz[k][i][p][q-p-1] <= _bx[k][i][p][q-p-1] * static_cast<int>(m-1));
           _model.add(_bxz[k][i][p][q-p-1] <= _z[k][p][q-p-1]);
-          _model.add(_bxz[k][i][p][q-p-1] >= _bx[k][i][p][q-p-1] + _z[k][p][q-p-1] - 1);
+          _model.add(_bxz[k][i][p][q-p-1] >= _bx[k][i][p][q-p-1] + (1./(m-1)) * _z[k][p][q-p-1] - 1);
         }
       }
     }

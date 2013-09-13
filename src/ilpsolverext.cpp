@@ -623,19 +623,19 @@ void IlpSolverExt::initPop()
   for (size_t k=0; k < chromosomeUB2; k++)
   {
     size_t offset = getNrInnerPred(k/2);
-    _bxxzz[k] = BoolVar3Matrix(_env, n + offset);
+    _bxxzz[k] = IntVar3Matrix(_env, n + offset);
 
     for (size_t i = 0; i < n; i++)
     {
-      _bxxzz[k][i] = BoolVarMatrix(_env, m - 1);
+      _bxxzz[k][i] = IntVarMatrix(_env, m - 1);
       for (size_t p = 0; p < m - 1; p++)
       {
-        _bxxzz[k][i][p] = IloBoolVarArray(_env, m-p-1);
+        _bxxzz[k][i][p] = IloIntVarArray(_env, m-p-1);
         for (size_t q = p+1; q < m; q++)
         {
           std::stringstream ss;
           ss << "bxxzz_" << k << "_" << i << "_" << p << "_" << q-p-1;
-          _bxxzz[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _bxxzz[k][i][p][q-p-1] = IloIntVar(_env, 0, m-1, ss.str().c_str());
           _allVar.add(_bxxzz[k][i][p][q-p-1]);
           if (_c[2*i][p] == _c[2*i+1][p] ||
               _c[2*i][q] == _c[2*i+1][q] ||
@@ -646,29 +646,28 @@ void IlpSolverExt::initPop()
           }
           else
           {
-            _model.add(_bxxzz[k][i][p][q-p-1] <= _xx[k][i]);
+            _model.add(_bxxzz[k][i][p][q-p-1] <= _xx[k][i] * static_cast<int>(m-1));
             _model.add(_bxxzz[k][i][p][q-p-1] <= _zz[k][p][q-p-1]);
-            _model.add(_bxxzz[k][i][p][q-p-1] >= _xx[k][i] + _zz[k][p][q-p-1] - 1);
+            _model.add(_bxxzz[k][i][p][q-p-1] >= _xx[k][i] + (1./(m-1)) * _zz[k][p][q-p-1] - 1);
           }
         }
       }
     }
     for (size_t i = n; i < n + offset; i++)
     {
-      _bxxzz[k][i] = BoolVarMatrix(_env, m-1);
+      _bxxzz[k][i] = IntVarMatrix(_env, m-1);
       for (size_t p = 0; p < m-1; p++)
       {
-        _bxxzz[k][i][p] = IloBoolVarArray(_env, m-p-1);
+        _bxxzz[k][i][p] = IloIntVarArray(_env, m-p-1);
         for (size_t q = p+1; q < m; q++)
         {
           std::stringstream ss;
           ss << "bxxzz_" << k << "_" << i << "_" << p << "_" << q-p-1;
-          _bxxzz[k][i][p][q-p-1] = IloBoolVar(_env, ss.str().c_str());
+          _bxxzz[k][i][p][q-p-1] = IloIntVar(_env, 0, m-1, ss.str().c_str());
           _allVar.add(_bxxzz[k][i][p][q-p-1]);
-          // TODO, maybe better in terms of b and x
-          _model.add(_bxxzz[k][i][p][q-p-1] <= _bxx[k][i][p][q-p-1]);
+          _model.add(_bxxzz[k][i][p][q-p-1] <= _bxx[k][i][p][q-p-1] * static_cast<int>(m-1));
           _model.add(_bxxzz[k][i][p][q-p-1] <= _zz[k][p][q-p-1]);
-          _model.add(_bxxzz[k][i][p][q-p-1] >= _bxx[k][i][p][q-p-1] + _zz[k][p][q-p-1] - 1);
+          _model.add(_bxxzz[k][i][p][q-p-1] >= _bxx[k][i][p][q-p-1] + (1./(m-1)) * _zz[k][p][q-p-1] - 1);
         }
       }
     }

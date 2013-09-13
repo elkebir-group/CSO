@@ -61,6 +61,7 @@ protected:
   typedef IloArray<NumVarMatrix> NumVar3Matrix;
   typedef IloArray<IloIntVarArray> IntVarMatrix;
   typedef IloArray<IntVarMatrix> IntVar3Matrix;
+  typedef IloArray<IntVar3Matrix> IntVar4Matrix;
 
   const Options& _options;
   IdxMap _idx;
@@ -111,7 +112,7 @@ protected:
   /// Encodes product of b and x
   BoolVar4Matrix _bx;
   /// Encodes product of b and x and z
-  BoolVar4Matrix _bxz;
+  IntVar4Matrix _bxz;
   /// Encodes z_{k,p,q}:
   /// the alleles at loci p and q of chromosome k are the result of a crossover
   IntVar3Matrix _z;

@@ -30,7 +30,7 @@ protected:
   /// Shadow bx
   BoolVar4Matrix _bxx;
   /// Shadow bxz
-  BoolVar4Matrix _bxxzz;
+  IntVar4Matrix _bxxzz;
   /// Shadow z
   IntVar3Matrix _zz;
   /// Mu for piece-wise linear approximation of probablities (_p)
@@ -112,9 +112,10 @@ inline double IlpSolverExt::parsePop(size_t i) const
 
 inline void IlpSolverExt::printYY() const
 {
-  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const size_t chromosomeUB2 = homozygousIdeotype ? 2 * _options._bound - 2 : 2 * _options._bound;
   const size_t m = _pData->getNumberOfLoci();
-  for (size_t k = 0; k < chromosomeUB; k++)
+  for (size_t k = 0; k < chromosomeUB2; k++)
   {
     for (size_t p = 0; p < m; p++)
     {
@@ -203,10 +204,11 @@ inline void IlpSolverExt::printPP() const
 
 inline void IlpSolverExt::printGG() const
 {
-  const size_t chromosomeUB = _pData->isIdeotypeHomozygous() ? 2 * _options._bound - 1 : 2 * _options._bound;
+  const bool homozygousIdeotype = _pData->isIdeotypeHomozygous();
+  const size_t chromosomeUB2 = homozygousIdeotype ? 2 * _options._bound - 2 : 2 * _options._bound;
   const size_t n = _pData->getParents().size();
   const size_t m = _pData->getNumberOfLoci();
-  for (size_t k = 0; k < chromosomeUB; k++)
+  for (size_t k = 0; k < chromosomeUB2; k++)
   {
     for (size_t p = 0; p < m; p++)
     {
