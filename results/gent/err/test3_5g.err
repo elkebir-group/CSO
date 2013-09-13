@@ -1,0 +1,29 @@
+Solving (1,1)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",0.344,-,-,-,-,"INFEASIBLE"
+Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",0.325,2,2,171.74,171.74,"OPT"
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",0.512,3,3,197.98,197.98,"OPT"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",1.914,3,4,197.66,197.66,"OPT"
+Solving (4,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",2.299,4,4,162.35,162.35,"OPT"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",7.768,4,5,159.68,159.68,"OPT"
+Solving (5,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",3.987,5,5,158.92,158.92,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",83.557,4,6,166.72,166.72,"OPT"
+Solving (6,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",34.660,5,6,165.93,165.93,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",124.170,4,7,172.80,172.80,"OPT"
+Solving (7,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",287.858,5,7,172.80,172.80,"OPT"
+Solving (8,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",530.676,4,8,188.03,188.03,"OPT"
+Solving (8,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",1740.409,5,8,178.20,178.20,"OPT"
+Solving (9,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test3_5g.xml",13269.725,5,9,183.07,183.07,"OPT"
+Solving (10,5)... pop <= 1.79769e+308 

@@ -1,0 +1,13 @@
+Solving (3,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test6b_4g.xml",0.243,-,-,-,-,"INFEASIBLE"
+Solving (4,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test6b_4g.xml",1.996,-,-,-,-,"INFEASIBLE"
+Solving (4,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test6b_4g.xml",5.655,4,4,471.34,471.34,"OPT"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test6b_4g.xml",153.313,4,5,289.04,289.04,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test6b_4g.xml",1595.727,4,6,301.53,301.53,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test6b_4g.xml",9434.340,4,7,318.98,318.98,"OPT"
+Solving (8,4)... pop <= 1.79769e+308 

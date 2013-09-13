@@ -1,0 +1,7 @@
+Solving (2,2)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom2_3g.xml",0.009,-,-,-,-,"INFEASIBLE"
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom2_3g.xml",0.139,3,3,455.78,455.78,"OPT"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom2_3g.xml",1.156,3,4,430.21,430.21,"OPT"
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom2_3g.xml",1.342,3,4,430.21,430.21,"?",337.000,337.000

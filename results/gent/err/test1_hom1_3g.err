@@ -1,0 +1,7 @@
+Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_3g.xml",0.013,2,2,133.20,133.20,"OPT"
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_3g.xml",0.122,3,3,145.96,145.96,"OPT"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_3g.xml",0.122,3,4,175.09,175.09,"OPT"
+"/home/elkebir/CSO2013/src/cso/data/gent/test1_hom1_3g.xml",0.324,3,4,175.09,175.09,"?",171.000,171.000

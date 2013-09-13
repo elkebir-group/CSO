@@ -1,0 +1,19 @@
+Solving (2,2)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",0.051,-,-,-,-,"INFEASIBLE"
+Solving (3,3)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",0.137,-,-,-,-,"INFEASIBLE"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",5.737,3,4,454.10,454.10,"OPT"
+Solving (4,4)... pop <= 1.79769e+308 Infeasible
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",5.130,-,-,-,-,"INFEASIBLE"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",239.918,4,5,407.72,407.72,"OPT"
+Solving (5,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",187.797,5,5,448.44,448.44,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",2513.708,4,6,356.24,356.24,"OPT"
+Solving (6,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",2779.636,5,6,317.64,317.64,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test7d_5g.xml",53434.954,4,7,323.60,323.60,"OPT"
+Solving (7,5)... pop <= 1.79769e+308 

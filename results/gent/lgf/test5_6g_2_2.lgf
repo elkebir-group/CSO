@@ -1,0 +1,14 @@
+@nodes
+label	genotype	pop	gen	cumCross	
+0	"5 6"	0	0	0	
+1	"0 7"	22.9226	2	2	
+2	"0 3"	0	0	0	
+3	"0 0"	29.4171	1	1	
+@arcs
+		label	upperChr	
+0	1	0	0	
+3	1	1	1	
+2	3	2	0	
+2	3	3	1	
+@attributes
+target 1

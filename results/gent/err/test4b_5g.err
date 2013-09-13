@@ -1,0 +1,61 @@
+Solving (1,1)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",0.004,1,1,1640.80,1640.80,"OPT"
+Solving (2,2)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",0.068,2,2,167.46,167.46,"OPT"
+Solving (3,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",0.156,3,3,185.80,185.80,"OPT"
+Solving (4,3)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",0.126,3,4,269.74,269.74,"OPT"
+Solving (4,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",0.499,4,4,165.95,165.95,"OPT"
+Solving (5,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",1.029,4,5,175.22,175.22,"OPT"
+Solving (5,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",0.891,5,5,175.22,175.22,"OPT"
+Solving (6,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",2.391,4,6,301.36,301.36,"OPT"
+Solving (6,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",2.923,5,6,182.94,182.94,"OPT"
+Solving (7,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",6.501,4,7,435.60,435.60,"OPT"
+Solving (7,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",6.599,5,7,189.60,189.60,"OPT"
+Solving (8,4)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",25.326,4,8,585.98,585.98,"OPT"
+Solving (8,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",54.458,5,8,201.76,201.76,"OPT"
+Solving (9,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",182.463,5,9,218.39,218.39,"OPT"
+Solving (10,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",1864.720,5,10,353.50,353.50,"OPT"
+Solving (11,5)... pop <= 1.79769e+308 Done... Obj value: 1.79769e+308
+"/home/elkebir/CSO2013/src/cso/data/gent/test4b_5g.xml",12044.298,5,11,495.40,495.40,"OPT"
+Solving (12,5)... pop <= 1.79769e+308 Error: signal 11:
+bin/csoilp2[0x471786]
+/lib/libc.so.6(+0x32230)[0x2add97583230]
+bin/csoilp2[0x5a077a]
+bin/csoilp2[0x74a895]
+bin/csoilp2[0xab99b1]
+bin/csoilp2[0xab850e]
+bin/csoilp2[0xab734e]
+bin/csoilp2[0xab5160]
+bin/csoilp2(CPXdualopt+0xc2)[0x7350f2]
+bin/csoilp2[0x83d948]
+bin/csoilp2[0x83cde0]
+bin/csoilp2[0x7c68db]
+bin/csoilp2[0x7c3e98]
+bin/csoilp2[0x7c1101]
+bin/csoilp2[0x7c033d]
+bin/csoilp2[0x7b6f15]
+bin/csoilp2[0x7b43cf]
+bin/csoilp2(CPXmipopt+0xb1)[0x735661]
+bin/csoilp2[0x761fa1]
+bin/csoilp2(CPXmipopt+0x155)[0x735705]
+bin/csoilp2[0x4b1362]
+bin/csoilp2[0xdd1523]
+bin/csoilp2[0xdd15a4]
+bin/csoilp2[0x463233]
+bin/csoilp2[0x4719fb]
+bin/csoilp2[0x4744bf]
+/lib/libc.so.6(__libc_start_main+0xfd)[0x2add9756fc8d]
+bin/csoilp2[0x440ae9]
