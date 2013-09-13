@@ -5,6 +5,8 @@
  *      Author: M. El-Kebir
  */
 
+/* Testing
+ 
 #include "cso.h"
 
 const Gamete g_InvalidGamete = {INVALID_GAMETE, 0};
@@ -13,7 +15,7 @@ void toBitstring(int val, int n, char* buf)
 {
 	/*
 	 * Example:
-	 * '1000' = 8
+	 * '1000' = 7
 	 * '0001' = 1
 	 */
 	for (int i = 0; i < n; i++)
