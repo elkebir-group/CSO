@@ -5,7 +5,7 @@
  *      Author: M. El-Kebir
  */
 
-/* Testing
+/* Testing */
  
 #include "cso.h"
 
