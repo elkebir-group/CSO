@@ -30,14 +30,13 @@ int getUncoveredLocusIndex(int nLoci, const GenotypeSet& parents, const Genotype
 	for (int i = 0; i < nLoci; i++)
 	{
 		if (res & 1) return i;
-		res >>= 1;
-	}
+        res >>= 1;
+    }
 
 	return nLoci;
 }
 
-void generateParents(GenotypeSet& parents, int nLoci, int nParents, 
-	int maxCorrectAlleles, double homozygousProb, const Genotype& ideotype)
+void generateParents(GenotypeSet& parents, int nLoci, int nParents, int maxCorrectAlleles, double homozygousProb, const Genotype& ideotype)
 {
 	while ((int) parents.size() != nParents)
 	{
@@ -99,9 +98,8 @@ void generateParents(GenotypeSet& parents, int nLoci, int nParents,
 		}
 	}
 }
-
 void generate(unsigned int seed, int nLoci, int nParents, int maxCorrectAlleles, double gamma,
-	int costGen, int costPop, int costCross, int popMax,
+    int costGen, int costCrossOver, int costNode, int popMax,
 	const Genotype& ideotype, const DoubleVector& mapDistances, double homozygousProb)
 {
 	char buf1[1024];
@@ -118,8 +116,8 @@ void generate(unsigned int seed, int nLoci, int nParents, int maxCorrectAlleles,
 		popMax = (int) (1.5 * inferredPopMax);
 
 	printf("<!-- seed: %u, max number of correct alleles: %d -->\n", seed, maxCorrectAlleles);
-	printf("<CSO nLoci=\"%d\" gamma=\"%f\" popMax=\"%d\" costPop=\"%d\" costGen=\"%d\" costCross=\"%d\">\n",
-		nLoci, gamma, popMax, costPop, costGen, costCross);
+    printf("<CSO nLoci=\"%d\" gamma=\"%f\" popMax=\"%d\" costCrossOver=\"%d\" costGen=\"%d\" costNode=\"%d\">\n",
+        nLoci, gamma, popMax, costCrossOver, costGen, costNode);
 
 	printf("\t<Parents>\n");
 	for (GenotypeSet::const_iterator it = parents.begin(); it != parents.end(); it++)
@@ -150,14 +148,13 @@ int main(int argc, char **argv)
 	std::string ideotypeString;
 	std::vector<double> mapDistances;
 	double homozygousProb;
-	int costGen, costPop, costCross, popMax;
+    int costGen, costCrossOver, costNode, popMax;
 	double gamma;
-
 	po::options_description desc("Allowed options");
 	desc.add_options()
 		("help,h", "Help message")
 		("version,v", "Version number")
-		("seed,s" , po::value<unsigned int>(&seed)->default_value((unsigned int) time(NULL)), "Seed")
+        ("seed,s" , po::value<unsigned int>(&seed)->default_value((unsigned int) time(NULL)), "Seed")
 		("number-loci,m", po::value<int>(&nLoci), "Number of loci")
 		("number-parents,n", po::value<int>(&nParents), "Number of parents")
 		("max-correct-alleles,a", po::value<int>(&maxCorrectAlleles), "Maximum number of correct alleles")
@@ -165,8 +162,8 @@ int main(int argc, char **argv)
 		("gamma", po::value<double>(&gamma)->default_value(0.99), "Gamma")
 		("pop-max", po::value<int>(&popMax)->default_value(500), "Maximum population size")
 		("cost-gen", po::value<int>(&costGen)->default_value(100), "Cost of a generation")
-		("cost-cross", po::value<int>(&costCross)->default_value(100), "Cost of a crossing")
-		("cost-pop", po::value<int>(&costPop)->default_value(1), "Cost of an individual")
+        ("cost-cross", po::value<int>(&costNode)->default_value(100), "Cost of a crossing")
+        ("cost-pop", po::value<int>(&costCrossOver)->default_value(1), "Cost of an individual")
 		("ideotype,i", po::value<std::string>(&ideotypeString), "Ideotype")
 		("map-distances", po::value<std::vector<double> >(&mapDistances)->composing(), "Map distances in cM");
 
@@ -182,7 +179,7 @@ int main(int argc, char **argv)
 
 		if (vm.count("version"))
 		{
-			std::cout << "Version: " << CSO_GEN_VER << std::endl;
+            std::cout << "Version: " << CSO_GEN_VER << std::endl;
 			return 0;
 		}
 		if (vm.count("help"))
@@ -256,7 +253,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		generate(seed, nLoci, nParents, maxCorrectAlleles, gamma, costGen, costPop, costCross, popMax, ideotype, mapDistances, homozygousProb);
+        generate(seed, nLoci, nParents, maxCorrectAlleles, gamma, costGen, costCrossOver, costNode, popMax, ideotype, mapDistances, homozygousProb);
 
 		return 0;
 	}
