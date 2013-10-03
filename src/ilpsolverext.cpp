@@ -103,21 +103,21 @@ IlpSolver::SolverStatus IlpSolverExt::solve(bool feasibility, int timeLimit)
       stat != CSO_SOLVER_TIME_LIMIT_INFEASIBLE &&
       _options._verbose)
   {
-    std::cout << "//" << std::endl;
-    printH();
-    std::cout << "//" << std::endl;
-    printF();
-    std::cout << "//" << std::endl;
-    printXX();
-    std::cout << "//" << std::endl;
-    printYY();
-    std::cout << "//" << std::endl;
-    printGG();
-    std::cout << "//" << std::endl;
-    printPP();
-    std::cout << "//" << std::endl;
-    printBLambda2();
-    std::cout << "//" << std::endl;
+    //std::cout << "//" << std::endl;
+    //printH();
+    //std::cout << "//" << std::endl;
+    //printF();
+    //std::cout << "//" << std::endl;
+    //printXX();
+    //std::cout << "//" << std::endl;
+    //printYY();
+    //std::cout << "//" << std::endl;
+    //printGG();
+    //std::cout << "//" << std::endl;
+    //printPP();
+    //std::cout << "//" << std::endl;
+    //printBLambda2();
+    //std::cout << "//" << std::endl;
   }
   return stat;
 }

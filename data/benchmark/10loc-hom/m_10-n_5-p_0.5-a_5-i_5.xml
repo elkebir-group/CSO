@@ -1,5 +1,5 @@
 <!-- seed: 1380205477, max number of correct alleles: 5 -->
-<CSO nLoci="10" gamma="0.990000" popMax="500" costCrossOver="1" costGen="100" costNode="100">
+<CSO nLoci="10" gamma="0.990000" genMax="10" popMax="500" costCrossOver="1" costGen="100" costNode="100">
 	<Parents>
 		<Parent c0="0001000011" c1="1001011000"/>
 		<Parent c0="0010000110" c1="0101001110"/>
