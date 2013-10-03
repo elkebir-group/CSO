@@ -1,0 +1,12 @@
+<!-- seed: 130206, max number of correct alleles: 4 -->
+<CSO nLoci="10" gamma="0.990000" popMax="500" costCrossOver="1" costGen="100" costNode="100">
+	<Parents>
+		<Parent c0="0000100100" c1="0000100100"/>
+		<Parent c0="0001011001" c1="0001011001"/>
+		<Parent c0="0100001001" c1="0100001001"/>
+		<Parent c0="0100001011" c1="0100001011"/>
+		<Parent c0="1010010001" c1="1010010001"/>
+	</Parents>
+	<Ideotype c0="1111111111" c1="1111111111"/>
+	<cM>2.00 9.50 19.00 35.00 38.50 50.00 52.00 67.00 74.50 84.50 </cM>
+</CSO>

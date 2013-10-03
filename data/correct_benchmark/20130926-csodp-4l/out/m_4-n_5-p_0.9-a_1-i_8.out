@@ -1,0 +1,164 @@
+digraph G {
+	{
+		rank = same;
+		00010001 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">1<BR/>0/0<BR/>1</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+			</TR>
+		</TABLE>>];
+		00101000 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">1<BR/>0/0<BR/>1</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+			</TR>
+		</TABLE>>];
+		01000100 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">1<BR/>0/0<BR/>1</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+			</TR>
+		</TABLE>>];
+		10001000 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">1<BR/>0/0<BR/>1</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+			</TR>
+		</TABLE>>];
+	}
+	{
+		rank = same;
+		00100100 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">10<BR/>1/1<BR/>210</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+			</TR>
+		</TABLE>>];
+	}
+	{
+		rank = same;
+		01101000 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">223<BR/>2/2<BR/>623</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+			</TR>
+		</TABLE>>];
+	}
+	{
+		rank = same;
+		00011110 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">424<BR/>3/3<BR/>1024</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="red">0</TD>
+			</TR>
+		</TABLE>>];
+	}
+	{
+		rank = same;
+		00011111 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="red">0</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">635<BR/>4/4<BR/>1435</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+			</TR>
+		</TABLE>>];
+	}
+	{
+		rank = same;
+		11111111 [fontcolor=white,style=rounded,shape=box,label=<<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="4" CELLBORDER="0">
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD WIDTH="40" ROWSPAN="2"><FONT COLOR="black">655<BR/>5/5<BR/>1655</FONT></TD>
+			</TR>
+			<TR>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+				<TD BGCOLOR="blue">1</TD>
+			</TR>
+		</TABLE>>];
+	}
+	00011111 -> 11111111 [label="20"];
+	00011110 -> 00011111 [label="211"];
+	00010001 -> 00011111 [label="211"];
+	01101000 -> 00011110 [label="200"];
+	00010001 -> 00011110 [label="200"];
+	00100100 -> 01101000 [label="212"];
+	10001000 -> 01101000 [label="212"];
+	00101000 -> 00100100 [label="8"];
+	01000100 -> 00100100 [label="8"];
+}
