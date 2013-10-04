@@ -32,8 +32,8 @@ for m in list_m:
 						seed = random.randint(0,1000000)
 						print "Found same seed. New seed is:", seed
 					    print m, n, p, a, i, seed
-					    command = csogenerator + " -s " + str(seed) + " -m "+ str(m) + " -n "+ str(n) +" -p "+ str(p) +" -a "+ str(a)
-					    f = open("-s_" + str(seed) + "-m_" + str(m) + "-n_" + str(n) + "-p_" + str(p) + "-a_" + str(a)+ "-i_" + str(i) + ".xml", "w")
+					    command = csogenerator + " -m "+ str(m) + " -n "+ str(n) +" -p "+ str(p) +" -a "+ str(a)
+					    f = open("m_" + str(m) + "-n_" + str(n) + "-p_" + str(p) + "-a_" + str(a)+ "-i_" + str(i) + ".xml", "w")
 					    subprocess.call(command, shell=True, stdout=f)
 					    old_seed = seed
 					    f.close()
