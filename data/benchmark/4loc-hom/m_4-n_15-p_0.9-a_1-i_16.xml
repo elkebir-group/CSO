@@ -1,4 +1,4 @@
-<!-- seed: 32767, max number of correct alleles: 1 -->
+<!-- seed: 599857, max number of correct alleles: 1 -->
 <CSO nLoci="4" gamma="0.990000" popMax="500" costCrossOver="1" costGen="100" costNode="100">
 	<Parents>
 		<Parent c0="0000" c1="0000"/>
@@ -18,5 +18,5 @@
 		<Parent c0="1000" c1="1000"/>
 	</Parents>
 	<Ideotype c0="1111" c1="1111"/>
-	<cM>0.00 12.00 18.50 26.50 </cM>
+	<cM>8.00 14.50 30.00 40.00 </cM>
 </CSO>

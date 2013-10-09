@@ -1,22 +1,22 @@
-<!-- seed: 32767, max number of correct alleles: 4 -->
+<!-- seed: 683342, max number of correct alleles: 4 -->
 <CSO nLoci="6" gamma="0.990000" popMax="500" costCrossOver="1" costGen="100" costNode="100">
 	<Parents>
-		<Parent c0="000010" c1="000010"/>
-		<Parent c0="001000" c1="001000"/>
-		<Parent c0="001001" c1="001001"/>
+		<Parent c0="000000" c1="000000"/>
+		<Parent c0="000110" c1="000110"/>
+		<Parent c0="001111" c1="001111"/>
+		<Parent c0="010000" c1="010000"/>
 		<Parent c0="010010" c1="010010"/>
+		<Parent c0="010100" c1="010100"/>
 		<Parent c0="010101" c1="010101"/>
+		<Parent c0="010111" c1="010111"/>
 		<Parent c0="011011" c1="011011"/>
-		<Parent c0="011100" c1="011100"/>
-		<Parent c0="100001" c1="100001"/>
-		<Parent c0="100011" c1="100011"/>
-		<Parent c0="100101" c1="100101"/>
-		<Parent c0="100110" c1="100110"/>
-		<Parent c0="101010" c1="101010"/>
-		<Parent c0="110101" c1="110101"/>
+		<Parent c0="011101" c1="011101"/>
+		<Parent c0="100111" c1="100111"/>
+		<Parent c0="101000" c1="101000"/>
+		<Parent c0="110010" c1="110010"/>
 		<Parent c0="111000" c1="111000"/>
-		<Parent c0="111001" c1="111001"/>
+		<Parent c0="111010" c1="111010"/>
 	</Parents>
 	<Ideotype c0="111111" c1="111111"/>
-	<cM>0.00 12.00 18.50 26.50 32.00 37.00 </cM>
+	<cM>5.00 21.00 22.50 36.00 46.50 51.50 </cM>
 </CSO>
