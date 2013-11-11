@@ -100,18 +100,18 @@ private:
 		double prob = 1;
 		for (int i = 0; i < nLoci; i++)
 		{
-			int c0_bit = (c0 >> i) & 1;
-			int c1_bit = (c1 >> i) & 1;
-			int target_bit = (target >> i) & 1;
+            int c0_bit = GET_BIT(nLoci, c0, i);
+            int c1_bit = GET_BIT(nLoci, c1, i);
+            int target_bit = GET_BIT(nLoci, target, i);
 
 			if (c0_bit != target_bit && c1_bit != target_bit)
 			{
 				penalty++;
 				// flip target_bit
 				if (target_bit == 1)
-					target &= ~(1 << i);
+                    target &= ~(1 << (nLoci - i - 1));
 				else
-					target |= (1 << i);
+                    target |= (1 << (nLoci - i - 1));
 			
 				if (prevIndex != -1)
 				{

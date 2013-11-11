@@ -64,7 +64,8 @@ inline int HeuristicCorrectLoci::getCost(const DpItem& item) const
 	int nCorrectLoci = 0;
 	for (int i = 0; i < _nLoci; i++)
 	{
-		if (item(0, i) == GET_BIT(_target, i) || item(1, i) == GET_BIT(_target, i))
+
+        if (item(0, i, _nLoci) == GET_BIT(_nLoci, _target, i) || item(1, i, _nLoci) == GET_BIT(_nLoci, _target, i))
 			nCorrectLoci++;
 	}
 

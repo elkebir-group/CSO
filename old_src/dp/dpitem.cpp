@@ -211,7 +211,7 @@ void DpItem::printNode(int nLoci, const DpItem* pItem, std::ostream& out) const
 	{
 		out << "\t\t\t\t<TD BGCOLOR=\"";
 
-		if (ideotype(0, nLoci - i - 1) == (*pItem)(0, nLoci - i - 1))
+        if (ideotype(nLoci, 0, i) == (*pItem)(nLoci, 0, i))
 			out << "blue";
 		else 
 			out << "red";
@@ -234,7 +234,7 @@ void DpItem::printNode(int nLoci, const DpItem* pItem, std::ostream& out) const
 	{
 		out << "\t\t\t\t<TD BGCOLOR=\"";
 
-		if (ideotype(1, nLoci - i - 1) == (*pItem)(1, nLoci - i - 1))
+        if (ideotype(nLoci, 1, i) == (*pItem)(nLoci, 1, i))
 			out << "blue";
 		else 
 			out << "red";

@@ -105,6 +105,9 @@ TODO:
   \item Heterozygous ideotype
   \item No selfing
   \item Identify two founding lines (goal: hybrid)
+  \item Maybe: don't care alleles?
+  \item We are mixing $\log$ and $\ln$
+  \item Sell the whole thing as identifying the Pareto frontier
 \end{itemize}
 
 %A \emph{genotype} consists of two bitstrings of size $m$. We are given a set of
@@ -153,7 +156,7 @@ Later papers by Ishii and Yonezawa \cite{Ishii-I:2007,Ishii-II:2007} assume that
 
 \subsubsection{Our contribution.}
 
-In this work we lift the restrictions imposed by Servin et al.\ and consider a more general variant of the problem where genotypes are allowed to be re-used and no assumption about the initial parental genotypes is made. For the first time we formulate a mathematical model of the general problem. We show NP-hardness using an approximation-factor preserving reduction from an inapproximability result follows. We introduce a mixed integer linear program (MIP) formulation which exploits various aspects of the inherent combinatorial structure of the problem and
+In this work we lift the restrictions imposed by Servin et al.\ and consider a more general variant of the problem where genotypes are allowed to be re-used and no assumption about the initial parental genotypes is made. For the first time we formulate a mathematical model of the general problem. We show NP-hardness using an approximation-factor preserving reduction from which an inapproximability result follows. We introduce a mixed integer linear program (MIP) formulation which exploits various aspects of the inherent combinatorial structure of the problem and
 which approximates the non-linear objective by a piecewise linear curve.
 Finally, we show that our approach is capable of solving real-world instances to provable optimality within a precise mathematical model, which was not possible
 with earlier methods.
@@ -253,7 +256,7 @@ Given $\mathcal{P} = \{C^1,\ldots,C^n\}$, the set of parental genotypes we start
 
 We show that the problem is NP-hard even for the case where we are only minimizing the number of crossings.
 %, i.e.\ $\lambda_\mathrm{crs}=1$ and $\lambda_\mathrm{gen},\lambda_\mathrm{pop} = 0$. 
-We do this by giving a polynomial-time reduction from the decision problem \textsc{SetCover}, which asks given a universe $U$ and a collection of subsets $\mathcal{S} \subseteq 2^U$ whether there exists a cover $\mathcal{C} \subseteq \mathcal{S}$ of cardinality at most $k$ whose union is $U$ \cite{Karp:1972}. Let $(U, \mathcal{S}, k)$, where $U = \{e_1, \ldots, e_n\}$ and $\mathcal{S} = \{S_1, \ldots, S_l\}$, be a problem instance of \textsc{SetCover}. The corresponding problem instance of \textsc{CrossingSchedule} is obtained by letting the loci correspond to the elements in $U$ and the initial set of parents to the subsets in $\mathcal{S}$. The first chromosome of a parent $C^i$ has a 1 at locus $p$ if $p \in S_i$. The second chromosomes of all parental genotypes consists of only zeros. The ideotype has 1 alleles at every locus. In the cost function we only consider the number of crossings, i.e.\ $\lambda_\mathrm{crs} = 1$ and $\lambda_\mathrm{gen} = \lambda_\mathrm{pop} = 0$. The reduction can be done in polynomial time (in fact in $\BigOh(nl)$ time). In order to show that the reduction works, we have to show that the following holds.
+We do this by giving a polynomial-time reduction from the decision problem \textsc{SetCover}, which asks, given a universe $U$ and a collection of subsets $\mathcal{S} \subseteq 2^U$, whether there exists a cover $\mathcal{C} \subseteq \mathcal{S}$ of cardinality at most $k$ whose union is $U$ \cite{Karp:1972}. Let $(U, \mathcal{S}, k)$, where $U = \{e_1, \ldots, e_n\}$ and $\mathcal{S} = \{S_1, \ldots, S_l\}$, be a problem instance of \textsc{SetCover}. The corresponding problem instance of \textsc{CrossingSchedule} is obtained by letting the loci correspond to the elements in $U$ and the initial set of parents to the subsets in $\mathcal{S}$. The first chromosome of a parent $C^i$ has a 1 at locus $p$ if $p \in S_i$. The second chromosomes of all parental genotypes consists of only zeros. The ideotype has 1-alleles at every locus. In the cost function we only consider the number of crossings, i.e.\ $\lambda_\mathrm{crs} = 1$ and $\lambda_\mathrm{gen} = \lambda_\mathrm{pop} = 0$. The reduction can be done in polynomial time (in fact in $\BigOh(nl)$ time). In order to show that the reduction works, we have to show that the following holds.
 \begin{lemma}
 \label{lem:NP-hardness}
 There is a cover of cardinality at most $k$ if and only if the cost of the optimum schedule is at most $k$.
@@ -444,7 +447,7 @@ $\mbox{OPT} \leftarrow \infty$\\
 Given an instance to \textsc{CrossingSchedule} with initial parental genotypes $\mathcal{P}=\{C^1,\dots,C^n\}$, a feasible solution with $G$ generations and $F$ crossings can be characterized by the following five conditions: (i) The topology of the schedule is represented by a directed acyclic graph with $n$ source nodes $s_1,\dots, s_n$, one target node $t$, and $F-1$ additional nodes, where every non-source node has in-degree two. Parallel arcs are allowed and represent selfings. (ii) The longest path from a source node to the target node has length $G$. (iii) The alleles of each non-source node are derived from either the upper or lower chromosome of the node's respective predecessors. (iv) The genotype of a source node $s_i$ is $C^i$, the genotype of $t$ is $C^*$. (v) The probability of obtaining the genotype of an inner node $v$ is at least $1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}}$ such that its corresponding population size is at most $N_\mathrm{max}$.
 
 In the following we show how these conditions can be formulated as linear constraints. Throughout our formulation, we let $L:=F+n$ be the total 
-number of nodes. Dummies $1 \leq i,j \leq L$ correspond to genotypes, loci are indexed by $1 \leq p,q \leq m$ and chromosomes are referred to by $1 \leq k,l \leq 2L$. For brevity's sake, in the remainder of the paper we will omit the linearization of products of binary variables. Unless otherwise stated, we applied a standard transformation \cite{Bradley:1977}: for a product $x\cdot y$ of binary variables $x$ and $y$ we introduce a new binary variable $z$ and require $z\leq x$, $z\leq y$, and $z\geq x+y-1$.
+number of nodes. Indices $1 \leq i,j \leq L$ correspond to genotypes, loci are indexed by $1 \leq p,q \leq m$ and chromosomes are referred to by $1 \leq k,l \leq 2L$. For brevity's sake, in the remainder of the paper we will omit the linearization of products of binary variables. Unless otherwise stated, we applied a standard transformation \cite{Bradley:1977}: for a product $x\cdot y$ of binary variables $x$ and $y$ we introduce a new binary variable $z$ and require $z\leq x$, $z\leq y$, and $z\geq x+y-1$.
 Similarly, we omit the details of the implementation of absolute differences of binary variables.
 
 \subsubsection{Feasibility constraints.}
@@ -529,53 +532,86 @@ maximal block of homozygous loci between heterozygous loci $p$ and $q$, $1 \leq 
 %Clearly, if loci $p+1$ up to $q-1$ form a homozygous block, $\sum_{k=p+1}^{q-1} \tilde{b}_{j,k}=0$ and thus a feasible solution contains at most one crossover. Furthermore,
 %the number of homozygous blocks enclosed by loci $p$ and $q$ is at most  $\sum_{k=p+1}^{q-1} \tilde{b}_{j,k}+1$ and hence we do not cut off any feasible solution.
 %%\prod_{1\leq p<q\leq m}
-We are now able to formulate the probability given in \eqref{eq:single_prob} in terms of our new binary variables. For that, let $\xi_k^j$ denote
+We are now able to formulate the probability given in \eqref{eq:single_prob} in
+terms of the binary variables $h, b$ and $z$. For that, let $\xi_k^j$ denote
 the event of obtaining a chromosome $k$ from a genotype $j$. %where we have replaced in the second inequality $b_{j,p,q}\cdot\sum_{r=p+1}^{q}z_{k,r,j}$ by $p_{k,p,q,j}$ according to \eqref{eq:whatever}.
-Using variables $h$, $b$, and $z$, we can express $\Pr[]{\xi_k^j}$ as follows.
-Under the assumption that $x_{k,j}=1$,
-\begin{equation*}
-\begin{split}\Pr[]{\xi_k^j}=(1-\frac{h_j}{2})&\prod_{p=1}^{m-1}\prod_{q=p+1}^m \bigg( (1-b_{j,p,q}) \\
-%& + b_{j,p,q}\cdot (r_{p.q}\cdot \sum_{r=p+1}^{q}z_{k,r,j}+(1-r_{p,q})\cdot (1-\sum_{r=p+1}^{q}z_{k,r,j}))   \bigg)  
-& + b_{j,p,q}\cdot (r_{p,q}\cdot z_{k,p,q}+(1-r_{p,q})\cdot (1-z_{k,p,q}))   \bigg)
-\end{split}
-\end{equation*}
-For a homozygous genotype $j$ all elements in the upper product evaluate to 1 as desired. In the heterozygous case, every maximal homozygous block
-contributes $r_{p,q}$ if it contains at least one crossover (first case in \eqref{eq:single_prob}), and $(1-r_{p,q})$ otherwise (second case in \eqref{eq:single_prob}).
+Since $(1-r_{p,q})\geq r_{p,q}$ for all $1\leq p<q<m$, we
+may define $\Delta r_{p,q}:=(1-r_{p,q})-r_{p,q}$. We can express
+$\Pr[]{\xi_k^j}$, assuming $x_{k,j}=1$, as follows.
+\begin{align*}
+\Pr[]{\xi_k^j} & = (1-\frac{h_j}{2})\prod_{p=1}^{m-1}\prod_{q=p+1}^m \bigg( (1-b_{j,p,q}) \\
+               & \quad\quad\quad\quad\quad + b_{j,p,q}\cdot (r_{p,q}\cdot
+               z_{k,p,q}+(1-r_{p,q})\cdot (1-z_{k,p,q}))   \bigg)\\
+&=(1-\frac{h_j}{2})\prod_{p=1}^{m-1}\prod_{q=p+1}^m \left((1-b_{j,p,q}) + b_{j,p,q}\cdot (1-r_{p,q}-\Delta r_{p,q} z_{k,p,q})\right)
+\end{align*}
+Indeed, for a homozygous genotype $j$ all elements in the upper product evaluate
+to 1 as desired. In the heterozygous case, every maximal homozygous block
+contributes $r_{p,q}$ if it contains at least one crossover (first case in
+\eqref{eq:single_prob}), and $(1-r_{p,q})$ otherwise (second case in
+\eqref{eq:single_prob}). The corresponding log-probability of event $\xi_k^j$ is as
+follows.
+%Now the idea is to develop an appropriate approximation of the nonlinear function $N(p,\gamma)$
+%defining the required population size so that integer linear programming
+%techniques can be utilized. More precisely, we reduce $N(p)$ to a separable form \cite{Steuer:1986} that depends only on a single decision variable 
+%and approximate it by a piecewise linear function.
 
-Now the idea is to develop an appropriate approximation of the nonlinear function $N(p,\gamma)$
-defining the required population size so that integer linear programming
-techniques can be utilized. More precisely, we reduce $N(p)$ to a separable form \cite{Steuer:1986} that depends only on a single decision variable 
-and approximate it by a piecewise linear function.
-Using the fact that $(1-r_{p,q})\geq r_{p,q}$, $\forall 1\leq p<q<m$, we
-define $\Delta r_{p,q}:=(1-r_{p,q})-r_{p,q}$ and rewrite the probability of event $\xi_k^j$, again assuming $x_{k,j}=1$ as
 \begin{equation*}
 \begin{split}
-\Pr[]{\xi_k^j}&=(1-\frac{h_j}{2})\prod_{p=1}^{m-1}\prod_{q=p+1}^m \left((1-b_{j,p,q}) + b_{j,p,q}\cdot (1-r_{p,q}-\Delta r_{p,q} z_{k,p,q})\right)\notag\\
-&=\exp\bigg(h_j\cdot\ln(\frac{1}{2})+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\cdot \ln(1-r_{p,q}) \\
-&\qquad\qquad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q} \cdot z_{k,p,q}\cdot \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)
+  \ln(\Pr[]{\xi_k^j}) &= h_j \ln(\frac{1}{2})+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\cdot \ln(1-r_{p,q}) \\
+&\qquad\qquad + \sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q} \cdot z_{k,p,q}\cdot \ln(\frac{r_{p,q}}{1-r_{p,q}})
 \end{split}
 \end{equation*}
 
-
-Finally, if $j_1$ and $j_2$ are the two parental genotypes of chromosomes $k_1$ and $k_2$ forming genotype $i$, we compute in variable $p_i$ the $\log$ probability of event $\xi^{j_1}_{k_1}\cap\xi^{j_2}_{k_2}$
-as $\ln(\Pr[]{\xi^{j_1}_{k_1}})+\ln(\Pr[]{\xi^{j_2}_{k_2}})$. For that we have to sum over all possible $1 \leq j<i$ to identify $j_1$ and $j_2$:
-\begin{equation}
+If $j_1$ and $j_2$ are the two parental genotypes of chromosomes $2i-1$
+and $2i$ forming genotype $i$, we compute in variable $p_i$ the $\log$
+probability of event $\xi^{j_1}_{2i-1}\cap\xi^{j_2}_{2i}$
+as $\ln(\Pr[]{\xi^{j_1}_{2i-1}})+\ln(\Pr[]{\xi^{j_2}_{2i}})$. For that we have
+to sum over all possible $1 \leq j<i$ to identify $j_1$ and $j_2$:
+\begin{align}
  \label{eq:something}
- \begin{split}
- p_i=\sum^{i-1}_{j=1}\sum_{l\in\{1,2\}}x_{k_l,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
- &+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k_l,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
- \end{split}
-\end{equation}
+   p_i &= \sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} x_{k,j} \cdot \ln(\Pr[]{\xi_k^j})\\
+       & =\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} x_{k,j}\bigg(h_j\ln(\frac{1}{2})+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
+   &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot \tilde{z}_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
+\end{align}
 \obacht{eq differs from conference version, see comment in .tex, MEK: it's good}
 
-Notice that we neglect the possibility that the two chromosomes $k_1$ and $k_2$ may swap their originating genotypes as accounted for in the 
-second case of equation \eqref{eq:combined_prob} and we therefore might underestimate the probability of success, respectively overestimate
-the population size. We will discuss this simplification in Section \ref{sec:discussion}.
+\HL{Notice that in case genotype $i$ is heterozygous, its two chromosomes may
+swap their originating genotypes as accounted for in the second
+case of equation \eqref{eq:combined_prob}. We model such an event
+$\xi^{j_2}_{2i-1}\cap\xi^{j_1}_{2i}$ with the shadow variables
+$\tilde{x}_{k,i} \in \{0,1\}$ and the following constraints.
+\begin{align}
+  \tilde{x}_{2i-1,j} & \leq x_{2i,j} & n < i \leq L, 1 \leq j < i\\
+  \tilde{x}_{2i,j} & \leq x_{2i-1,j} & n < i \leq L, 1 \leq j < i\\
+  \sum_{j=1}^{i-1} \tilde{x}_{2i-1,j} & = \sum_{j=1}^{i-1} \tilde{x}_{2i,j} & n < i \leq L\\
+  \tilde{x}_{k,j} & \leq h_i & 2n < k \leq 2L, 1 \leq j < \delta(k)
+\end{align}
+In addition, we need to ensure that the swapped parental genotypes are
+actually able to give rise to the two chromosomes. We do this by introducing
+shadow variables $\tilde{y}_{k,p}$, $\tilde{g}_{k,p,l} \in \{0,1\}$ that have
+similar meaning as their non-shadow counterparts as expressed by the following
+constraints.
+\begin{align}
+  \tilde{g}_{k,p,2i}   - a_{2i,p}   \cdot \tilde{x}_{k,i} \cdot (1-\tilde{y}_{k,p}) & = 0 & 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)\\
+  \tilde{g}_{k,p,2i-1} - a_{2i-1,p} \cdot \tilde{x}_{k,i} \cdot \tilde{y}_{k,p}     & = 0 & 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)\\
+  \tilde{g}_{k,p,2i} + \tilde{g}_{k,p,2i-1} - a_{k,p} \cdot \tilde{x}_{k,i}         & = 0 & 2n < k \leq 2L, 1 \leq p \leq m, 1 \leq i < \delta(k)
+\end{align}
+Now we can express the log-probability $\tilde{p}_i$ of observing
+$\xi^{j_2}_{2i-1}\cap\xi^{j_1}_{2i}$ as follows.
+\begin{equation}
+ \begin{split}
+   \tilde{p}_i=\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} x_{k,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
+   &+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot \tilde{z}_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
+ \end{split}
+\end{equation}}
 
 We develop an appropriate approximation of the nonlinear function $N(\rho, \gamma)$ defining the required population size so that integer linear 
 programming techniques can be utilized.
-More precisely, we are able to re-express the population size w.r.t.\ probability $p:=\Pr[]{j_1,j_2\rightarrow i}$ in separable form as: 
-$$ N(p,\gamma) = \frac{\ln(1-\gamma)}{\ln(1-\mathrm e^{p_i})} $$
+More precisely, we re-express the population size w.r.t.~probability
+$p:=\Pr[]{j_1,j_2\rightarrow i}$ as:
+$$N(p,\gamma) = \frac{\ln(1-\gamma)}{\ln(1-(\mathrm e^{p_i} + \mathrm{e}^{\tilde{p}_i}))}$$
+\obacht[mohammed]{Change the text, we use an extension of the $\lambda$-method to
+non-separable functions.}%
 We use $\ell$ segments to approximate the nonlinear function $N$ by a
 piecewise-linear curve specified by the points $(d_j,N(d_j,\gamma))$ for
 $j=1,\dots,\ell+1$. The idea of the \emph{$\lambda$-method} \cite{Steuer:1986} is to
@@ -727,6 +763,23 @@ The NP-hardness proof involves only the number of crossings; as for the number o
 \label{sec:complete_mip}
 
 Given $(F, G)$ as the number of crossings and the number of generations, respectively, and $L = F + n$, the MIP is as follows.
+Breakpoints are defined as follows.
+\begin{align*}
+  d_1 & = \log(1 - (1 - \gamma)^\frac{1}{N_\mathrm{max}})\\
+  \ldots\\
+  d_{\ell-1} & = \log(0.5) = -0.69\\
+  d_{\ell}   & = \log(1)   = 0\\
+  e_1 & = 0\\
+  e_2 & = d_1\\
+  e_{\ell-1} & = d_{\ell-2}\\
+  e_{\ell} & = d_{\ell-1}
+\end{align*}
+The vertices of the triangulation are given by
+\begin{align*}
+  N_{j,k} & = N(\mathrm{e}^{d_j} + \mathrm{e}^{e_k}, \gamma) && 1 < j \leq \ell,
+  1 < k \leq \ell\\
+  N_{j,1} & = N(\mathrm{e}^{d_j}, \gamma) && 1 \leq j \leq \ell.
+\end{align*}
 
 \begingroup
 \allowdisplaybreaks%

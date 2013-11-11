@@ -30,6 +30,8 @@ int solve(int maxIt, const char* pInputFileName, bool useArray,
 	Data* pData = Data::create(pInputFileName);
 	if (!pData)	return 1;
 
+    pData->printRM();
+
 	const Genotype& ideotype = pData->getIdeotype();
 
 	DpTable* pTable = NULL;

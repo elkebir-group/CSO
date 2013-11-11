@@ -22,17 +22,17 @@ int Genotype::getMask(int nLoci, int target) const
 {
 	for (int i = 0; i < nLoci; i++)
 	{
-		int c0_bit = (_c0 >> i) & 1;
-		int c1_bit = (_c1 >> i) & 1;
-		int target_bit = (target >> i) & 1;
+        int c0_bit = GET_BIT(nLoci, _c0, i);
+        int c1_bit = GET_BIT(nLoci, _c1, i);
+        int target_bit = GET_BIT(nLoci, target, i);
 
 		if (c0_bit != target_bit && c1_bit != target_bit)
 		{
 			// flip target_bit
 			if (target_bit == 1)
-				target &= ~(1 << i);
+                target &= ~(1 << (nLoci - i - 1));
 			else
-				target |= (1 << i);
+                target |= (1 << (nLoci - i - 1));
 		}
 	}
 
@@ -41,21 +41,21 @@ int Genotype::getMask(int nLoci, int target) const
 
 int Genotype::getMaskAtMostOneCrossOverGroup(int nLoci, int target) const
 {
-	std::vector<int> largestGroupSize0_0(nLoci); // _c0: right to left
-	std::vector<int> largestGroupSize1_0(nLoci); // _c1: left to right
-	std::vector<int> largestGroupSize0_1(nLoci); // _c0: left to right
-	std::vector<int> largestGroupSize1_1(nLoci); // _c1: right to left
+    std::vector<int> largestGroupSize0_0(nLoci); // _c0: left to right
+    std::vector<int> largestGroupSize1_0(nLoci); // _c1: right to left
+    std::vector<int> largestGroupSize0_1(nLoci); // _c0: right to left
+    std::vector<int> largestGroupSize1_1(nLoci); // _c1: left to right
 
 	/* First determine largest group size per chromosome */
-	largestGroupSize0_0[0] = GET_BIT(_c0, 0) == GET_BIT(target, 0) ? 1 : 0;
-	largestGroupSize1_1[0] = GET_BIT(_c1, 0) == GET_BIT(target, 0) ? 1 : 0;
+    largestGroupSize0_0[0] = GET_BIT(nLoci, _c0, 0) == GET_BIT(nLoci, target, 0) ? 1 : 0;
+    largestGroupSize1_1[0] = GET_BIT(nLoci, _c1, 0) == GET_BIT(nLoci, target, 0) ? 1 : 0;
 
 	int largestGroup0 = largestGroupSize0_0[0];
 	int largestGroup1 = largestGroupSize1_1[0];
 
 	for (int i = 1; i < nLoci; i++)
 	{
-		if (GET_BIT(_c0, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c0, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize0_0[i] += largestGroupSize0_0[i - 1] + 1;
 
@@ -69,7 +69,7 @@ int Genotype::getMaskAtMostOneCrossOverGroup(int nLoci, int target) const
 			largestGroupSize0_0[i] = 0;
 		}
 
-		if (GET_BIT(_c1, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c1, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize1_1[i] += largestGroupSize1_1[i - 1] + 1;
 
@@ -84,11 +84,11 @@ int Genotype::getMaskAtMostOneCrossOverGroup(int nLoci, int target) const
 		}
 	}
 
-	largestGroupSize0_1[nLoci - 1] = GET_BIT(_c0, nLoci - 1) == GET_BIT(target, nLoci - 1) ? 1 : 0;
-	largestGroupSize1_0[nLoci - 1] = GET_BIT(_c1, nLoci - 1) == GET_BIT(target, nLoci - 1) ? 1 : 0;
+    largestGroupSize0_1[nLoci - 1] = GET_BIT(nLoci, _c0, nLoci - 1) == GET_BIT(nLoci, target, nLoci - 1) ? 1 : 0;
+    largestGroupSize1_0[nLoci - 1] = GET_BIT(nLoci, _c1, nLoci - 1) == GET_BIT(nLoci, target, nLoci - 1) ? 1 : 0;
 	for (int i = nLoci - 2; i >= 0; i--)
 	{
-		if (GET_BIT(_c1, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c1, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize1_0[i] += largestGroupSize1_0[i + 1] + 1;
 		}
@@ -97,7 +97,7 @@ int Genotype::getMaskAtMostOneCrossOverGroup(int nLoci, int target) const
 			largestGroupSize1_0[i] = 0;
 		}
 
-		if (GET_BIT(_c0, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c0, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize0_1[i] += largestGroupSize0_1[i + 1] + 1;
 		}
@@ -241,15 +241,15 @@ std::vector<int> Genotype::getMaskVectorAtMostOneCrossOverGroup(int nLoci, int t
 	std::vector<int> largestGroupSize1_1(nLoci); // _c1: right to left
 
 	/* First determine largest group size per chromosome */
-	largestGroupSize0_0[0] = GET_BIT(_c0, 0) == GET_BIT(target, 0) ? 1 : 0;
-	largestGroupSize1_1[0] = GET_BIT(_c1, 0) == GET_BIT(target, 0) ? 1 : 0;
+    largestGroupSize0_0[0] = GET_BIT(nLoci, _c0, 0) == GET_BIT(nLoci, target, 0) ? 1 : 0;
+    largestGroupSize1_1[0] = GET_BIT(nLoci, _c1, 0) == GET_BIT(nLoci, target, 0) ? 1 : 0;
 
 	int largestGroup0 = largestGroupSize0_0[0];
 	int largestGroup1 = largestGroupSize1_1[0];
 
 	for (int i = 1; i < nLoci; i++)
 	{
-		if (GET_BIT(_c0, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci,_c0, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize0_0[i] += largestGroupSize0_0[i - 1] + 1;
 
@@ -263,7 +263,7 @@ std::vector<int> Genotype::getMaskVectorAtMostOneCrossOverGroup(int nLoci, int t
 			largestGroupSize0_0[i] = 0;
 		}
 
-		if (GET_BIT(_c1, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c1, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize1_1[i] += largestGroupSize1_1[i - 1] + 1;
 
@@ -278,11 +278,11 @@ std::vector<int> Genotype::getMaskVectorAtMostOneCrossOverGroup(int nLoci, int t
 		}
 	}
 
-	largestGroupSize0_1[nLoci - 1] = GET_BIT(_c0, nLoci - 1) == GET_BIT(target, nLoci - 1) ? 1 : 0;
-	largestGroupSize1_0[nLoci - 1] = GET_BIT(_c1, nLoci - 1) == GET_BIT(target, nLoci - 1) ? 1 : 0;
+    largestGroupSize0_1[nLoci - 1] = GET_BIT(nLoci, _c0, nLoci - 1) == GET_BIT(nLoci, target, nLoci - 1) ? 1 : 0;
+    largestGroupSize1_0[nLoci - 1] = GET_BIT(nLoci, _c1, nLoci - 1) == GET_BIT(nLoci, target, nLoci - 1) ? 1 : 0;
 	for (int i = nLoci - 2; i >= 0; i--)
 	{
-		if (GET_BIT(_c1, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c1, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize1_0[i] += largestGroupSize1_0[i + 1] + 1;
 		}
@@ -291,7 +291,7 @@ std::vector<int> Genotype::getMaskVectorAtMostOneCrossOverGroup(int nLoci, int t
 			largestGroupSize1_0[i] = 0;
 		}
 
-		if (GET_BIT(_c0, i) == GET_BIT(target, i))
+        if (GET_BIT(nLoci, _c0, i) == GET_BIT(nLoci, target, i))
 		{
 			largestGroupSize0_1[i] += largestGroupSize0_1[i + 1] + 1;
 		}
