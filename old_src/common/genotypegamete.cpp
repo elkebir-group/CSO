@@ -28,7 +28,7 @@ void GenotypeGamete::computeGametes(int nLoci, const DoubleMatrix& RM, double pr
 			// i = number to be mapped
 			// j = bit-index
 			// heterozygousLoci[j] = mapped bit-index
-			val |= ((i >> j) & 1) << heterozygousLoci[j];
+            val |= ((i >> j) & 1) << (nLoci - heterozygousLoci[j] - 1);
 		}
 
 		Gamete gamete;
@@ -151,6 +151,7 @@ void GenotypeGamete::computeGametes(int nLoci, const DoubleMatrix& RM, const Gen
 	const std::vector<int>& availableCrossOverPoints, const std::vector<int>& fixedCrossOverPoints,
 	int& addedGametesCount)
 {
+    // TODO: fix GENERATE_AND_MASK
 	if (crossOverCount == 0)
 	{
 		std::vector<int> cpyFixedCrossOverPoints;

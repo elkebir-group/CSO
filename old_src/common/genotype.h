@@ -37,7 +37,7 @@ public:
 	bool operator >=(const Genotype& genotype) const;
 	bool operator ==(const Genotype& genotype) const;
 	bool operator !=(const Genotype& genotype) const;
-	int operator ()(const int i, const int j) const;
+    int operator ()(const int nLoci, const int i, const int j) const;
 	double computeProb(int nLoci, const DoubleMatrix& RM, int c) const;
 	void printGenotype(int nLoci, bool newline = true, std::ostream& out = std::cout, const char* separator = "/") const;
   double computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
@@ -132,9 +132,9 @@ inline double Genotype::computeProb(int nLoci, const DoubleMatrix& RM, int gamet
 	for (std::vector<int>::const_iterator it = homozygousLoci.begin();
 		it != homozygousLoci.end(); it++)
 	{
-		assert((*this)(0, *it) == (*this)(1, *it));
+        assert((*this)(nLoci, 0, *it) == (*this)(nLoci, 1, *it));
 
-		if (((gamete >> *it) & 1) != ((_c0 >> *it) & 1)) return 0;
+        if (GET_BIT(nLoci, gamete, *it) != GET_BIT(nLoci, _c0, *it)) return 0;
 	}
 
 	int heterozygousLociCount = (int) heterozygousLoci.size();
@@ -145,15 +145,15 @@ inline double Genotype::computeProb(int nLoci, const DoubleMatrix& RM, int gamet
 	for (int i = 0; i < heterozygousLociCount - 1; i++)
 	{
 		// val_chromosome_locus
-		int val_0_0 = (*this)(0, heterozygousLoci[i]);
-		int val_0_1 = (*this)(0, heterozygousLoci[i+1]);
+        int val_0_0 = (*this)(nLoci, 0, heterozygousLoci[i]);
+        int val_0_1 = (*this)(nLoci, 0, heterozygousLoci[i+1]);
 #ifndef NDEBUG		
-		int val_1_0 = (*this)(1, heterozygousLoci[i]);
+        int val_1_0 = (*this)(nLoci, 1, heterozygousLoci[i]);
 #endif
-		int val_1_1 = (*this)(1, heterozygousLoci[i+1]);
+        int val_1_1 = (*this)(nLoci, 1, heterozygousLoci[i+1]);
 
-		int gamete_val_0 = (gamete >> heterozygousLoci[i]) & 1;
-		int gamete_val_1 = (gamete >> heterozygousLoci[i+1]) & 1;
+        int gamete_val_0 = GET_BIT(nLoci, gamete, heterozygousLoci[i]);
+        int gamete_val_1 = GET_BIT(nLoci, gamete, heterozygousLoci[i+1]);
 
 		if (gamete_val_0 == val_0_0)
 		{
@@ -200,17 +200,17 @@ inline int Genotype::getAllele(int locus, int chromosome)
 	return (chromosome >> locus) & 1;
 }
 
-inline int Genotype::operator ()(const int i, const int j) const
+inline int Genotype::operator ()(const int nLoci, const int i, const int j) const
 {
 	assert(i == 0 || i == 1);
 	if (i == 0)
 	{
-		return ((_c0 >> j) & 1);
+        return GET_BIT(nLoci, _c0, j);
 	}
 	else
 	{
-		return ((_c1 >> j) & 1);
-	}
+        return GET_BIT(nLoci, _c1, j);
+    }
 }
 
 inline void Genotype::printGenotype(int nLoci, bool newline, std::ostream& out, const char* separator) const
@@ -318,7 +318,7 @@ inline int Genotype::getNumberOfHomozygousLoci(int nLoci) const
 	int res = 0;
 	for (int i = 0; i < nLoci; i++)
 	{
-		if ((*this)(0, i) == (*this)(1, i))
+        if ((*this)(nLoci, 0, i) == (*this)(nLoci, 1, i))
 			res++;
 	}
 

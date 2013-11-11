@@ -99,7 +99,7 @@ inline GameteScorePair HeuristicSubGroupSizes::compute(int gamete) const
 	int maxGroupSize = 0;
 	for (int i = 0; i < _nLoci; i++)
 	{
-		if (GET_BIT(gamete, i) == GET_BIT(_target, i))
+        if (GET_BIT(_nLoci, gamete, i) == GET_BIT(_nLoci, _target, i))
 		{
 			maxGroupSize++;
 		}

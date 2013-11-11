@@ -45,8 +45,8 @@ inline double HeuristicLinkage::getCost(const DpItem& item) const
 	int penalty = 0;
 	for (int i = 0; i < _nLoci; i++)
 	{
-		if (GET_BIT(c0, i) != GET_BIT(_target, i) &&
-			GET_BIT(c1, i) != GET_BIT(_target, i))
+        if (GET_BIT(_nLoci, c0, i) != GET_BIT(_nLoci, _target, i) &&
+            GET_BIT(_nLoci, c1, i) != GET_BIT(_nLoci, _target, i))
 		{
 			penalty++;
 		}

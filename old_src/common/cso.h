@@ -9,7 +9,7 @@
 #define CSO_H_
 
 //#define TIXML_USE_STL
-#define GET_BIT(x, i) (((x) >> (i)) & 1)
+#define GET_BIT(n, x, i) (((x) >> ((n) - (i) - 1)) & 1)
 #define GENERATE_AND_MASK(i, n) (((1 << (n)) - 1) << (i))
 
 #include <assert.h>

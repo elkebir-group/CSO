@@ -54,15 +54,15 @@ DoubleMatrix Data::generateRM(const DoubleVector& cmVector)
 		{
 			if (i < j)
 			{
-				res[i][j] = 0.5 * (1 - exp(-2.0 * (cmVector[j] - cmVector[i]) / 100.0));
+                res[i][j] = 0.5 * (1 - exp(-2.0 * (cmVector[j] - cmVector[i]) / 100.0));
 			}
 			else if (i > j)
 			{
-				res[i][j] = 0.5 * (1 - exp(-2.0 * (cmVector[i] - cmVector[j]) / 100.0));
+                res[i][j] = 0.5 * (1 - exp(-2.0 * (cmVector[i] - cmVector[j]) / 100.0));
 			}
 			else
 			{
-				res[i][j] = 0;
+                res[i][j] = 0;
 			}
 		}
 	}
@@ -186,7 +186,7 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
 
 			for (int i = 0; i < nLoci; i++)
 			{
-                stream >> Data::_pData->_RM[nLoci - row - 1][nLoci - i - 1];
+                stream >> Data::_pData->_RM[row][i];
 			}
 
 			row++;
@@ -262,10 +262,11 @@ void Data::printParents() const
 
 void Data::printRM() const
 {
-	std::cout << "Number of loci: " << _nLoci << std::endl;
+    std::cout << "// Number of loci: " << _nLoci << std::endl;
 
 	for (int i = 0; i < _nLoci; i++)
 	{
+        std::cout << "// ";
 		for (int j = 0; j < _nLoci; j++)
 		{
 			std::cout << _RM[i][j] << "\t";

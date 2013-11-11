@@ -13,7 +13,7 @@ DpTableArray::DpTableArray(int crossOverCount, bool restrictGametes)
 	: DpTable(crossOverCount, restrictGametes)
 	, _M(new DpItem*[_nGenotypes])
 {
-	memset(_M, NULL, sizeof(DpItem*) * _nGenotypes);
+    memset(_M, 0, sizeof(DpItem*) * _nGenotypes);
 }
 
 DpTableArray::~DpTableArray()
