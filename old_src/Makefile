@@ -7,7 +7,7 @@ ifeq ($(DEBUG),yes)
 	LDFLAGS = -lm -lboost_program_options
 	CXXFLAGS = -Wall -g3 -DDEBUG -DVERBOSE -Icommon -Itinyxml -Iga -Idp
 else
-	LDFLAGS = -lm -lboost_program_options-mt
+	LDFLAGS = -lm -Wl,-Bstatic -lboost_program_options-mt -Wl,-Bdynamic
 	CXXFLAGS = -Wall -DNDEBUG -ffast-math -fcaller-saves -finline-functions -O3 -Icommon -Itinyxml -Iga -Idp -Ianalysis
 	#CXXFLAGS = -Wall -fcaller-saves -finline-functions -O3 -Icommon -Itinyxml -Iga
 endif
