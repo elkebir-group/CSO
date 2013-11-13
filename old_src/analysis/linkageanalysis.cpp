@@ -63,16 +63,16 @@ void LinkageAnalysis::analyse(const int nLoci, const GenotypeSet& parents,
 			for (GenotypeSet::const_iterator it = parents.begin(); it != parents.end(); it++)
 			{
 				const Genotype& parent = *it;
-                if (parent(0, i, nLoci) == val_i)
+        if (parent(nLoci, 0, i) == val_i)
 				{
-                    if (parent(0, j, nLoci) == val_j)
+          if (parent(nLoci, 0, j) == val_j)
 					{
 						// no recombination
 						unsigned long pop = probToPop(parent.computeProb(nLoci, RM, parent.getC0()), gamma);
 						if (pop < matrix[i][j].second || matrix[i][j].first != Linked)
 							matrix[i][j] = matrix[j][i] = LinkagePopPair(Linked, pop);
 					}
-                    else if (parent(1, j, nLoci) == val_j)
+          else if (parent(nLoci, 1, j) == val_j)
 					{
 						// recombination needed
 						unsigned long pop = probToPop(0.5 * RM[i][j], gamma);
@@ -87,16 +87,16 @@ void LinkageAnalysis::analyse(const int nLoci, const GenotypeSet& parents,
 							matrix[i][j] = matrix[j][i] = LinkagePopPair(Unlinked, pop);
 					}
 				}
-                if (parent(1, i, nLoci) == val_i)
+        if (parent(nLoci, 1, i) == val_i)
 				{
-                    if (parent(1, j, nLoci) == val_j)
+          if (parent(nLoci, 1, j) == val_j)
 					{
 						// no recombination
 						unsigned long pop = probToPop(parent.computeProb(nLoci, RM, parent.getC1()), gamma);
 						if (pop < matrix[i][j].second || matrix[i][j].first != Linked)
 							matrix[i][j] = matrix[j][i] = LinkagePopPair(Linked, pop);
 					}
-                    else if (parent(0, j, nLoci) == val_j)
+          else if (parent(nLoci, 0, j) == val_j)
 					{
 						// recombination needed
 						unsigned long pop = probToPop(0.5 * RM[i][j], gamma);

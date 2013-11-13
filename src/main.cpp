@@ -223,9 +223,10 @@ int main(int argc, char** argv)
     return 1;
   }
 
-  if (ap.given("b") && !ap.given("a") && ap.given("r") == ap.given("br"))
+  if (!ap.given("a") && !ap.given("b") && !ap.given("br"))
   {
-    std::cerr << "Specify either -r or -br" << std::endl;
+    std::cerr << "Specify either -a or (-b and -br)" << std::endl;
+    return 1;
   }
 
   const std::string& inputFileName = ap.files()[0];

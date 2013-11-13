@@ -571,7 +571,7 @@ to sum over all possible $1 \leq j<i$ to identify $j_1$ and $j_2$:
  \label{eq:something}
    p_i &= \sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} x_{k,j} \cdot \ln(\Pr[]{\xi_k^j})\\
        & =\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} x_{k,j}\bigg(h_j\ln(\frac{1}{2})+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
-   &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot \tilde{z}_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
+   &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot z_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
 \end{align}
 \obacht{eq differs from conference version, see comment in .tex, MEK: it's good}
 
@@ -584,7 +584,7 @@ $\tilde{x}_{k,i} \in \{0,1\}$ and the following constraints.
   \tilde{x}_{2i-1,j} & \leq x_{2i,j} & n < i \leq L, 1 \leq j < i\\
   \tilde{x}_{2i,j} & \leq x_{2i-1,j} & n < i \leq L, 1 \leq j < i\\
   \sum_{j=1}^{i-1} \tilde{x}_{2i-1,j} & = \sum_{j=1}^{i-1} \tilde{x}_{2i,j} & n < i \leq L\\
-  \tilde{x}_{k,j} & \leq h_i & 2n < k \leq 2L, 1 \leq j < \delta(k)
+  \tilde{x}_{k,j} & \leq h_{\delta(k)} & 2n < k \leq 2L, 1 \leq j < \delta(k)
 \end{align}
 In addition, we need to ensure that the swapped parental genotypes are
 actually able to give rise to the two chromosomes. We do this by introducing
@@ -600,7 +600,7 @@ Now we can express the log-probability $\tilde{p}_i$ of observing
 $\xi^{j_2}_{2i-1}\cap\xi^{j_1}_{2i}$ as follows.
 \begin{equation}
  \begin{split}
-   \tilde{p}_i=\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} x_{k,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
+   \tilde{p}_i=\sum^{i-1}_{j=1}\sum_{k=2i-1}^{2i} \tilde{x}_{k,j}\bigg(h_j\ln(\frac{1}{2})&+\sum_{p=1}^{m-1}\sum_{q=p+1}^m b_{j,p,q}\ln(1-r_{p,q})\\
    &+ \sum_{p=1}^{m-1}\sum_{q=p+1}^m  b_{j,p,q} \cdot \tilde{z}_{k,p,q} \ln(\frac{r_{p,q}}{1-r_{p,q}}) \bigg)   
  \end{split}
 \end{equation}}

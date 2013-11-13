@@ -37,7 +37,7 @@ public:
 	bool operator >=(const Genotype& genotype) const;
 	bool operator ==(const Genotype& genotype) const;
 	bool operator !=(const Genotype& genotype) const;
-    int operator ()(const int nLoci, const int i, const int j) const;
+  int operator ()(const int nLoci, const int i, const int j) const;
 	double computeProb(int nLoci, const DoubleMatrix& RM, int c) const;
 	void printGenotype(int nLoci, bool newline = true, std::ostream& out = std::cout, const char* separator = "/") const;
   double computeProb(int nLoci, const DoubleMatrix& RM, const Genotype& D, const Genotype& E) const;
@@ -203,14 +203,15 @@ inline int Genotype::getAllele(int locus, int chromosome)
 inline int Genotype::operator ()(const int nLoci, const int i, const int j) const
 {
 	assert(i == 0 || i == 1);
+  assert(0 <= j && j < nLoci);
 	if (i == 0)
 	{
-        return GET_BIT(nLoci, _c0, j);
+    return GET_BIT(nLoci, _c0, j);
 	}
 	else
 	{
-        return GET_BIT(nLoci, _c1, j);
-    }
+    return GET_BIT(nLoci, _c1, j);
+  }
 }
 
 inline void Genotype::printGenotype(int nLoci, bool newline, std::ostream& out, const char* separator) const

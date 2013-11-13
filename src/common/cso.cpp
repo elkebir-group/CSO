@@ -18,7 +18,7 @@ void toBitstring(int val, int n, char* buf)
 	 */
 	for (int i = 0; i < n; i++)
 	{
-    buf[i] = (val & 1) ? '1' : '0';
+    buf[n - i - 1] = (val & 1) ? '1' : '0';
 		val >>= 1;
 	}
 
@@ -33,12 +33,11 @@ int fromBitstring(int n, const char* buf)
 	 * '0001' = 1
 	 */
 	int val = 0;
-  for (int i = 0; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
-    //if (buf[n - i - 1] == '1')
-    if (buf[i] == '1')
-    {
-			val |= 1 << i;
+		if (buf[n - i - 1] == '1')
+		{
+      val |= (1 << i);
 		}
 	}
 	return val;
@@ -69,20 +68,18 @@ int chromosomeCompare(int n, int val1, int val2,
 	heterozygousLoci.clear();
 
 	int base = 0;
-	for (int i = 0; i < n; i++)
-	{
-		if ((val1 & 1) == (val2 & 1))	// homozygous
+  for (int i = 0; i < n; i++)
+  {
+    if (GET_BIT(n, val1, i) == GET_BIT(n, val2, i))	// homozygous
 		{
-			base |= (val1 & 1) << i;
-			homyzygousLoci.push_back(i);
-		}
+      base |= GET_BIT(n, val1, i) << (n - i - 1);
+      homyzygousLoci.push_back(i);
+    }
 		else				// heterozygous
-			heterozygousLoci.push_back(i);
-
-		val1 >>= 1;
-		val2 >>= 1;
+      heterozygousLoci.push_back(i);
 	}
 
+  // base is the case where all bits at heterozygous loci are set to 0
 	return base;
 }
 

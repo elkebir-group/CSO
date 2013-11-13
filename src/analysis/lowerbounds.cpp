@@ -70,7 +70,7 @@ unsigned long LowerBound::solveSetCover()
     for (GenotypeSet::const_iterator it = parents.begin(); it != parents.end(); it++, i++)
     {
       const Genotype& C = *it;
-      if (C(0,p) || C(1,p))
+      if (C(m,0,p) || C(m,1,p))
         sum += x[i];
     }
     model.add(sum >= 1);
@@ -79,14 +79,6 @@ unsigned long LowerBound::solveSetCover()
   sum.end();
 
   model.add(IloMinimize(env, obj));
-
-  // UGLY hack, just to suppress the ILOG License Manager spamming
-  int bakfd, newfd;
-  fflush(stderr);
-  bakfd = dup(2);
-  newfd = open("/dev/null", O_WRONLY);
-  dup2(newfd, 2);
-  close(newfd);
 
   pCplex = new IloCplex(model);
   if (!_verbose)
@@ -103,15 +95,12 @@ unsigned long LowerBound::solveSetCover()
   }
 
   fflush(stderr);
-  dup2(bakfd, 2);
-  close(bakfd);
 
   if (pCplex->solve())
   {
     _crossLB = pCplex->getObjValue();
     if (!_pData->isIdeotypeHomozygous() && _crossLB > 1) _crossLB--;
   }
-
 
   delete pCplex;
   obj.end();
