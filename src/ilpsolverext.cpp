@@ -704,7 +704,7 @@ void IlpSolverExt::initPop()
       {
         for (size_t q = p + 1; q < m; q++)
         {
-          double r_pq = RM[m-p-1][m-q-1];
+          double r_pq = RM[p][q];
           sumoflogprobs += log(1-r_pq) * _bxx[2*j][i][p][q-p-1];
           sumoflogprobs += log(r_pq/(1.-r_pq)) * _bxxzz[2*j][i][p][q-p-1];
 

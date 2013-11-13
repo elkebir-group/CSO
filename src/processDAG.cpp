@@ -48,12 +48,9 @@ int main(int argc, char** argv)
     dataFileName.c_str(),
     G.getGen(), G.getCross(), G.getPop(), G.getCost());
 
-  if (!recomputePop)
-    G.printDAG(std::cout);
-
-  G.recomputePop();
   if (recomputePop)
-    G.printDAG(std::cout);
+    G.recomputePop();
+  G.printDAG(std::cout);
 
   fprintf(stderr, "%.3f,%.3f\n", G.getPop(), G.getCost());
 

@@ -9,6 +9,8 @@
 #define CSO_H_
 
 //#define TIXML_USE_STL
+#define GET_BIT(n, x, i) (((x) >> ((n) - (i) - 1)) & 1)
+#define GENERATE_AND_MASK(i, n) (((1 << (n)) - 1) << (i))
 
 #include <assert.h>
 #include <vector>
@@ -35,6 +37,7 @@ class Genotype;
 class GenotypeGamete;
 class Data;
 
+// function prototypes
 void toBitstring(int val, int n, char* buf);
 int fromBitstring(int n, const char* buf);
 int numberOfDifferences(int n, int val1, int val2);

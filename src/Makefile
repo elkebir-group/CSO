@@ -18,16 +18,19 @@ endif
 
 all: csoilp2 processDAG computeLB
 
-csoilp2: ilpsolverheuristic.o crossingschedule.o ilpsolver.o ilpsolverext.o main.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
+#csoilp2: ilpsolverheuristic.o crossingschedule.o ilpsolver.o ilpsolverext.o main.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
+csoilp2: ilpsolverheuristic.o crossingschedule.o ilpsolver.o ilpsolverext.o main.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
 	$(CXX) $(CXXFLAGS) -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 csoilp: schedule3.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
 	$(CXX) $(CXXFLAGS) -o $(BINDIR)/$@ $^ $(LDFLAGS) -lboost_program_options
 
-processDAG: crossingschedule.o processDAG.o lemon/arg_parser.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
+#processDAG: crossingschedule.o processDAG.o lemon/arg_parser.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
+processDAG: crossingschedule.o processDAG.o lemon/arg_parser.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o
 	$(CXX) $(CXXFLAGS) -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
-computeLB: computeLB.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o 
+#computeLB: computeLB.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o dp/dpitem.o dp/dptable.o dp/dptablehashmap.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o 
+computeLB: computeLB.o lemon/arg_parser.o analysis/linkageanalysis.o analysis/lowerbounds.o common/stopwatch.o common/data.o common/cso.o tinyxml/tinyxml.o tinyxml/tinyxmlparser.o tinyxml/tinyxmlerror.o tinyxml/tinystr.o common/genotype.o 
 	$(CXX) $(CXXFLAGS) -o $(BINDIR)/$@ $^ $(LDFLAGS)
 
 csogenerator: common/cso.o common/data.o tinyxml/tinystr.o tinyxml/tinyxml.o tinyxml/tinyxmlerror.o tinyxml/tinyxmlparser.o analysis/linkageanalysis.o generator/inputgen.o analysis/linkageanalysis.o

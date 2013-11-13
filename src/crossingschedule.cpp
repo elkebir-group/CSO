@@ -199,8 +199,8 @@ void CrossingSchedule::printNode(Node node, std::ostream& out) const
   {
     out << "\t\t\t\t<TD BGCOLOR=\"";
 
-    if (ideotype(0, i) == genotype(0, i) ||
-        ideotype(1, i) == genotype(0, i))
+    if (ideotype(nLoci, 0, i) == genotype(nLoci, 0, i) ||
+        ideotype(nLoci, 1, i) == genotype(nLoci, 0, i))
       out << "blue";
     else 
       out << "red";
@@ -223,8 +223,8 @@ void CrossingSchedule::printNode(Node node, std::ostream& out) const
   {
     out << "\t\t\t\t<TD BGCOLOR=\"";
 
-    if (ideotype(1, i) == genotype(1, i) ||
-        ideotype(0, i) == genotype(1, i))
+    if (ideotype(nLoci, 1, i) == genotype(nLoci, 1, i) ||
+        ideotype(nLoci, 0, i) == genotype(nLoci, 1, i))
       out << "blue";
     else 
       out << "red";

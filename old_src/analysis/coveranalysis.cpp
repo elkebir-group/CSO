@@ -44,7 +44,7 @@ void CoverAnalysis::analyse(const int nLoci, const GenotypeSet& parents, const i
 	{
 		for (GenotypeSet::const_iterator it = parents.begin(); it != parents.end(); it++)
 		{
-            if ((*it)(0, i) == GET_BIT(nLoci, targetChromosome, i))
+      if ((*it)(0, i) == GET_BIT(nLoci, targetChromosome, i))
 			{
 				genotypePopVector[i]._count++;
 				
@@ -55,7 +55,7 @@ void CoverAnalysis::analyse(const int nLoci, const GenotypeSet& parents, const i
 					genotypePopVector[i]._pop = pop;
 				}
 			}
-            else if ((*it)(1, i) == GET_BIT(nLoci, targetChromosome, i))
+      else if ((*it)(1, i) == GET_BIT(nLoci, targetChromosome, i))
 			{
 				genotypePopVector[i]._count++;
 				
