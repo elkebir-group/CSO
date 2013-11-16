@@ -334,12 +334,14 @@ void IlpSolver::initParentalGenotypes()
   int i=0;
   for (GenotypeSet::const_iterator it = parents.begin(); it != parents.end(); it++, i++)
   {
+    const Genotype& parent = *it;
+
     _c[2*i] = IloBoolArray(_env, m);
     _c[2*i+1] = IloBoolArray(_env, m);
     for (int j=0; j<m; j++)
     {
-      _c[2*i][j] = (it->getC0() >> (m-1-j)) & 1;
-      _c[2*i+1][j] = (it->getC1() >> (m-1-j)) & 1;
+      _c[2*i][j] = parent(m, 0, j);
+      _c[2*i+1][j] = parent(m, 1, j);
     }
     _homozygous[i]=it->isHomozygous();
   }
@@ -354,8 +356,8 @@ void IlpSolver::initIdeotype(bool swapIdeotype)
   // two targets - used only in multi-target case
   for (size_t j=0; j<m; j++)
   {
-    _cs1[j] = (ideotype.getC0() >> (m-1-j)) & 1;
-    _cs2[j] = (ideotype.getC1() >> (m-1-j)) & 1;
+    _cs1[j] = ideotype(m, 0, j);
+    _cs2[j] = ideotype(m, 1, j);
   }
 
   // fix target bits

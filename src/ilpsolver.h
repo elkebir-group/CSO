@@ -483,8 +483,8 @@ inline Genotype IlpSolver::parseGenotype(size_t i) const
     bool b0 = _pCplex->getValue(_a[2*i][l]) != 0;
     bool b1 = _pCplex->getValue(_a[2*i+1][l]) != 0;
 
-    c0 |= (int)b0 << (m - l - 1);
-    c1 |= (int)b1 << (m - l - 1);
+    c0 |= (int)b0 << (m-l-1);
+    c1 |= (int)b1 << (m-l-1);
   }
 
   return Genotype(c0, c1);
