@@ -12,6 +12,7 @@
 #include <limits>
 #include "common/data.h"
 #include "crossingschedule.h"
+#include <lemon/tolerance.h>
 
 class IlpSolver : public CrossingSchedule
 {
@@ -64,6 +65,7 @@ protected:
   typedef IloArray<IntVar3Matrix> IntVar4Matrix;
 
   const Options& _options;
+  const lemon::Tolerance<double> _tol;
   IdxMap _idx;
   IloEnv _env;
   IloModel _model;
@@ -480,8 +482,8 @@ inline Genotype IlpSolver::parseGenotype(size_t i) const
   int c0 = 0, c1 = 0;
   for (size_t l = 0; l < m; l++)
   {
-    bool b0 = _pCplex->getValue(_a[2*i][l]) != 0;
-    bool b1 = _pCplex->getValue(_a[2*i+1][l]) != 0;
+    bool b0 = _tol.nonZero(_pCplex->getValue(_a[2*i][l]));
+    bool b1 = _tol.nonZero(_pCplex->getValue(_a[2*i+1][l]));
 
     c0 |= (int)b0 << (m-l-1);
     c1 |= (int)b1 << (m-l-1);

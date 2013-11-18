@@ -17,6 +17,7 @@
 IlpSolver::IlpSolver(const Data* pData, const Options& options)
   : CrossingSchedule(pData)
   , _options(options)
+  , _tol(1e-8)
   , _idx(_G)
   , _env()
   , _model(_env)
@@ -1378,7 +1379,8 @@ void IlpSolver::constructDAG()
     size_t offset = getNrInnerPred(i);
     for (size_t j = 0; j < n + offset; j++)
     {
-      if (_pCplex->getValue(_x[2*i][j]))
+      double x_val = _pCplex->getValue(_x[2*i][j]);
+      if (_tol.nonZero(x_val))
       {
         assert(p1 == -1);
         if (j>=n+i)
@@ -1388,7 +1390,7 @@ void IlpSolver::constructDAG()
       }
       if (homozygousIdeotype)
       {
-        if (i != _options._bound - 1 && _pCplex->getValue(_x[2*i+1][j]))
+        if (i != _options._bound - 1 && _tol.nonZero(_pCplex->getValue(_x[2*i+1][j])))
         {
           assert(p2 == -1);
           if (j>=n+i)
@@ -1401,7 +1403,8 @@ void IlpSolver::constructDAG()
       }
       else
       {
-        if (_pCplex->getValue(_x[2*i+1][j]))
+        double x_val2 = _pCplex->getValue(_x[2*i+1][j]);
+        if (_tol.nonZero(x_val2))
         {
           assert(p2 == -1);
           if (j>=n+i)

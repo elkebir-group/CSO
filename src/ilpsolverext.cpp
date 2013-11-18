@@ -110,6 +110,8 @@ IlpSolver::SolverStatus IlpSolverExt::solve(bool feasibility, int timeLimit)
     //std::cout << "//" << std::endl;
     //printXX();
     //std::cout << "//" << std::endl;
+    //printX();
+    //std::cout << "//" << std::endl;
     //printYY();
     //std::cout << "//" << std::endl;
     //printGG();
