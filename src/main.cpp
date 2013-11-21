@@ -71,13 +71,15 @@ IlpSolver::SolverStatus solve(const Data* pData,
 
     pSolver1->init(true);
     stat1 = pSolver1->solve(feasiblity, timeLimit);
-    solve1 = stat1 != IlpSolver::CSO_SOLVER_INFEASIBLE;
+    solve1 = stat1 != IlpSolver::CSO_SOLVER_INFEASIBLE
+        && stat1 != IlpSolver::CSO_SOLVER_TIME_LIMIT_INFEASIBLE;
 
     if (!pData->isIdeotypeHomozygous())
     {
       pSolver2->init(false);
       stat2 = pSolver2->solve(feasiblity, timeLimit);
-      solve2 = stat2 != IlpSolver::CSO_SOLVER_INFEASIBLE;
+      solve2 = stat2 != IlpSolver::CSO_SOLVER_INFEASIBLE
+          && stat2 != IlpSolver::CSO_SOLVER_TIME_LIMIT_INFEASIBLE;
     }
   }
 

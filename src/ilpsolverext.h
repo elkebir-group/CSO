@@ -230,7 +230,7 @@ inline double IlpSolverExt::parseProb2(size_t i) const
     return 0;
   }
 
-  if (_pCplex->getValue(_f[i]))
+  if (_tol.nonZero(_pCplex->getValue(_f[i])))
   {
     return exp(_pCplex->getValue(_pp[i]));
   }
