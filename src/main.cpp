@@ -261,7 +261,7 @@ int main(int argc, char** argv)
     LowerBound LB(pData, false);
     bool foundFeasible = false;
     options._upperBoundPop = std::numeric_limits<double>::max();
-    for (int b = std::max(2, std::max(LB.getCrossLB(), options._bound));; b++)
+    for (int b = std::max(2ul, std::max(LB.getCrossLB(), options._bound));; b++)
     {
       const int lbr = 1+ceil(log(b)/log(2));
       if (lbr > pData->getGenMax())
