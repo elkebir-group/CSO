@@ -277,18 +277,18 @@ Data* Data::create(const char* fileName, bool readParents, bool allowPopMax)
       c1 = fromBitstring(nLoci, buf);
 
       GenotypeGamete parent(c0, c1);
-      parent.computeGametes(nLoci, Data::_pData->_RM, Data::_pData->_probLowerBound);
-      parent.computeGametesCumulative();
-      if (parent.getGametes().size())
-      {
-        Data::_pData->_parents.insert(parent);
-      }
-      else
-      {
-        std::cerr << "Skipped parent ";
-        parent.printGenotype(nLoci, false, std::cerr);
-        std::cerr << ", as it produces no gametes within N_{max}." << std::endl;
-      }
+      //parent.computeGametes(nLoci, Data::_pData->_RM, Data::_pData->_probLowerBound);
+      //parent.computeGametesCumulative();
+      //if (parent.getGametes().size())
+      //{
+      Data::_pData->_parents.insert(parent);
+      //}
+      //else
+      //{
+      //  std::cerr << "Skipped parent ";
+      //  parent.printGenotype(nLoci, false, std::cerr);
+      //  std::cerr << ", as it produces no gametes within N_{max}." << std::endl;
+      //}
     }
   }
 
