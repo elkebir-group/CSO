@@ -147,13 +147,13 @@ int Genotype::getMaskAtMostOneCrossOverGroup(int nLoci, int target) const
 		{
 			if (i <= bestCrossoverPoint)
 			{
-				val1 |= (_c0 & (1 << i));
-				val2 |= (_c1 & (1 << i));
+        val1 |= (_c0 & (1 << (nLoci - i - 1)));
+        val2 |= (_c1 & (1 << (nLoci - i - 1)));
 			}
 			else
 			{
-				val1 |= (_c1 & (1 << i));
-				val2 |= (_c0 & (1 << i));
+        val1 |= (_c1 & (1 << (nLoci - i - 1)));
+        val2 |= (_c0 & (1 << (nLoci - i - 1)));
 			}
 		}
 

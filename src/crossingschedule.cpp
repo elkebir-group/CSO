@@ -135,7 +135,7 @@ void CrossingSchedule::recomputePop(Node node)
 {
   if (isLeaf(node))
   {
-    _pop[node] = 0;
+    _pop[node] = 1;
     _prob[node] = 0;
     _prob1[node] = 0;
     _prob2[node] = 0;
