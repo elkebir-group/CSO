@@ -10,79 +10,79 @@
 #include <string.h>
 
 DpTableArray::DpTableArray(int crossOverCount, bool restrictGametes)
-	: DpTable(crossOverCount, restrictGametes)
-	, _M(new DpItem*[_nGenotypes])
+  : DpTable(crossOverCount, restrictGametes)
+  , _M(new DpItem*[_nGenotypes])
 {
     memset(_M, 0, sizeof(DpItem*) * _nGenotypes);
 }
 
 DpTableArray::~DpTableArray()
 {
-	for (int i = 0; i < _nGenotypes; i++)
-	{
-		delete _M[i];
-	}
+  for (int i = 0; i < _nGenotypes; i++)
+  {
+    delete _M[i];
+  }
 
-	delete[] _M;
+  delete[] _M;
 }
 
 bool DpTableArray::isPresent(const Genotype& genotype) const
 {
-	assert(getIndex(genotype) < _nGenotypes);
-	return _M[getIndex(genotype)] != NULL;
+  assert(getIndex(genotype) < _nGenotypes);
+  return _M[getIndex(genotype)] != NULL;
 }
 
 const DpItem& DpTableArray::getItem(const Genotype& genotype) const
 {
-	int index = getIndex(genotype);
-	
-	if (_M[index])
-	{
-		return *_M[getIndex(genotype)];
-	}
-	else
-	{
-		_useCount++;
+  int index = getIndex(genotype);
 
-		_M[index] = new DpItem(genotype, NULL, NULL, INT_MAX, INT_MAX, INT_MAX, INT_MAX, GenotypeSet(), false);
+  if (_M[index])
+  {
+    return *_M[getIndex(genotype)];
+  }
+  else
+  {
+    _useCount++;
 
-		if (_crossOverCount > 0) 
-			_M[index]->computeGametes(_nLoci, _RM, _ideotype, 
-				_probLowerBound, _restrictGametes, _crossOverCount);
-		else
-			_M[index]->computeGametes(_nLoci, _RM, _probLowerBound);
+    _M[index] = new DpItem(genotype, NULL, NULL, INT_MAX, INT_MAX, INT_MAX, INT_MAX, GenotypeSet(), false);
 
-		return *_M[index];
-	}
+    if (_crossOverCount > 0)
+      _M[index]->computeGametes(_nLoci, _RM, _ideotype,
+        _probLowerBound, _restrictGametes, _crossOverCount);
+    else
+      _M[index]->computeGametes(_nLoci, _RM, _probLowerBound);
+
+    return *_M[index];
+  }
 }
 
 DpItem& DpTableArray::getItem(const Genotype& genotype)
 {
-	int index = getIndex(genotype);
-	
-	if (_M[index])
-	{
-		return *_M[getIndex(genotype)];
-	}
-	else
-	{
-		_useCount++;
+  int index = getIndex(genotype);
 
-		_M[index] = new DpItem(genotype, NULL, NULL, INT_MAX, INT_MAX, INT_MAX, INT_MAX, GenotypeSet(), false);
+  if (_M[index])
+  {
+    return *_M[getIndex(genotype)];
+  }
+  else
+  {
+    _useCount++;
 
-		if (_crossOverCount > 0) 
-			_M[index]->computeGametes(_nLoci, _RM, _ideotype, 
-				_probLowerBound, _restrictGametes, _crossOverCount);
-		else
-			_M[index]->computeGametes(_nLoci, _RM, _probLowerBound);
+    _M[index] = new DpItem(genotype, NULL, NULL, INT_MAX, INT_MAX, INT_MAX, INT_MAX, GenotypeSet(), false);
 
-		return *_M[index];
-	}
+    if (_crossOverCount > 0)
+      _M[index]->computeGametes(_nLoci, _RM, _ideotype,
+        _probLowerBound, _restrictGametes, _crossOverCount);
+    else
+      _M[index]->computeGametes(_nLoci, _RM, _probLowerBound);
+
+    return *_M[index];
+  }
 }
 
 DpItem& DpTableArray::updateItem(const DpItem& item)
 {
-	DpItem& itemToUpdate = getItem(item);
-	itemToUpdate.update(item);
-	return itemToUpdate;
+  DpItem& itemToUpdate = getItem(item);
+  itemToUpdate.update(item);
+  return itemToUpdate;
 }

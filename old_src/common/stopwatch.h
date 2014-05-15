@@ -13,21 +13,21 @@
 class StopWatch
 {
 private:
-	clock_t _starttime;
-	clock_t _stoptime;
+  clock_t _starttime;
+  clock_t _stoptime;
 
 public:
-	StopWatch();
-	~StopWatch();
+  StopWatch();
+  ~StopWatch();
 
-	void start();
-	void stop();
-	double getElapsedTime();
+  void start();
+  void stop();
+  double getElapsedTime();
 };
 
 inline double StopWatch::getElapsedTime()
 {
-	return (_stoptime - _starttime) / (double) CLOCKS_PER_SEC;
+  return (_stoptime - _starttime) / (double) CLOCKS_PER_SEC;
 }
 
 #endif /* STOPWATCH_H_ */

@@ -157,7 +157,6 @@ common/cso.cpp
 dp/solver.h
 dp/heuristicsubgroupsizes.h
 dp/heuristicsubgroupsize.h
-dp/heuristicsolverfast.h
 dp/heuristicsolver.h
 dp/heuristics.h
 dp/heuristicpurelinkage.h
@@ -173,7 +172,6 @@ dp/dptable.h
 dp/dpitem.h
 dp/csodp.h
 dp/solver.cpp
-dp/heuristicsolverfast.cpp
 dp/heuristicsolver.cpp
 dp/heuristicpurelinkage.cpp
 dp/dptablehashmap.cpp

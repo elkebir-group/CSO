@@ -33,19 +33,19 @@ typedef std::tr1::unordered_map<int, std::tr1::unordered_map<int, DpItem> > DpMa
 
 typedef enum 
 {
-	HeuristicCorrectLociType = 1,
-	HeuristicCorrectAllelesType = 2,
-	//HeuristicIndividualCostType = 3,
-	HeuristicLinkageType = 3,
-	HeuristicLinkageLociType = 4,
-	HeuristicLinkageAllelesType = 5,
-	//HeuristicCorrectLociBonusPerLocusType = 6,
-	//HeuristicCorrectAllelesBonusPerLocusType = 7,
-	//HeuristicLinkageLociBonusType = 8,
-	//HeuristicLinkageAllelesBonusType = 9,
-	HeuristicPureLinkageType = 10,
-	HeuristicLargestSubGroupSizeType = 11,
-	HeuristicSubGroupSizesType = 12
+  HeuristicCorrectLociType = 1,
+  HeuristicCorrectAllelesType = 2,
+  //HeuristicIndividualCostType = 3,
+  HeuristicLinkageType = 3,
+  HeuristicLinkageLociType = 4,
+  HeuristicLinkageAllelesType = 5,
+  //HeuristicCorrectLociBonusPerLocusType = 6,
+  //HeuristicCorrectAllelesBonusPerLocusType = 7,
+  //HeuristicLinkageLociBonusType = 8,
+  //HeuristicLinkageAllelesBonusType = 9,
+  HeuristicPureLinkageType = 10,
+  HeuristicLargestSubGroupSizeType = 11,
+  HeuristicSubGroupSizesType = 12
 } HeuristicType;
 
 #endif

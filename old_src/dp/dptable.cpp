@@ -13,14 +13,14 @@
  */
 
 DpTable::DpTable(int crossOverCount, bool restrictGametes)
-	: _nLoci(Data::getInstance()->getNumberOfLoci())
-	, _nGenotypes((1 << (2 * _nLoci - 1)) + (1 << (_nLoci - 1)))
-	, _RM(Data::getInstance()->getRM())
-	, _probLowerBound(Data::getInstance()->getProbLowerBound())
-	, _ideotype(Data::getInstance()->getIdeotype())
-	, _crossOverCount(crossOverCount)
-	, _restrictGametes(restrictGametes)
-	, _useCount(0)
+  : _nLoci(Data::getInstance()->getNumberOfLoci())
+  , _nGenotypes((1 << (2 * _nLoci - 1)) + (1 << (_nLoci - 1)))
+  , _RM(Data::getInstance()->getRM())
+  , _probLowerBound(Data::getInstance()->getProbLowerBound())
+  , _ideotype(Data::getInstance()->getIdeotype())
+  , _crossOverCount(crossOverCount)
+  , _restrictGametes(restrictGametes)
+  , _useCount(0)
 {
 }
 

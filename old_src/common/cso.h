@@ -56,8 +56,8 @@ typedef std::tr1::unordered_map<int, std::tr1::unordered_map<int, GenotypeGamete
 
 typedef struct
 {
-	int _c;
-	double _prob;
+  int _c;
+  double _prob;
 } Gamete;
 
 extern const Gamete g_InvalidGamete;
