@@ -20,11 +20,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef _MSC_VER
-#include <unordered_map>
-#else
-#include <tr1/unordered_map>
-#endif
+//#ifdef _MSC_VER
+//#include <unordered_map>
+//#else
+//#include <tr1/unordered_map>
+//#endif
 
 #include <limits.h>
 #include <float.h>
@@ -62,7 +62,7 @@ typedef std::set<const Genotype*> GenotypePointerSet;
 typedef std::list<Genotype> GenotypeList;
 typedef std::list<const Genotype*> GenotypePointerList;
 
-typedef std::tr1::unordered_map<int, std::tr1::unordered_map<int, GenotypeGamete> > GenotypeGameteMatrix;
+//typedef std::tr1::unordered_map<int, std::tr1::unordered_map<int, GenotypeGamete> > GenotypeGameteMatrix;
 
 typedef struct
 {

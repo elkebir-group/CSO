@@ -8,8 +8,8 @@
 #ifndef LINKAGEANALYSIS_H_
 #define LINKAGEANALYSIS_H_
 
-#include "cso.h"
-#include "data.h"
+#include "common/cso.h"
+#include "common/data.h"
 #include <vector>
 
 typedef std::pair<LinkageType, unsigned long> LinkagePopPair;

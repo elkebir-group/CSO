@@ -8,7 +8,7 @@
 #ifndef LOWERBOUNDS_H_
 #define LOWERBOUNDS_H_
 
-#include "data.h"
+#include "common/data.h"
 #include "linkageanalysis.h"
 
 class LowerBound
