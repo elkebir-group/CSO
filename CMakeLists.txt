@@ -8,9 +8,12 @@ set( Analysis_Hdr
 )
 
 set( Analysis_Src
-  #  src/analysis/analysemain.cpp
   src/analysis/linkageanalysis.cpp
   src/analysis/lowerbounds.cpp
+)
+
+set( Analysis_Main_Src
+  src/analysis/analysemain.cpp
 )
 
 set( Common_Hdr
@@ -19,6 +22,7 @@ set( Common_Hdr
   src/common/genotype.h
   src/common/genotypegamete.h
   src/common/stopwatch.h
+  src/crossingschedule.h
 )
 
 set( Common_Src
@@ -26,6 +30,7 @@ set( Common_Src
   src/common/data.cpp
   src/common/genotype.cpp
   src/common/stopwatch.cpp
+  src/crossingschedule.cpp
 )
 
 set( Generator_Src
@@ -46,17 +51,19 @@ set( Tinyxml_Src
 
 set( Cso_Hdr
   src/ilpsolverheuristic.h
-  src/crossingschedule.h
   src/ilpsolver.h
   src/ilpsolverext.h
 )
 
 set( Cso_Src
   src/ilpsolverheuristic.cpp
-  src/crossingschedule.cpp
   src/ilpsolver.cpp
   src/ilpsolverext.cpp
   src/main.cpp
+)
+
+set( ProcessDAG_Src
+  src/processDAG.cpp
 )
 
 set( GitCommand1 "symbolic-ref HEAD 2> /dev/null | cut -b 12-" )
@@ -147,3 +154,9 @@ set( CplexLibs
 
 add_executable( csoilp ${Analysis_Hdr} ${Analysis_Src} ${Common_Hdr} ${Common_Src} ${CommonObjs} ${Tinyxml_Hdr} ${Tinyxml_Src} ${Cso_Hdr} ${Cso_Src} )
 target_link_libraries( csoilp ${CommonLibs} ${CplexLibs} )
+
+add_executable( processDAG ${Common_Hdr} ${Common_Src} ${CommonObjs} ${Tinyxml_Hdr} ${Tinyxml_Src} ${ProcessDAG_Src} )
+target_link_libraries( processDAG ${CommonLibs} )
+
+#add_executable( analyse ${Analysis_Hdr} ${Analysis_Src} ${Analysis_Main_Src} ${Common_Hdr} ${Common_Src} ${CommonObjs} ${Tinyxml_Hdr} ${Tinyxml_Src} )
+#target_link_libraries( anaylse ${CommonLibs} )
